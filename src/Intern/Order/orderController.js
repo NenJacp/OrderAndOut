@@ -30,11 +30,11 @@ const generateTicket = (order) => {
 // Función para crear una nueva orden
 const createOrder = async (req, res) => {
     const { items, total, paymentMethod } = req.body; // Desestructuración de datos
-    const createdBy = req.userId; // Obtener el ID del usuario desde el token
-    const createdByType = req.userType; // Obtener el tipo de usuario desde el token
-    const restaurantId = req.params.idRestaurant; // Obtener el ID del restaurante de los parámetros
+    const createdById = req.user.id; // Obtener el ID del usuario desde el token
+    const createdByType = req.user.type; // Obtener el tipo de usuario desde el token
+    const restaurantId = req.params.restaurantId; // Obtener el ID del restaurante de los parámetros
 
-    if (!items || !total || !createdBy || !createdByType || !paymentMethod) {
+    if (!items || !total || !createdById || !createdByType || !paymentMethod) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
@@ -47,7 +47,7 @@ const createOrder = async (req, res) => {
             numOrder, // Asegúrate de incluir el numOrder aquí
             products: items,
             totalPrice: total,
-            createdBy,
+            createdById,
             createdByType,
             creationTime: new Date().toLocaleTimeString(),
             paymentMethod,

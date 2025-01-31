@@ -40,7 +40,7 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: '', // Valor por defecto es una cadena vacía
     },
-    createdBy: { // ID de quien creó la orden (kiosko, cajero o usuario)
+    createdById: { // ID de quien creó la orden (kiosko, cajero o usuario)
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,

@@ -10,7 +10,7 @@ const restaurantController = require('../Restaurant/restaurantController'); // I
 
 // Rutas para administradores
 router.post('/', adminController.createAdmin); // Crear un nuevo administrador
-router.post('/login', adminController.loginAdmin); // Iniciar sesión como administrador
+router.post('/login/admin', adminController.loginAdmin); // Iniciar sesión como administrador
 router.get('/', verifyToken, adminController.getAllAdmins); // Obtener todos los administradores
 router.get('/:id', verifyToken, adminController.getAdminById); // Obtener un administrador por ID
 router.put('/:id', verifyToken, adminController.updateAdmin); // Actualizar un administrador
