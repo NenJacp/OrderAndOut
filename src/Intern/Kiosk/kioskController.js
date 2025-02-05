@@ -55,9 +55,6 @@ const getKiosksByRestaurantId = async (req, res) => {
 const loginKiosk = async (req, res) => {
     const { serial, password } = req.body;
 
-    console.log("Serial:", serial); // Verificar el valor de serial
-    console.log("Password:", password); // Verificar el valor de password
-
     if (!serial || !password) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
@@ -86,3 +83,4 @@ module.exports = {
     loginKiosk,
     getKiosksByRestaurantId,
 };
+    
