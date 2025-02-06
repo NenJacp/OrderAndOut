@@ -6,26 +6,26 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config(); // Cargar variables de entorno
 
 const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization']?.split(' ')[1]; // Obtener el token del encabezado
-
+    const token = req.headers.authorization?.split(' ')[1];
+    
     if (!token) {
-        return res.status(403).json({ message: 'Token no proporcionado.' });
+        return res.status(401).json({ message: 'Acceso no autorizado' });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({ message: 'Token inválido.' });
-        }
-        req.userId = decoded.id; // Establecer el ID del usuario en req.userId
-        req.userType = decoded.type; // Establecer el tipo de usuario en req.userType
-
-        // Eliminar la lógica de restaurantId
-        // if (decoded.type !== 'admin') {
-        //     req.restaurantId = decoded.restaurantId; // Establecer el ID del restaurante en req.restaurantId
-        // }
-
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Asegurar la estructura correcta del usuario
+        req.user = { 
+            id: decoded.id.toString(),  // Convertir a string por si es ObjectId
+            type: decoded.type 
+        };
+        
+        console.log('Usuario autenticado:', req.user); // Debug
         next();
-    });
+    } catch (error) {
+        res.status(401).json({ message: 'Token inválido' });
+    }
 };
 
 module.exports = verifyToken; 

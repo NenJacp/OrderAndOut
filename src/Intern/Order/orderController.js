@@ -29,6 +29,7 @@ const generateTicket = (order) => {
 
 // Función para crear una nueva orden
 const createOrder = async (req, res) => {
+    console.log("estoy en controller");
     const { items, total, paymentMethod } = req.body; // Desestructuración de datos
     const createdById = req.user.id; // Obtener el ID del usuario desde el token
     const createdByType = req.user.type; // Obtener el tipo de usuario desde el token

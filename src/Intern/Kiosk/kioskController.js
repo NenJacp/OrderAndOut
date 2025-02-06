@@ -71,7 +71,14 @@ const loginKiosk = async (req, res) => {
         }
 
         // Generar un token JWT con solo el ID y tipo
-        const token = jwt.sign({ id: kiosk._id, type: 'kiosk' }, process.env.JWT_SECRET); // Agregar tipo de usuario
+        const token = jwt.sign(
+            { 
+                id: kiosk._id.toString(),  // Asegurar conversión a string
+                type: 'kiosk' 
+            }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '2h' }
+        );
         res.status(200).json({ token, kioskId: kiosk._id }); // Responder solo con el token
     } catch (error) {
         res.status(500).json({ message: error.message }); // Manejo de errores

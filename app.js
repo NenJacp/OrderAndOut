@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////
 
 const express = require('express');
-const connectDB = require('./src/Config/mongoDB'); // Importar la conexión a MongoDB
+const connectDB = require('./src/core/config/mongoDB'); // Importar la conexión a MongoDB
 const adminRouter = require('./src/Intern/Admin/adminRouter'); // Importar las rutas de administradores
 const restaurantRouter = require('./src/Intern/Restaurant/restaurantRouter'); // Importar las rutas de restaurantes
 const kioskRouter = require('./src/Intern/Kiosk/kioskRouter'); // Importar las rutas de kioskos

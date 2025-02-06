@@ -6,6 +6,7 @@ const Order = require('./orderModel'); // Importar el modelo de orden
 
 // Función para crear una nueva orden
 const createOrder = async (orderData) => {
+    console.log("estoy en repository");
     const newOrder = new Order(orderData);
     return await newOrder.save(); // Guardar en la base de datos
 };
