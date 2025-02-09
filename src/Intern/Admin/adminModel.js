@@ -36,7 +36,11 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    restaurants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', default: [] }],
+    restaurant: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Restaurant',
+        default: null
+    },
     creationDate: {
         type: Date,
         default: Date.now,

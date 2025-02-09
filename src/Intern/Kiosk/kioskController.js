@@ -15,11 +15,11 @@ require('dotenv').config(); // Cargar variables de entorno
 
 // Función para crear un nuevo kiosko
 const createKiosk = async (req, res) => {
-    const { paymentType, password } = req.body; // Obtener solo los campos necesarios del cuerpo de la solicitud
-    const restaurantId = req.params.restaurantId; // Obtener restaurantId de los parámetros de la solicitud
-    // Verificar que se proporcionen todos los campos requeridos
-    if (!paymentType || !password || !restaurantId) {
-        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    const { paymentType, password } = req.body;
+    const restaurantId = req.user.restaurant; // Obtener del token
+
+    if (req.user.restaurant === 'Empty') {
+        return res.status(400).json({ message: 'Primero debes crear un restaurante' });
     }
 
     try {
@@ -38,10 +38,8 @@ const createKiosk = async (req, res) => {
 
 // Función para obtener todos los kioskos por ID del restaurante
 const getKiosksByRestaurantId = async (req, res) => {
-    const { restaurantId } = req.params;
-
     try {
-        const kiosks = await kioskRepository.getKiosksByRestaurantId(restaurantId);
+        const kiosks = await kioskRepository.getKiosksByRestaurantId(req.user.restaurant);
         if (!kiosks || kiosks.length === 0) {
             return res.status(404).json({ message: 'No se encontraron kioskos para este restaurante.' });
         }
@@ -60,28 +58,34 @@ const loginKiosk = async (req, res) => {
     }
 
     try {
-        const kiosk = await Kiosk.findOne({ serial }); // Obtener el kiosko por serial
+        const kiosk = await Kiosk.findOne({ serial }).populate('restaurantId'); // Agregar populate
         if (!kiosk) {
-            return res.status(404).json({ message: 'Kiosko no encontrado.' }); // Manejo de no encontrado
+            return res.status(404).json({ message: 'Kiosko no encontrado.' });
         }
 
-        const isPasswordValid = await comparer(password, kiosk.password); // Comparar la contraseña
+        const isPasswordValid = await comparer(password, kiosk.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Contraseña incorrecta.' }); // Manejo de contraseña incorrecta
+            return res.status(401).json({ message: 'Contraseña incorrecta.' });
         }
 
-        // Generar un token JWT con solo el ID y tipo
+        // Generar token con restaurantId
         const token = jwt.sign(
             { 
-                id: kiosk._id.toString(),  // Asegurar conversión a string
-                type: 'kiosk' 
+                id: kiosk._id.toString(),
+                type: 'kiosk',
+                restaurant: kiosk.restaurantId._id.toString() // Agregar restaurantId al token
             }, 
             process.env.JWT_SECRET, 
-            { expiresIn: '2h' }
+            { expiresIn: '7d' } // Cambiar tiempo de expiración a 7 días
         );
-        res.status(200).json({ token, kioskId: kiosk._id }); // Responder solo con el token
+        
+        res.status(200).json({ 
+            token, 
+            kioskId: kiosk._id,
+            restaurantId: kiosk.restaurantId._id // Enviar también en la respuesta
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Manejo de errores
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -90,4 +94,3 @@ module.exports = {
     loginKiosk,
     getKiosksByRestaurantId,
 };
-    

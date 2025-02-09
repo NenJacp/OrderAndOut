@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////
 
 const restaurantRepository = require('./restaurantRepository'); // Importar el repositorio
+const Admin = require('../Admin/adminModel'); // Importar modelo Admin
 
 ////////////////////////////////////////////////////////////
 //                     CREATE SECTION                      ///
@@ -11,13 +12,20 @@ const restaurantRepository = require('./restaurantRepository'); // Importar el r
 // Función para crear un nuevo restaurante
 const createRestaurant = async (req, res) => {
     const { name, image, location, delivery, categories, hours } = req.body; // Obtener otros campos del cuerpo de la solicitud
-    const adminId = req.params.adminId; // Obtener adminId de los parámetros de la solicitud
+    const adminId = req.user.id; // Obtener ID del admin desde el token
 
-    if (!name || !image || !location || !hours || !adminId) {
+    if (!name || !image || !location || !hours) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
     }
 
     try {
+        // Verificar si el admin ya tiene restaurante
+        const admin = await Admin.findById(adminId);
+        if (admin.restaurant) {
+            return res.status(400).json({ message: 'Ya tienes un restaurante registrado' });
+        }
+
+        // Crear nuevo restaurante
         const newRestaurant = await restaurantRepository.createRestaurant({
             name,
             image,
@@ -25,8 +33,14 @@ const createRestaurant = async (req, res) => {
             delivery,
             categories,
             hours,
-            adminId: [adminId], // Usar adminId pasado por parámetro
+            adminId: adminId // Registrar relación con el admin
         });
+
+        // Actualizar admin con el nuevo restaurante
+        await Admin.findByIdAndUpdate(adminId, { 
+            restaurant: newRestaurant._id 
+        });
+
         res.status(201).json(newRestaurant);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -112,6 +126,24 @@ const deleteRestaurant = async (req, res) => {
     }
 }
 
+////////////////////////////////////////////////////////////
+//                     GET SECTION                        ///
+////////////////////////////////////////////////////////////
+
+const getRestaurantByAdmin = async (req, res) => {
+    try {
+        const restaurant = await restaurantRepository.getRestaurantByAdminId(req.user.id);
+        
+        if (!restaurant) {
+            return res.status(404).json({ message: 'Restaurante no encontrado' });
+        }
+        
+        res.status(200).json(restaurant);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     createRestaurant,
     getAllRestaurants,
@@ -119,4 +151,5 @@ module.exports = {
     updateRestaurant,
     deleteRestaurant,
     getRestaurantsByAdminId,
+    getRestaurantByAdmin,
 };

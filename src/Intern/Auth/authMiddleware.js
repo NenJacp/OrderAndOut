@@ -18,7 +18,8 @@ const verifyToken = (req, res, next) => {
         // Asegurar la estructura correcta del usuario
         req.user = { 
             id: decoded.id.toString(),  // Convertir a string por si es ObjectId
-            type: decoded.type 
+            type: decoded.type,
+            restaurant: decoded.restaurant // Ahora será el ID o 'Empty'
         };
         
         console.log('Usuario autenticado:', req.user); // Debug

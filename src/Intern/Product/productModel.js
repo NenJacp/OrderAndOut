@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
+        required: [true, 'El nombre es requerido'],
     },
     description: {
         type: String,
@@ -19,7 +19,8 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number, // Usar Number para precios
-        required: true,
+        required: [true, 'El precio es requerido'],
+        min: [0, 'El precio no puede ser negativo']
     },
     availability: {
         type: Boolean,
@@ -30,13 +31,13 @@ const productSchema = new mongoose.Schema({
         default: Date.now, // Fecha de creación
     },
     creationTime: {
-        type: String, // Hora de creación
-        required: true,
+        type: Date,
+        default: Date.now // Valor por defecto: fecha actual
     },
     restaurantId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant', // Referencia al modelo Restaurant
-        required: true,
+        required: [true, 'El restaurante es requerido']
     },
     ingredients: {
         type: [String], // Array de ingredientes

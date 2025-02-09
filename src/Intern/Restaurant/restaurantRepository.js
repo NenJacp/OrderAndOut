@@ -36,6 +36,10 @@ const getRestaurantsByAdminId = async (adminId) => {
     return await Restaurant.find({ adminId }); // Buscar restaurantes por adminId
 };
 
+const getRestaurantByAdminId = async (adminId) => {
+    return await Restaurant.findOne({ adminId }).populate('adminId');
+};
+
 module.exports = {
     createRestaurant,
     getAllRestaurants,
@@ -43,4 +47,5 @@ module.exports = {
     updateRestaurant,
     deleteRestaurant,
     getRestaurantsByAdminId,
+    getRestaurantByAdminId,
 };

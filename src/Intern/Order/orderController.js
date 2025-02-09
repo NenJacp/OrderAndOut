@@ -33,7 +33,7 @@ const createOrder = async (req, res) => {
     const { items, total, paymentMethod } = req.body; // Desestructuración de datos
     const createdById = req.user.id; // Obtener el ID del usuario desde el token
     const createdByType = req.user.type; // Obtener el tipo de usuario desde el token
-    const restaurantId = req.params.restaurantId; // Obtener el ID del restaurante de los parámetros
+    const restaurantId = req.user.restaurant;
 
     if (!items || !total || !createdById || !createdByType || !paymentMethod) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
@@ -62,10 +62,8 @@ const createOrder = async (req, res) => {
 
 // Nueva función para obtener órdenes por ID de restaurante
 const getOrdersByRestaurantId = async (req, res) => {
-    const { restaurantId } = req.params; // Obtener el ID del restaurante de los parámetros
-
     try {
-        const orders = await orderRepository.getOrdersByRestaurantId(restaurantId); // Llamar al repositorio
+        const orders = await orderRepository.getOrdersByRestaurantId(req.user.restaurant);
         if (!orders || orders.length === 0) {
             return res.status(404).json({ message: 'No se encontraron órdenes para este restaurante.' });
         }

@@ -69,8 +69,12 @@ const loginAdmin = async (req, res) => {
             return res.status(401).json({ message: 'Contraseña incorrecta.' }); // Manejo de contraseña incorrecta
         }
 
-        // Generar un token JWT con solo el ID y tipo
-        const token = jwt.sign({ id: admin._id, type: 'admin' }, process.env.JWT_SECRET, { expiresIn: '2h' }); // Agregar tipo de usuario
+        const restaurantStatus = admin.restaurant ? admin.restaurant.toString() : 'Empty';
+        const token = jwt.sign({ 
+            id: admin._id, 
+            type: 'admin',
+            restaurant: restaurantStatus
+        }, process.env.JWT_SECRET, { expiresIn: '2h' });
         res.status(200).json({ token, adminId: admin._id }); // Responder con el token y el ID del administrador
     } catch (error) {
         res.status(500).json({ message: error.message }); // Manejo de errores
