@@ -9,17 +9,25 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    lastNamePaternal: {
+    lastName: {
         type: String,
         required: true,
-    },
-    lastNameMaternal: {
-        type: String,
-        required: true,
+        trim: true
     },
     birthDate: {
         type: Date,
         required: true,
+    },
+    phone: {
+        type: String,
+        required: [true, 'El número telefónico es requerido'],
+        unique: true,
+        validate: {
+            validator: function(v) {
+                return /^\+?(\d{2})?[\s-]?\d{10,15}$/.test(v);
+            },
+            message: props => `${props.value} no es un número válido!`
+        }
     },
     email: {
         type: String,
@@ -64,7 +72,7 @@ const adminSchema = new mongoose.Schema({
     resetPasswordExpires: {
         type: Date,
         default: null
-    }
+    },
 });
 
 // Exportaciones

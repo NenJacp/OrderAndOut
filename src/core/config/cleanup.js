@@ -12,6 +12,6 @@ const cleanupExpiredRegistrations = async () => {
 };
 
 // Ejecutar cada 1 minuto
-setInterval(cleanupExpiredRegistrations, 60000);
+setInterval(cleanupExpiredRegistrations, 3600000);
 
 module.exports = cleanupExpiredRegistrations; 

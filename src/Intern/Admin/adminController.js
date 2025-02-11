@@ -45,7 +45,7 @@ const startRegistration = async (req, res) => {
             email,
             password: hashedPassword,
             verificationCode,
-            codeExpires: Date.now() + 600000 // 10 minutos
+            codeExpires: Date.now() + 3600000 // 1 hora (3,600,000 ms)
         });
 
         await sendVerificationEmail(email, verificationCode);
@@ -66,7 +66,7 @@ const verifyAndActivate = async (req, res) => {
         });
 
         if (!admin) {
-            return res.status(400).json({ message: 'Código inválido o expirado' });
+            return res.status(400).json({ message: 'Código inválido o expirado (1 hora de validez)' });
         }
 
         admin.isVerified = true;
