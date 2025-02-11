@@ -14,7 +14,8 @@ const comparer = async (candidatePassword, storedPassword) => {
     return await bcrypt.compare(candidatePassword, storedPassword);
 };
 
+// Exportar como objeto con métodos
 module.exports = {
-    hasher,
-    comparer,
+    hasher: async (password) => await bcrypt.hash(password, 10),
+    comparer: async (candidatePassword, storedPassword) => await bcrypt.compare(candidatePassword, storedPassword)
 }; 

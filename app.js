@@ -10,6 +10,8 @@ const kioskRouter = require('./src/Intern/Kiosk/kioskRouter'); // Importar las r
 const orderRouter = require('./src/Intern/Order/orderRouter'); // Importar las rutas de órdenes
 const productRouter = require('./src/Intern/Product/productRouter'); // Importar las rutas de productos
 const app = express();
+const cleanupJob = require('./src/core/config/cleanup');
+const cors = require('cors');
 
 // Conectar a la base de datos
 connectDB();
@@ -17,12 +19,21 @@ connectDB();
 // Middleware
 app.use(express.json()); // Para parsear el cuerpo de las solicitudes JSON
 
+// Configurar CORS
+app.use(cors({
+  origin: 'http://localhost:3000', // URL de tu frontend
+  credentials: true
+}));
+
 // Rutas
 app.use('/api/intern/admins', adminRouter); // Usar las rutas de administradores
 app.use('/api/intern/restaurants', restaurantRouter); // Usar las rutas de restaurantes
 app.use('/api/intern/kiosks', kioskRouter); // Usar las rutas de kioskos
 app.use('/api/intern/orders', orderRouter); // Usar las rutas de órdenes
 app.use('/api/intern/products', productRouter); // Usar las rutas de productos
+
+// Iniciar limpieza automática
+cleanupJob();
 
 // Puerto
 const PORT = process.env.PORT || 5000; // Usar el puerto definido en .env o 5000 por defecto

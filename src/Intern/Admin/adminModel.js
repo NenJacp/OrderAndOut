@@ -44,6 +44,26 @@ const adminSchema = new mongoose.Schema({
     creationDate: {
         type: Date,
         default: Date.now,
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    verificationCode: {
+        type: String,
+        default: null
+    },
+    codeExpires: {
+        type: Date,
+        default: null
+    },
+    resetPasswordCode: {
+        type: String,
+        default: null
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: null
     }
 });
 

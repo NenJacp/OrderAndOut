@@ -6,44 +6,79 @@ const adminRepository = require('./adminRepository'); // Importar el repositorio
 const { hasher, comparer } = require('../Auth/authService');
 const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
 require('dotenv').config(); // Cargar variables de entorno
+const Admin = require('./adminModel'); // Importar el modelo de administrador
+const { sendVerificationEmail, sendPasswordResetEmail } = require('../Auth/emailService'); // Importar el servicio de envío de correo
 
 ////////////////////////////////////////////////////////////
 //                     CREATE SECTION                    ///
 ////////////////////////////////////////////////////////////
 
-// Ejemplo de función para crear un nuevo administrador
-const createAdmin = async (req, res) => {
-    const { firstName, lastNamePaternal, lastNameMaternal, birthDate, email, password } = req.body; // Desestructuración de datos
+const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-    if (!firstName || !lastNamePaternal || !lastNameMaternal || !birthDate || !email || !password) {
-        return res.status(400).json({ message: 'Todos los campos son obligatorios.' }); // Validación de campos
-    }
-
-    // Validar el correo electrónico antes de hashearlo
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: `${email} no es un correo válido!` }); // Validación de correo
-    }
+const startRegistration = async (req, res) => {
+    const { email, password, ...rest } = req.body;
 
     try {
-        const hashedPassword = await hasher(password); // Hasear la contraseña
-        const newAdmin = await adminRepository.createAdmin({ // Llamar al repositorio para crear el administrador
-            firstName,
-            lastNamePaternal,
-            lastNameMaternal,
-            birthDate,
-            email, // Guardar el correo sin hashear
-            password: hashedPassword
+        // Buscar administradores no verificados con el mismo email
+        const existingAdmin = await Admin.findOne({
+            email,
+            isVerified: false,
+            codeExpires: { $lt: Date.now() }
         });
 
-        res.status(201).json(newAdmin); // Responder con el nuevo administrador
-    } catch (error) {
-        if (error.code === 11000) { // Código de error para duplicados
-            return res.status(400).json({ message: 'El correo electrónico ya está en uso.' });
+        // Eliminar registro expirado si existe
+        if (existingAdmin) {
+            await Admin.deleteOne({ _id: existingAdmin._id });
         }
-        res.status(500).json({ message: error.message }); // Manejo de errores
+
+        // Verificar si el email ya está registrado y verificado
+        const verifiedAdmin = await Admin.findOne({ email, isVerified: true });
+        if (verifiedAdmin) {
+            return res.status(400).json({ message: 'El correo ya está registrado' });
+        }
+
+        const verificationCode = generateCode();
+        const hashedPassword = await hasher(password);
+
+        const newAdmin = await Admin.create({
+            ...rest,
+            email,
+            password: hashedPassword,
+            verificationCode,
+            codeExpires: Date.now() + 600000 // 10 minutos
+        });
+
+        await sendVerificationEmail(email, verificationCode);
+        res.status(200).json({ message: 'Código enviado', tempId: newAdmin._id });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-}
+};
+
+const verifyAndActivate = async (req, res) => {
+    const { tempId, code } = req.body;
+
+    try {
+        const admin = await Admin.findOne({
+            _id: tempId,
+            verificationCode: code,
+            codeExpires: { $gt: Date.now() }
+        });
+
+        if (!admin) {
+            return res.status(400).json({ message: 'Código inválido o expirado' });
+        }
+
+        admin.isVerified = true;
+        admin.verificationCode = undefined;
+        admin.codeExpires = undefined;
+        await admin.save();
+
+        res.status(201).json({ message: 'Cuenta activada exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 ////////////////////////////////////////////////////////////
 //                     LOGIN SECTION                       ///
@@ -51,35 +86,38 @@ const createAdmin = async (req, res) => {
 
 // Función para iniciar sesión como administrador
 const loginAdmin = async (req, res) => {
-    const { email, password } = req.body; // Desestructuración de datos
-
-    // Verificar que se proporcionen ambos campos
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email y contraseña son obligatorios.' }); // Validación de campos
-    }
+    const { email, password } = req.body;
 
     try {
-        const admin = await adminRepository.getAdminByEmail(email); // Obtener el administrador por email
+        const admin = await Admin.findOne({ email });
         if (!admin) {
-            return res.status(404).json({ message: 'Administrador no encontrado.' }); // Manejo de no encontrado
+            return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
-        const isPasswordValid = await comparer(password, admin.password); // Comparar la contraseña
+        // Verificar si la cuenta está activa
+        if (!admin.isVerified) {
+            return res.status(403).json({ 
+                message: 'Cuenta no verificada',
+                tempId: admin._id  // Para permitir reenvío de código
+            });
+        }
+
+        const isPasswordValid = await comparer(password, admin.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Contraseña incorrecta.' }); // Manejo de contraseña incorrecta
+            return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
-        const restaurantStatus = admin.restaurant ? admin.restaurant.toString() : 'Empty';
-        const token = jwt.sign({ 
-            id: admin._id, 
-            type: 'admin',
-            restaurant: restaurantStatus
-        }, process.env.JWT_SECRET, { expiresIn: '2h' });
-        res.status(200).json({ token, adminId: admin._id }); // Responder con el token y el ID del administrador
+        const token = jwt.sign(
+            { id: admin._id, type: 'admin' },
+            process.env.JWT_SECRET,
+            { expiresIn: '2h' }
+        );
+
+        res.status(200).json({ token, adminId: admin._id });
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Manejo de errores
+        res.status(500).json({ message: error.message });
     }
-}
+};
 
 ////////////////////////////////////////////////////////////
 //                     READ SECTION                      ///
@@ -142,11 +180,60 @@ const deleteAdmin = async (req, res) => {
     }
 }
 
+const requestPasswordReset = async (req, res) => {
+    const { email } = req.body;
+    
+    try {
+        const admin = await Admin.findOne({ email });
+        if (!admin) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        const resetCode = generateCode();
+        admin.resetPasswordCode = resetCode;
+        admin.resetPasswordExpires = Date.now() + 600000; // 10 minutos
+        await admin.save();
+
+        await sendPasswordResetEmail(email, resetCode);
+        res.status(200).json({ message: 'Código de recuperación enviado' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    const { email, code, newPassword } = req.body;
+    
+    try {
+        const admin = await Admin.findOne({
+            email,
+            resetPasswordCode: code,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!admin) {
+            return res.status(400).json({ message: 'Código inválido o expirado' });
+        }
+
+        admin.password = await hasher(newPassword);
+        admin.resetPasswordCode = undefined;
+        admin.resetPasswordExpires = undefined;
+        await admin.save();
+
+        res.status(200).json({ message: 'Contraseña actualizada exitosamente' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
-    createAdmin,
+    startRegistration,
+    verifyAndActivate,
     loginAdmin,
     getAllAdmins,
     getAdminById,
     updateAdmin,
     deleteAdmin,
+    requestPasswordReset,
+    resetPassword,
 };
