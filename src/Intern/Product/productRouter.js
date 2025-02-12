@@ -18,4 +18,9 @@ router.delete('/:productId', verifyToken, productController.deleteProduct);
 // Ruta para crear productos
 router.post('/', verifyToken, productController.createProduct);
 
+// Nueva ruta para productos disponibles
+router.get('/available', verifyToken, (req, res) => {
+    productController.getProductsByRestaurantId(req, res);
+});
+
 module.exports = router;

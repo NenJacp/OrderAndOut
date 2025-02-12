@@ -31,18 +31,6 @@ const restaurantSchema = new mongoose.Schema({
             required: true,
         }
     },
-    hours: {
-        type: String, // Horarios de operación
-        required: true,
-    },
-    delivery: {
-        type: Number,
-        default: 0, // Número de entregas disponibles
-    },
-    categories: {
-        type: [String],
-        default: [], // Categorías de productos
-    },
     adminId: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Admin',

@@ -11,7 +11,7 @@ const {
 const verifyToken = require('../Auth/authMiddleware'); // Importar el middleware
 
 // Rutas para restaurantes
-router.post('/:adminId', verifyToken, createRestaurant); // Crear un nuevo restaurante
+router.post('/', verifyToken, createRestaurant); // Crear un nuevo restaurante
 router.get('/', getRestaurantByAdmin); // Obtener todos los restaurantes
 router.get('/:id', getRestaurantByAdmin); // Obtener un restaurante por ID
 router.put('/:id', verifyToken, getRestaurantByAdmin); // Actualizar un restaurante

@@ -107,13 +107,24 @@ const loginAdmin = async (req, res) => {
             return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
+        // Obtener el restaurantId actualizado
+        const currentAdmin = await Admin.findById(admin._id); // Nueva consulta para obtener datos frescos
+
         const token = jwt.sign(
-            { id: admin._id, type: 'admin' },
+            { 
+                id: admin._id, 
+                type: 'admin',
+                restaurant: currentAdmin.restaurant || 'Empty' // Usar valor actualizado
+            },
             process.env.JWT_SECRET,
-            { expiresIn: '2h' }
+            { expiresIn: '7d' }
         );
 
-        res.status(200).json({ token, adminId: admin._id });
+        res.status(200).json({ 
+            token, 
+            adminId: admin._id,
+            restaurant: currentAdmin.restaurant // Enviar también en la respuesta
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

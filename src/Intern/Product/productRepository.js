@@ -22,12 +22,26 @@ const getProductById = async (productId) => {
 
 // Nueva función para obtener productos por ID del restaurante
 const getProductsByRestaurantId = async (restaurantId) => {
-    return await Product.find({ restaurantId }).sort({ creationTime: -1 });
+    return await Product.find({ restaurantId })
+                       .sort({ creationDate: -1 })
+                       .select('-__v');
 };
 
 // Función para actualizar un producto
 const updateProduct = async (id, productData) => {
-    return await Product.findByIdAndUpdate(id, productData, { new: true }); // Actualizar producto
+    const allowedUpdates = ['name', 'description', 'image', 'costPrice', 
+                          'salePrice', 'category', 'ingredients', 'availability'];
+    const updates = Object.keys(productData)
+                        .filter(key => allowedUpdates.includes(key))
+                        .reduce((obj, key) => {
+                            obj[key] = productData[key];
+                            return obj;
+                        }, {});
+
+    return await Product.findByIdAndUpdate(id, updates, { 
+        new: true,
+        runValidators: true 
+    });
 };
 
 // Función para eliminar un producto

@@ -4,6 +4,8 @@
 
 const productRepository = require('./productRepository'); // Importar el repositorio
 const { hasher } = require('../Auth/authService'); // Importar funciones de hashing
+const Category = require('../Category/categoryModel'); // Importar el modelo de categoría
+const mongoose = require('mongoose');
 
 ////////////////////////////////////////////////////////////
 //                     CREATE SECTION                    ///
@@ -11,31 +13,89 @@ const { hasher } = require('../Auth/authService'); // Importar funciones de hash
 
 // Función para crear un nuevo producto
 const createProduct = async (req, res) => {
-    const { name, description, price, image, category, available } = req.body;
+    const { 
+        name,
+        description,
+        image,
+        costPrice,
+        salePrice,
+        category,
+        ingredients
+    } = req.body;
+
+    // Validar campos obligatorios
+    const requiredFields = ['name', 'image', 'costPrice', 'salePrice', 'category'];
+    const missingFields = requiredFields.filter(field => !req.body[field]);
     
-    if (!name || !price || !category) {
-        return res.status(400).json({ message: 'Nombre, precio y categoría son requeridos' });
+    if (missingFields.length > 0) {
+        return res.status(400).json({
+            message: `Campos requeridos faltantes: ${missingFields.join(', ')}`
+        });
     }
 
     try {
-        // Verificar si el admin tiene restaurante
-        if (req.user.restaurant === 'Empty') {
-            return res.status(400).json({ message: 'Debes tener un restaurante registrado' });
+        // Validar formato de ID de categoría
+        if (!mongoose.Types.ObjectId.isValid(category)) {
+            return res.status(400).json({ 
+                message: 'Formato de ID de categoría inválido' 
+            });
         }
 
-        const newProduct = await productRepository.createProduct({
-            name,
-            description,
-            price,
-            image: image || 'https://ejemplo.com/default.jpg',
-            category,
-            available: available !== undefined ? available : true,
-            restaurantId: req.user.restaurant // Añadir desde el token
+        // Convertir y validar precios
+        const numericCost = parseFloat(costPrice);
+        const numericSale = parseFloat(salePrice);
+        
+        if (isNaN(numericCost) || isNaN(numericSale)) {
+            return res.status(400).json({ 
+                message: 'Los precios deben ser valores numéricos' 
+            });
+        }
+
+        if (numericSale <= numericCost) {
+            return res.status(400).json({ 
+                message: 'El precio de venta debe ser mayor al de costo' 
+            });
+        }
+
+        // Verificar existencia de categoría
+        const categoriaValida = await Category.findOne({
+            _id: category,
+            restaurantId: req.user.restaurant
         });
 
-        res.status(201).json(newProduct);
+        if (!categoriaValida) {
+            return res.status(400).json({ 
+                message: 'Categoría no existe o no pertenece a tu restaurante' 
+            });
+        }
+
+        // Crear nuevo producto
+        const nuevoProducto = await productRepository.createProduct({
+            name,
+            description: description || '',
+            image,
+            costPrice: numericCost,
+            salePrice: numericSale,
+            category,
+            ingredients: ingredients || [],
+            restaurantId: req.user.restaurant, // Obtenido del JWT
+            available: true
+        });
+
+        res.status(201).json({
+            _id: nuevoProducto._id,
+            nombre: nuevoProducto.name,
+            precio: nuevoProducto.salePrice,
+            categoria: nuevoProducto.category,
+            disponible: nuevoProducto.available
+        });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error al crear producto:', error);
+        const mensaje = error.name === 'ValidationError' 
+            ? 'Datos del producto inválidos: ' + error.message
+            : 'Error interno del servidor';
+        res.status(500).json({ message: mensaje });
     }
 };
 

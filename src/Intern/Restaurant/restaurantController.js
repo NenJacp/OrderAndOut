@@ -4,6 +4,10 @@
 
 const restaurantRepository = require('./restaurantRepository'); // Importar el repositorio
 const Admin = require('../Admin/adminModel'); // Importar modelo Admin
+const Product = require('../Product/productModel'); // Importar modelo de producto
+const mongoose = require('mongoose'); // Importar mongoose para usar Types
+const Category = require('../Category/categoryModel'); // Importar modelo de categoría
+const jwt = require('jsonwebtoken'); // Importar jsonwebtoken para generar tokens
 
 ////////////////////////////////////////////////////////////
 //                     CREATE SECTION                      ///
@@ -11,11 +15,17 @@ const Admin = require('../Admin/adminModel'); // Importar modelo Admin
 
 // Función para crear un nuevo restaurante
 const createRestaurant = async (req, res) => {
-    const { name, image, location, delivery, categories, hours } = req.body; // Obtener otros campos del cuerpo de la solicitud
-    const adminId = req.user.id; // Obtener ID del admin desde el token
+    const { name, image, location} = req.body;
+    const adminId = req.user.id; // Ahora viene del token
 
-    if (!name || !image || !location || !hours) {
-        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    // Validar que el admin tenga permiso
+    if (req.user.type !== 'admin') {
+        return res.status(403).json({ message: 'Solo administradores pueden crear restaurantes' });
+    }
+
+    // Validar campos requeridos
+    if (!name || !image || !location?.country || !location?.city || !location?.address || !location?.postalCode) {
+        return res.status(400).json({ message: 'Todos los campos son requeridos' });
     }
 
     try {
@@ -30,18 +40,37 @@ const createRestaurant = async (req, res) => {
             name,
             image,
             location,
-            delivery,
-            categories,
-            hours,
-            adminId: adminId // Registrar relación con el admin
+            adminId: adminId
         });
 
-        // Actualizar admin con el nuevo restaurante
-        await Admin.findByIdAndUpdate(adminId, { 
-            restaurant: newRestaurant._id 
+        // Corregir la actualización del admin (faltaba asignar a variable)
+        const updatedAdmin = await Admin.findByIdAndUpdate(
+            adminId, 
+            { restaurant: newRestaurant._id },
+            { new: true }
+        );
+
+        if (!updatedAdmin) {
+            await restaurantRepository.deleteRestaurant(newRestaurant._id);
+            return res.status(404).json({ message: 'Administrador no encontrado' });
+        }
+
+        // Generar nuevo token con los datos actualizados
+        const token = jwt.sign(
+            {
+                id: updatedAdmin._id,
+                type: 'admin',
+                restaurant: newRestaurant._id // ← Usar el ID del nuevo restaurante
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        res.status(201).json({
+            restaurant: newRestaurant,
+            token
         });
 
-        res.status(201).json(newRestaurant);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -70,7 +99,12 @@ const getRestaurantById = async (req, res) => {
         if (!restaurant) {
             return res.status(404).json({ message: 'Restaurante no encontrado' });
         }
-        res.status(200).json(restaurant);
+        
+        // Nuevo: Populate de categorías del restaurante
+        const categories = await Category.find({ restaurantId: restaurant._id });
+        const restaurantWithCategories = { ...restaurant._doc, categories };
+        
+        res.status(200).json(restaurantWithCategories);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

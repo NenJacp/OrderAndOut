@@ -5,11 +5,6 @@
 const mongoose = require('mongoose');
 
 const kioskSchema = new mongoose.Schema({
-    serial: {
-        type: String,
-        required: true,
-        unique: true, // Debe ser único
-    },
     creationDate: {
         type: Date,
         default: Date.now, // Fecha de creación por defecto

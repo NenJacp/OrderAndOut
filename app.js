@@ -9,6 +9,7 @@ const restaurantRouter = require('./src/Intern/Restaurant/restaurantRouter'); //
 const kioskRouter = require('./src/Intern/Kiosk/kioskRouter'); // Importar las rutas de kioskos
 const orderRouter = require('./src/Intern/Order/orderRouter'); // Importar las rutas de órdenes
 const productRouter = require('./src/Intern/Product/productRouter'); // Importar las rutas de productos
+const categoriesRouter = require('./src/Intern/Category/categoryRouter'); // Importar las rutas de categorías
 const app = express();
 const cleanupJob = require('./src/core/config/cleanup');
 const cors = require('cors');
@@ -31,6 +32,7 @@ app.use('/api/intern/restaurants', restaurantRouter); // Usar las rutas de resta
 app.use('/api/intern/kiosks', kioskRouter); // Usar las rutas de kioskos
 app.use('/api/intern/orders', orderRouter); // Usar las rutas de órdenes
 app.use('/api/intern/products', productRouter); // Usar las rutas de productos
+app.use('/api/intern/categories', categoriesRouter); // Usar las rutas de categorías
 
 // Iniciar limpieza automática
 cleanupJob();

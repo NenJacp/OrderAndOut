@@ -16,21 +16,24 @@ require('dotenv').config(); // Cargar variables de entorno
 // Función para crear un nuevo kiosko
 const createKiosk = async (req, res) => {
     const { paymentType, password } = req.body;
-    const restaurantId = req.user.restaurant; // Obtener del token
-
-    if (req.user.restaurant === 'Empty') {
-        return res.status(400).json({ message: 'Primero debes crear un restaurante' });
+    
+    if (!req.user?.restaurant) {
+        return res.status(400).json({ 
+            message: 'Restaurante no asignado' 
+        });
     }
 
     try {
-        const hashedPassword = await hasher(password); // Hashear la contraseña
+        const hashedPassword = await hasher(password);
         const newKiosk = await kioskRepository.createKiosk({
-            serial: uuidv4(), // Generar un nuevo serial usando uuid
             paymentType,
-            password: hashedPassword, // Guardar la contraseña hasheada
-            restaurantId, // Usar restaurantId pasado por parámetro
+            password: hashedPassword,
+            restaurantId: req.user.restaurant
         });
-        res.status(201).json(newKiosk);
+        res.status(201).json({
+            _id: newKiosk._id, // ← Ahora se usa el ID automático de MongoDB
+            paymentType: newKiosk.paymentType
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -51,38 +54,37 @@ const getKiosksByRestaurantId = async (req, res) => {
 
 // Función para iniciar sesión como kiosko
 const loginKiosk = async (req, res) => {
-    const { serial, password } = req.body;
+    const { id, password } = req.body; // ← Cambiar de 'serial' a 'id'
 
-    if (!serial || !password) {
-        return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    if (!id || !password) {
+        return res.status(400).json({ message: 'ID y contraseña requeridos' });
     }
 
     try {
-        const kiosk = await Kiosk.findOne({ serial }).populate('restaurantId'); // Agregar populate
+        const kiosk = await Kiosk.findById(id).populate('restaurantId');
         if (!kiosk) {
-            return res.status(404).json({ message: 'Kiosko no encontrado.' });
+            return res.status(404).json({ message: 'Kiosko no encontrado' });
         }
 
         const isPasswordValid = await comparer(password, kiosk.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Contraseña incorrecta.' });
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
 
-        // Generar token con restaurantId
         const token = jwt.sign(
             { 
                 id: kiosk._id.toString(),
                 type: 'kiosk',
-                restaurant: kiosk.restaurantId._id.toString() // Agregar restaurantId al token
+                restaurant: kiosk.restaurantId._id.toString()
             }, 
-            process.env.JWT_SECRET, 
-            { expiresIn: '7d' } // Cambiar tiempo de expiración a 7 días
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
         );
         
         res.status(200).json({ 
-            token, 
+            token,
             kioskId: kiosk._id,
-            restaurantId: kiosk.restaurantId._id // Enviar también en la respuesta
+            restaurantId: kiosk.restaurantId._id
         });
     } catch (error) {
         res.status(500).json({ message: error.message });

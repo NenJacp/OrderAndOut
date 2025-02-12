@@ -17,35 +17,53 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true, // Este campo es requerido
     },
-    price: {
-        type: Number, // Usar Number para precios
-        required: [true, 'El precio es requerido'],
-        min: [0, 'El precio no puede ser negativo']
+    costPrice: {  
+        type: Number,
+        required: true,
+        min: [0.01, 'El precio de costo debe ser mayor a 0']
+    },
+    salePrice: {  
+        type: Number,
+        required: true,
+        min: [0.01, 'El precio de venta debe ser mayor a 0'],
+        validate: {
+            validator: function(v) {
+                return v > this.costPrice;
+            },
+            message: 'El precio de venta debe ser mayor al de costo'
+        }
     },
     availability: {
         type: Boolean,
-        default: true, // Disponibilidad por defecto es true
+        default: true,
     },
     creationDate: {
         type: Date,
-        default: Date.now, // Fecha de creación
-    },
-    creationTime: {
-        type: Date,
-        default: Date.now // Valor por defecto: fecha actual
+        default: Date.now,
     },
     restaurantId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Restaurant', // Referencia al modelo Restaurant
-        required: [true, 'El restaurante es requerido']
+        ref: 'Restaurant',
+        required: true
     },
     ingredients: {
         type: [String], // Array de ingredientes
         default: [],
     },
     category: {
-        type: String, // Categoría del producto (opcional)
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
         required: true,
+        validate: {
+            validator: async function(categoryId) {
+                const category = await mongoose.model('Category').findOne({
+                    _id: categoryId,
+                    restaurantId: this.restaurantId
+                });
+                return !!category;
+            },
+            message: 'La categoría no pertenece a este restaurante'
+        }
     },
 });
 
