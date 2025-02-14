@@ -1,13 +1,19 @@
 ////////////////////////////////////////////////////////////
-//                     Admin Model                       ///
-////////////////////////////////////////////////////////////
+//                MODELO DE ADMINISTRADOR                ///
+// Propósito: Gestionar cuentas de administradores con   ///
+// sistema de verificación en dos pasos                 ///
+// Relaciones:                                          ///
+//   - restaurant: Referencia a Restaurant (1:1)       ///
+//////////////////////////////////////////////////////////
 
 const mongoose = require('mongoose');
 
 const adminSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: true,
+        required: [true, 'El nombre es requerido'],
+        trim: true,
+        maxlength: [50, 'El nombre no puede exceder 50 caracteres']
     },
     lastName: {
         type: String,
@@ -31,14 +37,15 @@ const adminSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
-        unique: true,
+        required: [true, 'El correo electrónico es obligatorio'],
+        unique: [true, 'Este correo ya está registrado'],
         validate: {
             validator: function(v) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); // Validación básica para un correo
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
             },
             message: props => `${props.value} no es un correo válido!`
-        }
+        },
+        index: true // Índice para búsquedas rápidas
     },
     password: {
         type: String,
@@ -55,11 +62,14 @@ const adminSchema = new mongoose.Schema({
     },
     isVerified: {
         type: Boolean,
-        default: false
+        default: false,
+        description: 'Indica si completó la verificación por correo'
     },
     verificationCode: {
         type: String,
-        default: null
+        description: 'Código temporal de 6 dígitos para verificación',
+        index: true,
+        expires: 3600 // Autoexpiración en 1 hora
     },
     codeExpires: {
         type: Date,
@@ -74,6 +84,9 @@ const adminSchema = new mongoose.Schema({
         default: null
     },
 });
+
+// Índice compuesto para búsquedas rápidas
+adminSchema.index({ email: 1, isVerified: 1 });
 
 // Exportaciones
 const Admin = mongoose.model('Admin', adminSchema);

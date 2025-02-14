@@ -1,6 +1,27 @@
+////////////////////////////////////////////////////////////
+//           CONTROLADOR DE CATEGORÍAS                  ///
+// Funcionalidades:
+// - Creación de categorías por restaurante
+// - Gestión de categorías inactivas
+// - Validación de unicidad por restaurante
+// Seguridad:
+// - Requiere autenticación JWT
+// - Restringe acceso al restaurante del usuario
+////////////////////////////////////////////////////////////
+
 const categoryRepository = require('./categoryRepository');
 const Restaurant = require('../Restaurant/restaurantModel');
 
+/**
+ * @method createCategory
+ * @desc Crea nueva categoría asociada al restaurante del usuario
+ * @param {Object} req - Debe contener en el body:
+ *   - name: Nombre de la categoría (único por restaurante)
+ * @param {Object} res 
+ * @returns {Object} - Categoría creada o error de validación
+ * @throws {400} - Si el usuario no tiene restaurante asignado
+ * @throws {409} - Si la categoría ya existe en el restaurante
+ */
 const createCategory = async (req, res) => {
     try {
         const { name } = req.body;

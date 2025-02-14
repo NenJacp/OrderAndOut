@@ -1,5 +1,9 @@
 ////////////////////////////////////////////////////////////
-//                     Admin Controller                  ///
+//                CONTROLADOR DE ADMINISTRADORES         ///
+// Métodos:                                               //
+// - Registro y verificación de cuentas                  //
+// - Autenticación y gestión de sesiones                //  
+// - Gestión de perfiles y contraseñas                 ///
 ////////////////////////////////////////////////////////////
 
 const adminRepository = require('./adminRepository'); // Importar el repositorio
@@ -15,37 +19,57 @@ const { sendVerificationEmail, sendPasswordResetEmail } = require('../Auth/email
 
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
+/**
+ * @method startRegistration
+ * @desc Inicia el flujo de registro con verificación por correo
+ * @param {Object} req - Datos de solicitud
+ * @param {string} req.body.email - Correo electrónico
+ * @param {string} req.body.password - Contraseña en texto plano
+ * @param {Object} res - Objeto de respuesta
+ * @returns {Object} 
+ *  - 200: {message: string, tempId: string} 
+ *  - 400: Cuenta ya verificada
+ *  - 500: Error del servidor
+ * @security Public
+ */
 const startRegistration = async (req, res) => {
-    const { email, password, ...rest } = req.body;
+    const { email, password, phone, firstName, lastName, birthDate } = req.body;
 
     try {
-        // Buscar administradores no verificados con el mismo email
-        const existingAdmin = await Admin.findOne({
-            email,
-            isVerified: false,
-            codeExpires: { $lt: Date.now() }
+        // Eliminar cualquier registro previo no verificado con el mismo email o teléfono
+        await Admin.deleteMany({
+            $or: [
+                { email, isVerified: false },
+                { phone, isVerified: false }
+            ]
         });
 
-        // Eliminar registro expirado si existe
-        if (existingAdmin) {
-            await Admin.deleteOne({ _id: existingAdmin._id });
-        }
-
-        // Verificar si el email ya está registrado y verificado
-        const verifiedAdmin = await Admin.findOne({ email, isVerified: true });
-        if (verifiedAdmin) {
-            return res.status(400).json({ message: 'El correo ya está registrado' });
+        // Verificar si ya existe una cuenta verificada
+        const existingVerified = await Admin.findOne({
+            $or: [
+                { email, isVerified: true },
+                { phone, isVerified: true }
+            ]
+        });
+        
+        if (existingVerified) {
+            const conflictField = existingVerified.email === email ? 'correo' : 'teléfono';
+            return res.status(400).json({ message: `El ${conflictField} ya está registrado y verificado` });
         }
 
         const verificationCode = generateCode();
         const hashedPassword = await hasher(password);
 
         const newAdmin = await Admin.create({
-            ...rest,
+            firstName,
+            lastName,
+            birthDate,
             email,
+            phone,
             password: hashedPassword,
             verificationCode,
-            codeExpires: Date.now() + 3600000 // 1 hora (3,600,000 ms)
+            codeExpires: Date.now() + 3600000,
+            isVerified: false
         });
 
         await sendVerificationEmail(email, verificationCode);

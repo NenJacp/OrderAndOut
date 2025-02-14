@@ -1,5 +1,11 @@
 ////////////////////////////////////////////////////////////
-//                     MongoDB Connection                  ///
+//            CONEXIÓN A MONGODB ATLAS                   ///
+// Propósito: Establecer conexión segura con la base de datos
+// Dependencias:
+// - mongoose: ORM para MongoDB
+// - dotenv: Manejo de variables de entorno
+// Configuración requerida:
+// - MONGODB_URI: URI de conexión con credenciales
 ////////////////////////////////////////////////////////////
 
 const mongoose = require('mongoose');
@@ -11,10 +17,10 @@ const connectDB = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        console.log('MongoDB conectado exitosamente');
+        console.log('✅ MongoDB conectado exitosamente');
     } catch (error) {
-        console.error('Error al conectar a MongoDB:', error.message);
-        process.exit(1); // Salir del proceso si hay un error
+        console.error('❌ Error de conexión a MongoDB:', error.message);
+        process.exit(1); // Fuerza reinicio del servidor en caso de error
     }
 };
 

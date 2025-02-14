@@ -1,5 +1,10 @@
 ////////////////////////////////////////////////////////////
-//                     Admin Repository                  ///
+//          REPOSITORIO DE ADMINISTRADORES              ///
+// Propósito: Abstacción de operaciones CRUD para Admin
+// Métodos:
+// - Búsquedas case-insensitive
+// - Validación de existencia previa
+// - Manejo seguro de actualizaciones
 ////////////////////////////////////////////////////////////
 
 const Admin = require('./adminModel'); // Importar el modelo de administrador
@@ -10,9 +15,17 @@ const createAdmin = async (adminData) => {
     return await newAdmin.save(); // Guardar en la base de datos
 };
 
-// Función para obtener un administrador por email
+/**
+ * @method getAdminByEmail
+ * @desc Busca administrador por email (insensible a mayúsculas)
+ * @param {String} email - Correo a buscar
+ * @returns {Promise<Admin|null>} 
+ * @throws {MongoError} - Errores de base de datos
+ */
 const getAdminByEmail = async (email) => {
-    return await Admin.findOne({ email }); // Buscar administrador por email
+    return await Admin.findOne({ 
+        email: new RegExp(`^${email}$`, 'i') 
+    });
 };
 
 // Función para obtener todos los administradores

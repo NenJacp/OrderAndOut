@@ -1,6 +1,12 @@
 ////////////////////////////////////////////////////////////
-//                     Kiosk Controller                  ///
-////////////////////////////////////////////////////////////
+//           CONTROLADOR DE TERMINALES POS              ///
+// Funcionalidades:                                      ///
+//   - Creación con hash de contraseña                  ///
+//   - Autenticación JWT                               ///
+//   - Gestión por restaurante                        ///
+// Seguridad:                                         ///
+//   - Passwords almacenados con bcrypt              ///
+////////////////////////////////////////////////////////
 
 const kioskRepository = require('./kioskRepository'); // Importar el repositorio
 const Kiosk = require('./kioskModel'); // Importar el modelo de kiosko
@@ -13,7 +19,17 @@ require('dotenv').config(); // Cargar variables de entorno
 //                     CREATE SECTION                      ///
 ////////////////////////////////////////////////////////////
 
-// Función para crear un nuevo kiosko
+/**
+ * @method createKiosk
+ * @desc Crea nuevo terminal POS para el restaurante del usuario
+ * @param {Object} req - Debe contener:
+ *   - paymentType: 'card'/'cash'
+ *   - password: Mín 8 caracteres
+ * @security Requiere token JWT de administrador
+ * @returns {Object} - ID y tipo de pago del kiosko creado
+ * @throws {400} - Si no tiene restaurante asignado
+ * @throws {500} - Error del servidor
+ */
 const createKiosk = async (req, res) => {
     const { paymentType, password } = req.body;
     
@@ -52,7 +68,16 @@ const getKiosksByRestaurantId = async (req, res) => {
     }
 };
 
-// Función para iniciar sesión como kiosko
+/**
+ * @method loginKiosk
+ * @desc Autentica terminal POS generando token JWT
+ * @param {String} id - ID del kiosko
+ * @param {String} password - Contraseña en texto plano
+ * @returns {Object} - Token JWT válido por 7 días
+ * @throws {400} - Faltan credenciales
+ * @throws {404} - Kiosko no encontrado
+ * @throws {401} - Contraseña incorrecta
+ */
 const loginKiosk = async (req, res) => {
     const { id, password } = req.body; // ← Cambiar de 'serial' a 'id'
 

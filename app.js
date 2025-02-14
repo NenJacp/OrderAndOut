@@ -2,17 +2,19 @@
 //                     Main Application                    ///
 ////////////////////////////////////////////////////////////
 
+require('dotenv').config(); // Importar .env
 const express = require('express');
 const connectDB = require('./src/core/config/mongoDB'); // Importar la conexión a MongoDB
-const adminRouter = require('./src/Intern/Admin/adminRouter'); // Importar las rutas de administradores
-const restaurantRouter = require('./src/Intern/Restaurant/restaurantRouter'); // Importar las rutas de restaurantes
-const kioskRouter = require('./src/Intern/Kiosk/kioskRouter'); // Importar las rutas de kioskos
-const orderRouter = require('./src/Intern/Order/orderRouter'); // Importar las rutas de órdenes
-const productRouter = require('./src/Intern/Product/productRouter'); // Importar las rutas de productos
-const categoriesRouter = require('./src/Intern/Category/categoryRouter'); // Importar las rutas de categorías
+const adminRouter = require('./src/modules/Admin/adminRouter'); // Importar las rutas de administradores
+const restaurantRouter = require('./src/modules/Restaurant/restaurantRouter'); // Importar las rutas de restaurantes
+const kioskRouter = require('./src/modules/Kiosk/kioskRouter'); // Importar las rutas de kioskos
+const orderRouter = require('./src/modules/Order/orderRouter'); // Importar las rutas de órdenes
+const productRouter = require('./src/modules/Product/productRouter'); // Importar las rutas de productos
+const categoriesRouter = require('./src/modules/Category/categoryRouter'); // Importar las rutas de categorías
 const app = express();
 const cleanupJob = require('./src/core/config/cleanup');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 // Conectar a la base de datos
 connectDB();
@@ -42,3 +44,7 @@ const PORT = process.env.PORT || 5000; // Usar el puerto definido en .env o 5000
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Conectado a MongoDB'))
+  .catch(err => console.error('Error al conectar a MongoDB:', err));
