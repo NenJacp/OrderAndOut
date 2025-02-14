@@ -1,22 +1,12 @@
-////////////////////////////////////////////////////////////
-//                     Restaurant Controller                ///
-////////////////////////////////////////////////////////////
-
 const restaurantRepository = require('./restaurantRepository'); // Importar el repositorio
-const Admin = require('../Admin/adminModel'); // Importar modelo Admin
-const Product = require('../Product/productModel'); // Importar modelo de producto
-const mongoose = require('mongoose'); // Importar mongoose para usar Types
-const Category = require('../Category/categoryModel'); // Importar modelo de categoría
+const adminRepository = require('../Admin/adminRepository');  // Cambiar modelo por repositorio
+const categoryRepository = require('../Category/categoryRepository');  // Cambiar modelo por repositorio
 const jwt = require('jsonwebtoken'); // Importar jsonwebtoken para generar tokens
-
-////////////////////////////////////////////////////////////
-//                     CREATE SECTION                      ///
-////////////////////////////////////////////////////////////
 
 // Función para crear un nuevo restaurante
 const createRestaurant = async (req, res) => {
     const { name, image, location} = req.body;
-    const adminId = req.user.id; // Ahora viene del token
+    const adminId = req.user.id; // obtencion del id del admin por el token
 
     // Validar que el admin tenga permiso
     if (req.user.type !== 'admin') {
@@ -30,24 +20,18 @@ const createRestaurant = async (req, res) => {
 
     try {
         // Verificar si el admin ya tiene restaurante
-        const admin = await Admin.findById(adminId);
+        const admin = await adminRepository.getAdminById(adminId);
         if (admin.restaurant) {
             return res.status(400).json({ message: 'Ya tienes un restaurante registrado' });
         }
 
         // Crear nuevo restaurante
-        const newRestaurant = await restaurantRepository.createRestaurant({
-            name,
-            image,
-            location,
-            adminId: adminId
-        });
+        const newRestaurant = await restaurantRepository.createRestaurant({name, image, location, adminId});
 
         // Corregir la actualización del admin (faltaba asignar a variable)
-        const updatedAdmin = await Admin.findByIdAndUpdate(
+        const updatedAdmin = await adminRepository.updateAdmin(
             adminId, 
-            { restaurant: newRestaurant._id },
-            { new: true }
+            { restaurant: newRestaurant._id }
         );
 
         if (!updatedAdmin) {
@@ -63,22 +47,15 @@ const createRestaurant = async (req, res) => {
                 restaurant: newRestaurant._id // ← Usar el ID del nuevo restaurante
             },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '2h' }
         );
 
-        res.status(201).json({
-            restaurant: newRestaurant,
-            token
-        });
+        res.status(201).json({ token });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al crear el restaurante' });
     }
 }
-
-////////////////////////////////////////////////////////////
-//                     READ SECTION                        ///
-////////////////////////////////////////////////////////////
 
 // Función para obtener todos los restaurantes
 const getAllRestaurants = async (req, res) => {
@@ -86,7 +63,7 @@ const getAllRestaurants = async (req, res) => {
         const restaurants = await restaurantRepository.getAllRestaurants();
         res.status(200).json(restaurants);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al obtener los restaurantes' });
     }
 };
 
@@ -101,12 +78,12 @@ const getRestaurantById = async (req, res) => {
         }
         
         // Nuevo: Populate de categorías del restaurante
-        const categories = await Category.find({ restaurantId: restaurant._id });
+        const categories = await categoryRepository.getCategoriesByRestaurant(restaurant._id);
         const restaurantWithCategories = { ...restaurant._doc, categories };
         
         res.status(200).json(restaurantWithCategories);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al obtener el restaurante' });
     }
 };
 
@@ -126,10 +103,6 @@ const getRestaurantsByAdminId = async (req, res) => {
     }
 }
 
-////////////////////////////////////////////////////////////
-//                     UPDATE SECTION                      ///
-////////////////////////////////////////////////////////////
-
 // Función para actualizar un restaurante
 const updateRestaurant = async (req, res) => {
     try {
@@ -143,10 +116,6 @@ const updateRestaurant = async (req, res) => {
     }
 }
 
-////////////////////////////////////////////////////////////
-//                     DELETE SECTION                      ///
-////////////////////////////////////////////////////////////
-
 // Función para eliminar un restaurante
 const deleteRestaurant = async (req, res) => {
     try {
@@ -159,10 +128,6 @@ const deleteRestaurant = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
-
-////////////////////////////////////////////////////////////
-//                     GET SECTION                        ///
-////////////////////////////////////////////////////////////
 
 const getRestaurantByAdmin = async (req, res) => {
     try {

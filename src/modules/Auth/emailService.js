@@ -1,46 +1,41 @@
-////////////////////////////////////////////////////////////
-//               SERVICIO DE CORREOS ELECTRÓNICOS        ///
-// Dependencias: nodemailer                              //
-// Configuración: Requiere variables de entorno EMAIL_* ///
-////////////////////////////////////////////////////////////
-
+// Importación de módulos necesarios
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
+// Creación del transporte de correo electrónico
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'gmail', // Servicio de correo electrónico a utilizar
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: process.env.EMAIL_USER, // Correo electrónico del usuario
+        pass: process.env.EMAIL_PASS // Contraseña del correo electrónico
     }
 });
 
-/**
- * @function sendVerificationEmail
- * @desc Envía código de verificación a nuevo usuario
- * @param {string} toEmail - Correo destino
- * @param {string} code - Código de 6 dígitos
- * @throws {Error} - Si falla el envío
- * @example
- * await sendVerificationEmail('user@example.com', '123456');
- */
-const sendVerificationEmail = async (toEmail, code) => {
+// Función para enviar correo electrónico de verificación
+const sendVerificationEmail = async (email, code) => {
+    // Configuración de las opciones del correo electrónico
     const mailOptions = {
-        from: `"Verificación" <${process.env.EMAIL_USER}>`,
-        to: toEmail,
-        subject: 'Código de verificación',
-        html: `<h2>Tu código es: ${code}</h2>`
+        from: `"Verificación" <${process.env.EMAIL_USER}>`, // Remitente del correo electrónico
+        to: email, // Destinatario del correo electrónico
+        subject: 'Código de verificación', // Asunto del correo electrónico
+        html: `<h2>Tu código es: ${code}</h2>` // Contenido HTML del correo electrónico
     };
+    // Envío del correo electrónico
     await transporter.sendMail(mailOptions);
 };
 
-const sendPasswordResetEmail = async (toEmail, code) => {
+// Función para enviar correo electrónico de recuperación de contraseña
+const sendPasswordResetEmail = async (email, code) => {
+    // Configuración de las opciones del correo electrónico
     const mailOptions = {
-        from: `"Recuperación" <${process.env.EMAIL_USER}>`,
-        to: toEmail,
-        subject: 'Código de recuperación',
-        html: `<h2>Código: ${code}</h2>`
+        from: `"Recuperación" <${process.env.EMAIL_USER}>`, // Remitente del correo electrónico
+        to: email, // Destinatario del correo electrónico
+        subject: 'Código de recuperación', // Asunto del correo electrónico
+        html: `<h2>Código: ${code}</h2>` // Contenido HTML del correo electrónico
     };
+    // Envío del correo electrónico
     await transporter.sendMail(mailOptions);
 };
 
+// Exportación de las funciones para su uso en otros módulos
 module.exports = { sendVerificationEmail, sendPasswordResetEmail }; 

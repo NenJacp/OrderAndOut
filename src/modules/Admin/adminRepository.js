@@ -1,28 +1,16 @@
-////////////////////////////////////////////////////////////
-//          REPOSITORIO DE ADMINISTRADORES              ///
-// Propósito: Abstacción de operaciones CRUD para Admin
-// Métodos:
-// - Búsquedas case-insensitive
-// - Validación de existencia previa
-// - Manejo seguro de actualizaciones
-////////////////////////////////////////////////////////////
-
 const Admin = require('./adminModel'); // Importar el modelo de administrador
 
 // Función para crear un nuevo administrador
 const createAdmin = async (adminData) => {
+    // Crear un nuevo administrador con los datos proporcionados
     const newAdmin = new Admin(adminData);
-    return await newAdmin.save(); // Guardar en la base de datos
+    // Guardar el nuevo administrador en la base de datos
+    return await newAdmin.save();
 };
 
-/**
- * @method getAdminByEmail
- * @desc Busca administrador por email (insensible a mayúsculas)
- * @param {String} email - Correo a buscar
- * @returns {Promise<Admin|null>} 
- * @throws {MongoError} - Errores de base de datos
- */
+// Función para obtener un administrador por correo electrónico
 const getAdminByEmail = async (email) => {
+    // Buscar un administrador por correo electrónico, sin importar mayúsculas o minúsculas
     return await Admin.findOne({ 
         email: new RegExp(`^${email}$`, 'i') 
     });
@@ -30,24 +18,29 @@ const getAdminByEmail = async (email) => {
 
 // Función para obtener todos los administradores
 const getAllAdmins = async () => {
-    return await Admin.find(); // Obtener todos los administradores
+    // Obtener todos los administradores de la base de datos
+    return await Admin.find();
 };
 
 // Función para obtener un administrador por ID
 const getAdminById = async (id) => {
-    return await Admin.findById(id); // Buscar administrador por ID
+    // Buscar un administrador por su ID
+    return await Admin.findById(id);
 };
 
 // Función para actualizar un administrador
 const updateAdmin = async (id, adminData) => {
-    return await Admin.findByIdAndUpdate(id, adminData, { new: true }); // Actualizar administrador
+    // Actualizar un administrador por su ID, devolviendo el administrador actualizado
+    return await Admin.findByIdAndUpdate(id, adminData, { new: true });
 };
 
 // Función para eliminar un administrador
 const deleteAdmin = async (id) => {
-    return await Admin.findByIdAndDelete(id); // Eliminar administrador
+    // Eliminar un administrador por su ID
+    return await Admin.findByIdAndDelete(id);
 };
 
+// Exportar las funciones para su uso en otros módulos
 module.exports = {
     createAdmin,
     getAdminByEmail,

@@ -1,7 +1,3 @@
-////////////////////////////////////////////////////////////
-//                     Restaurant Model                  ///
-////////////////////////////////////////////////////////////
-
 const mongoose = require('mongoose');
 
 const restaurantSchema = new mongoose.Schema({
@@ -9,7 +5,7 @@ const restaurantSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-        image: {
+    image: {
         type: String,
         required: true,
     },
@@ -36,10 +32,9 @@ const restaurantSchema = new mongoose.Schema({
         ref: 'Admin',
         required: true,
     },
-    creationDate: {
-        type: Date,
-        default: Date.now,
-    },
+},
+{
+    timestamps: true
 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);

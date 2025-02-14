@@ -1,37 +1,15 @@
-////////////////////////////////////////////////////////////
-//                CONTROLADOR DE ADMINISTRADORES         ///
-// Métodos:                                               //
-// - Registro y verificación de cuentas                  //
-// - Autenticación y gestión de sesiones                //  
-// - Gestión de perfiles y contraseñas                 ///
-////////////////////////////////////////////////////////////
-
+require('dotenv').config(); // Cargar variables de entorno
+const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
+const Admin = require('./adminModel'); // Importar el modelo de administrador
 const adminRepository = require('./adminRepository'); // Importar el repositorio
 const { hasher, comparer } = require('../Auth/authService');
-const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
-require('dotenv').config(); // Cargar variables de entorno
-const Admin = require('./adminModel'); // Importar el modelo de administrador
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../Auth/emailService'); // Importar el servicio de envío de correo
 
-////////////////////////////////////////////////////////////
-//                     CREATE SECTION                    ///
-////////////////////////////////////////////////////////////
 
+// Función para generar un código de verificación aleatorio
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-/**
- * @method startRegistration
- * @desc Inicia el flujo de registro con verificación por correo
- * @param {Object} req - Datos de solicitud
- * @param {string} req.body.email - Correo electrónico
- * @param {string} req.body.password - Contraseña en texto plano
- * @param {Object} res - Objeto de respuesta
- * @returns {Object} 
- *  - 200: {message: string, tempId: string} 
- *  - 400: Cuenta ya verificada
- *  - 500: Error del servidor
- * @security Public
- */
+// Función para iniciar el registro de un administrador
 const startRegistration = async (req, res) => {
     const { email, password, phone, firstName, lastName, birthDate } = req.body;
 
@@ -69,16 +47,16 @@ const startRegistration = async (req, res) => {
             password: hashedPassword,
             verificationCode,
             codeExpires: Date.now() + 3600000,
-            isVerified: false
         });
 
         await sendVerificationEmail(email, verificationCode);
-        res.status(200).json({ message: 'Código enviado', tempId: newAdmin._id });
+        res.status(200).json({ tempId: newAdmin._id });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
+// Función para verificar y activar una cuenta de administrador
 const verifyAndActivate = async (req, res) => {
     const { tempId, code } = req.body;
 
@@ -100,13 +78,9 @@ const verifyAndActivate = async (req, res) => {
 
         res.status(201).json({ message: 'Cuenta activada exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al activar la cuenta' });
     }
 };
-
-////////////////////////////////////////////////////////////
-//                     LOGIN SECTION                       ///
-////////////////////////////////////////////////////////////
 
 // Función para iniciar sesión como administrador
 const loginAdmin = async (req, res) => {
@@ -120,10 +94,7 @@ const loginAdmin = async (req, res) => {
 
         // Verificar si la cuenta está activa
         if (!admin.isVerified) {
-            return res.status(403).json({ 
-                message: 'Cuenta no verificada',
-                tempId: admin._id  // Para permitir reenvío de código
-            });
+            return res.status(403).json({ message: 'Cuenta no verificada' });
         }
 
         const isPasswordValid = await comparer(password, admin.password);
@@ -141,22 +112,15 @@ const loginAdmin = async (req, res) => {
                 restaurant: currentAdmin.restaurant || 'Empty' // Usar valor actualizado
             },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '2h' }
         );
 
-        res.status(200).json({ 
-            token, 
-            adminId: admin._id,
-            restaurant: currentAdmin.restaurant // Enviar también en la respuesta
-        });
+        res.status(200).json({ token });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al iniciar sesión' });
     }
 };
 
-////////////////////////////////////////////////////////////
-//                     READ SECTION                      ///
-////////////////////////////////////////////////////////////
 
 // Ejemplo de función para obtener todos los administradores
 const getAllAdmins = async (req, res) => {
@@ -164,7 +128,7 @@ const getAllAdmins = async (req, res) => {
         const admins = await adminRepository.getAllAdmins(); // Llamar al repositorio para obtener todos los administradores
         res.status(200).json(admins); // Responder con la lista de administradores
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Manejo de errores
+        res.status(500).json({ message: 'Error al obtener administradores' }); // Manejo de errores
     }
 };
 
@@ -181,10 +145,6 @@ const getAdminById = async (req, res) => {
     }
 }
 
-////////////////////////////////////////////////////////////
-//                     UPDATE SECTION                    ///
-////////////////////////////////////////////////////////////
-
 // Ejemplo de función para actualizar los detalles de un administrador
 const updateAdmin = async (req, res) => {
     try {
@@ -194,13 +154,9 @@ const updateAdmin = async (req, res) => {
         }
         res.status(200).json(updatedAdmin); // Responder con el administrador actualizado
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Manejo de errores
+        res.status(500).json({ message: 'Error al actualizar el administrador' }); // Manejo de errores
     }
 }
-
-////////////////////////////////////////////////////////////
-//                     DELETE SECTION                    ///
-////////////////////////////////////////////////////////////
 
 // Ejemplo de función para eliminar un administrador
 const deleteAdmin = async (req, res) => {
@@ -211,7 +167,7 @@ const deleteAdmin = async (req, res) => {
         }
         res.status(204).send(); // Sin contenido
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Manejo de errores
+        res.status(500).json({ message: 'Error al eliminar el administrador' }); // Manejo de errores
     }
 }
 
@@ -232,7 +188,7 @@ const requestPasswordReset = async (req, res) => {
         await sendPasswordResetEmail(email, resetCode);
         res.status(200).json({ message: 'Código de recuperación enviado' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al enviar el código de recuperación' });
     }
 };
 
@@ -257,7 +213,7 @@ const resetPassword = async (req, res) => {
 
         res.status(200).json({ message: 'Contraseña actualizada exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al actualizar la contraseña' });
     }
 };
 

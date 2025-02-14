@@ -1,13 +1,6 @@
-////////////////////////////////////////////////////////////
-//                     Restaurant Router                   ///
-////////////////////////////////////////////////////////////
-
 const express = require('express');
 const router = express.Router();
-const { 
-    createRestaurant, 
-    getRestaurantByAdmin
-} = require('./restaurantController'); // Importar el controlador
+const { createRestaurant, getRestaurantByAdmin } = require('./restaurantController'); // Importar el controlador
 const verifyToken = require('../Auth/authMiddleware'); // Importar el middleware
 
 // Rutas para restaurantes

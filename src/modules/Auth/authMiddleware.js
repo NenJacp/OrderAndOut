@@ -1,29 +1,14 @@
-////////////////////////////////////////////////////////////
-//           MIDDLEWARE DE AUTENTICACIÓN JWT             ///
-// Funcionalidad:
-// - Verifica token en header Authorization
-// - Inyecta user context en requests
-// - Manejo centralizado de errores de token
-// Seguridad:
-// - Usa algoritmo HS256 por defecto
-// - Secret almacenado en variables de entorno
-////////////////////////////////////////////////////////////
-
 const jwt = require('jsonwebtoken');
 require('dotenv').config(); // Cargar variables de entorno
 
 /**
- * @middleware verifyToken
- * @desc Verifica token JWT y extrae datos de usuario
- * @param {Object} req - Objeto de solicitud
- * @header {string} Authorization - Token JWT (Bearer format)
- * @property {Object} req.user - Datos de usuario decodificados
- * @throws {401} - Token no proporcionado o inválido
+ * Middleware para verificar el token de autenticación.
+ * @param {NextFunction} next - Función para continuar con el flujo de la aplicación.
  */
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     
-    // Validación básica del header
+    // Validación básica del header de autenticación
     if (!authHeader?.startsWith('Bearer ')) {
         return res.status(401).json({ 
             code: 'MISSING_TOKEN', 
@@ -31,14 +16,14 @@ const verifyToken = (req, res, next) => {
         });
     }
 
-    // Extracción y verificación del token
+    // Extracción del token de autenticación
     const token = authHeader.split(' ')[1];
     
     try {
-        // Verificar y decodificar
+        // Verificar y decodificar el token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // Inyectar datos de usuario
+        // Inyectar los datos del usuario autenticado en la solicitud
         req.user = {
             id: decoded.id,
             type: decoded.type, // 'admin' o 'kiosk'
@@ -48,7 +33,7 @@ const verifyToken = (req, res, next) => {
         console.log('Usuario autenticado:', req.user); // Debug
         next();
     } catch (error) {
-        // Manejar errores específicos
+        // Manejo de errores específicos relacionados con el token
         const statusCode = error.name === 'TokenExpiredError' ? 401 : 403;
         const message = error.expiredAt 
             ? `Token expirado el ${error.expiredAt.toISOString()}`
@@ -56,7 +41,7 @@ const verifyToken = (req, res, next) => {
         
         res.status(statusCode).json({
             code: 'INVALID_TOKEN',
-            message
+            message: 'Token inválido o manipulado'
         });
     }
 };
