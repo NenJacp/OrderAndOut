@@ -15,21 +15,6 @@ const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
 const { v4: uuidv4 } = require('uuid'); // Importar la función uuid
 require('dotenv').config(); // Cargar variables de entorno
 
-////////////////////////////////////////////////////////////
-//                     CREATE SECTION                      ///
-////////////////////////////////////////////////////////////
-
-/**
- * @method createKiosk
- * @desc Crea nuevo terminal POS para el restaurante del usuario
- * @param {Object} req - Debe contener:
- *   - paymentType: 'card'/'cash'
- *   - password: Mín 8 caracteres
- * @security Requiere token JWT de administrador
- * @returns {Object} - ID y tipo de pago del kiosko creado
- * @throws {400} - Si no tiene restaurante asignado
- * @throws {500} - Error del servidor
- */
 const createKiosk = async (req, res) => {
     const { paymentType, password } = req.body;
     
@@ -68,16 +53,6 @@ const getKiosksByRestaurantId = async (req, res) => {
     }
 };
 
-/**
- * @method loginKiosk
- * @desc Autentica terminal POS generando token JWT
- * @param {String} id - ID del kiosko
- * @param {String} password - Contraseña en texto plano
- * @returns {Object} - Token JWT válido por 7 días
- * @throws {400} - Faltan credenciales
- * @throws {404} - Kiosko no encontrado
- * @throws {401} - Contraseña incorrecta
- */
 const loginKiosk = async (req, res) => {
     const { id, password } = req.body; // ← Cambiar de 'serial' a 'id'
 

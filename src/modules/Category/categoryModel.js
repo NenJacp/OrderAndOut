@@ -11,14 +11,14 @@ const categorySchema = new mongoose.Schema({
         ref: 'Restaurant',
         required: [true, 'Restaurante es requerido']
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-}, { 
+},
+{ 
     // Índice compuesto para evitar duplicados en el mismo restaurante
     index: { name: 1, restaurantId: 1 }, 
     unique: true 
+},
+{
+    timestamps: true
 });
 
 const Category = mongoose.model('Category', categorySchema);

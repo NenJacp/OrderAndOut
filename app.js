@@ -2,7 +2,6 @@
 //                     Main Application                    ///
 ////////////////////////////////////////////////////////////
 
-require('dotenv').config(); // Importar .env
 const express = require('express');
 const connectDB = require('./src/core/config/mongoDB'); // Importar la conexión a MongoDB
 const adminRouter = require('./src/modules/Admin/adminRouter'); // Importar las rutas de administradores
@@ -22,10 +21,11 @@ connectDB();
 // Middleware
 app.use(express.json()); // Para parsear el cuerpo de las solicitudes JSON
 
-// Configurar CORS
+// Configurar CORS (versión modificada)
 app.use(cors({
-  origin: 'http://localhost:3000', // URL de tu frontend
-  credentials: true
+  origin: '*', // Permitir cualquier origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'] // Headers permitidos
 }));
 
 // Rutas

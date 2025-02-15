@@ -65,6 +65,9 @@ const productSchema = new mongoose.Schema({
             message: 'La categoría no pertenece a este restaurante'
         }
     },
+},
+{
+    timestamps: true
 });
 
 const Product = mongoose.model('Product', productSchema);
