@@ -23,6 +23,14 @@ const verifyToken = (req, res, next) => {
         // Verificar y decodificar el token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
+        // Añadir validación de campos esenciales
+        if (!decoded.id || !decoded.type) {
+            return res.status(403).json({
+                code: 'INVALID_TOKEN',
+                message: 'Token mal formado'
+            });
+        }
+
         // Inyectar los datos del usuario autenticado en la solicitud
         req.user = {
             id: decoded.id,

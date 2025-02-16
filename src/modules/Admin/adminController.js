@@ -106,10 +106,10 @@ const loginAdmin = async (req, res) => {
         const currentAdmin = await Admin.findById(admin._id); // Nueva consulta para obtener datos frescos
 
         const token = jwt.sign(
-            { 
-                id: admin._id, 
+            {
+                id: admin._id.toString(),
                 type: 'admin',
-                restaurant: currentAdmin.restaurant || 'Empty' // Usar valor actualizado
+                restaurant: currentAdmin.restaurant?.toString() || null
             },
             process.env.JWT_SECRET,
             { expiresIn: '2h' }

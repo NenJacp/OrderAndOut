@@ -2,13 +2,6 @@ const mongoose = require('mongoose');
 
 // Definición del esquema de Kiosk
 const kioskSchema = new mongoose.Schema({
-    // Campo para el nombre del kiosko
-    name: {
-        type: String,
-        required: [true, 'El nombre es obligatorio'],
-        unique: false,
-        trim: true // Elimina espacios al principio y final
-    },
     // Campo para la referencia al restaurante
     restaurantId: {
         type: mongoose.Schema.Types.ObjectId,
