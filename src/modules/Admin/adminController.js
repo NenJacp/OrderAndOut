@@ -50,7 +50,7 @@ const startRegistration = async (req, res) => {
         });
 
         await sendVerificationEmail(email, verificationCode);
-        res.status(200).json({ tempId: newAdmin._id });
+        res.status(200).json({ tempId: newAdmin._id }); // Devolver el ID temporal
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
