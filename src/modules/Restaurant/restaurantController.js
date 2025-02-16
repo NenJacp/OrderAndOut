@@ -2,6 +2,7 @@ const restaurantRepository = require('./restaurantRepository'); // Importar el r
 const adminRepository = require('../Admin/adminRepository');  // Cambiar modelo por repositorio
 const categoryRepository = require('../Category/categoryRepository');  // Cambiar modelo por repositorio
 const jwt = require('jsonwebtoken'); // Importar jsonwebtoken para generar tokens
+const Admin = require('../Admin/adminModel'); // Importar el modelo de Admin
 
 // Función para crear un nuevo restaurante
 const createRestaurant = async (req, res) => {
@@ -131,17 +132,23 @@ const deleteRestaurant = async (req, res) => {
 
 const getRestaurantByAdmin = async (req, res) => {
     try {
-        const restaurant = await restaurantRepository.getRestaurantByAdminId(req.user.id);
+        const admin = await Admin.findById(req.user.id).populate('restaurant');
         
-        if (!restaurant) {
-            return res.status(404).json({ message: 'Restaurante no encontrado' });
+        if (!admin?.restaurant) {
+            return res.status(404).json({ 
+                code: 'RESTAURANT_NOT_FOUND',
+                message: 'Administrador no tiene restaurante asignado' 
+            });
         }
         
-        res.status(200).json(restaurant);
+        res.status(200).json(admin.restaurant);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ 
+            code: 'SERVER_ERROR',
+            message: error.message 
+        });
     }
-}
+};
 
 module.exports = {
     createRestaurant,
@@ -150,5 +157,5 @@ module.exports = {
     updateRestaurant,
     deleteRestaurant,
     getRestaurantsByAdminId,
-    getRestaurantByAdmin,
+    getRestaurantByAdmin
 };

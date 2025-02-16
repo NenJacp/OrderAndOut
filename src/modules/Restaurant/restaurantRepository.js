@@ -34,7 +34,8 @@ const getRestaurantsByAdminId = async (adminId) => {
 
 // Función para obtener un restaurante por ID de administrador
 const getRestaurantByAdminId = async (adminId) => {
-    return await Restaurant.findOne({ adminId }).populate('adminId'); // Buscar y devolver un restaurante específico asociado a un administrador, incluyendo el administrador
+    return await Restaurant.findOne({ adminId })
+        .populate('adminId', '-password'); // Buscar y devolver un restaurante específico asociado a un administrador, incluyendo el administrador
 };
 
 // Exportar las funciones del repositorio para su uso en otros módulos

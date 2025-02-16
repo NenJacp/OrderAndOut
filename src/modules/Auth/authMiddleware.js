@@ -31,6 +31,14 @@ const verifyToken = (req, res, next) => {
             });
         }
 
+        // Validar estructura del token para administradores
+        if (decoded.type === 'admin' && !decoded.restaurant) {
+            return res.status(403).json({
+                code: 'RESTAURANT_REQUIRED',
+                message: 'El administrador no tiene restaurante asignado'
+            });
+        }
+
         // Inyectar los datos del usuario autenticado en la solicitud
         req.user = {
             id: decoded.id,
