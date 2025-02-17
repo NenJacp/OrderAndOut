@@ -109,7 +109,7 @@ const loginAdmin = async (req, res) => {
             {
                 id: admin._id.toString(),
                 type: 'admin',
-                restaurant: currentAdmin.restaurant?.toString() || null
+                restaurant: currentAdmin.restaurant?.toString() || 'empty'
             },
             process.env.JWT_SECRET,
             { expiresIn: '2h' }
