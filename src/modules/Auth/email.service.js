@@ -2,7 +2,6 @@ require('dotenv').config(); // Importación de dotenv
 
 const nodemailer = require('nodemailer'); // Importación de nodemailer
 
-
 /**
  * @description Creación del transporte de correo electrónico
  * @const {object} transporter

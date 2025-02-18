@@ -1,14 +1,5 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-/**
- * @description Generar un código de verificación aleatorio
- * @returns {string}
- */
-const generateCode = () => {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    return code;
-};
+const bcrypt = require('bcrypt'); // Importar bcrypt
+const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
 
 /**
  * @description Hashear la contraseña
@@ -29,6 +20,20 @@ const comparer = async (candidatePassword, storedPassword) => {
     return await bcrypt.compare(candidatePassword, storedPassword); // Comparar la contraseña candidata con la contraseña almacenada
 };
 
+/**
+ * @description Generar un código de verificación aleatorio
+ * @returns {string}
+ */
+const generateCode = () => {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    return code;
+};
+
+/**
+ * @description Generar un token de autenticación para un administrador
+ * @param {Object} payload
+ * @returns {string}
+ */
 const generateAdminAuthToken = (payload) => {
     return jwt.sign(
         {
@@ -42,6 +47,23 @@ const generateAdminAuthToken = (payload) => {
 };
 
 /**
+ * @description Verificar un token
+ * @param {string} token
+ * @returns {Object}
+ */
+const verifyToken = (token) => {
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+        throw { 
+            name: error.name, 
+            message: error.message,
+            expiredAt: error.expiredAt 
+        };
+    }
+};
+
+/**
  * @description Exportar como objeto con métodos
  * @returns {Object}
  */
@@ -49,5 +71,6 @@ module.exports = {
     hasher,
     comparer,
     generateCode,
-    generateAdminAuthToken
+    generateAdminAuthToken,
+    verifyToken
 };

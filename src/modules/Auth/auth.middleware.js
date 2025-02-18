@@ -1,5 +1,6 @@
-const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
 require('dotenv').config(); // Cargar variables de entorno
+
+const AuthService = require('./auth.service'); // Importar el servicio de autenticación
 
 /**
  * Middleware para verificar el token de autenticación.
@@ -7,7 +8,7 @@ require('dotenv').config(); // Cargar variables de entorno
  * @param {string} res - Objeto de respuesta.
  * @const {NextFunction} next - Función para continuar con el flujo de la aplicación.
  */
-const verifyToken = (req, res, next) => {
+const verifyTokenMiddleware = (req, res, next) => {
 
     /**
      * @description Obtener el encabezado de autenticación
@@ -46,10 +47,10 @@ const verifyToken = (req, res, next) => {
          * @description Decodificar el token
          * @param {string} token - Token de autenticación.
          * @param {string} process.env.JWT_SECRET - Clave secreta para el token.
-         * @param {string} jwt.verify - Verificar el token.
+         * @param {string} jwt.verify - Verificar el token.a
          * @const {string} decoded - Token decodificado.
          */
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = AuthService.verifyToken(token);
         
         /**
          * @description Validar los campos esenciales del token
@@ -120,7 +121,7 @@ const verifyDeveloperToken = (req, res, next) => {
      * @param {string} res - Objeto de respuesta.
      * @param {string} next - Función para continuar el flujo.
      */
-    verifyToken(req, res, (err) => {
+    verifyTokenMiddleware(req, res, (err) => {
         if (err) return next(err);
         
         /**
@@ -146,6 +147,6 @@ const verifyDeveloperToken = (req, res, next) => {
  * @returns {object} - Funciones de autenticación.
  */
 module.exports = {
-    verifyToken,
+    verifyTokenMiddleware,
     verifyDeveloperToken
 }; 
