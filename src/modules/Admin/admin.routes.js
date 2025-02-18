@@ -37,12 +37,12 @@ router.post('/reset-password', adminController.resetPassword);
 /**
  * @description Ruta para obtener un administrador por JWT
  */
-router.get('/me', authMiddleware.verifyToken, adminController.getAdminByJWT);
+router.get('/me', authMiddleware.verifyTokenMiddleware, adminController.getAdminByJWT);
 
 /**
  * @description Ruta para actualizar un administrador por JWT
  */
-router.put('/me', authMiddleware.verifyToken, adminController.updateAdminByJWT);
+router.put('/me', authMiddleware.verifyTokenMiddleware, adminController.updateAdminByJWT);
 
 //////////////////////////////////////////////////////////////////////////////////
 //          █▀▄ ██▀ █ █ ██▀ █   ▄▀▄ █▀▄ ██▀ █▀▄   █▀▄ ▄▀▄ █ █ ▀█▀ ██▀ ▄▀▀       //

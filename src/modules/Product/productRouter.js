@@ -8,18 +8,18 @@ const productController = require('./productController'); // Importar el control
 const authMiddleware = require('../Auth/auth.middleware'); // Importar el middleware
 
 // Ruta para productos del restaurante actual
-router.get('/mine', authMiddleware.verifyToken, productController.getProductsByRestaurantId);
+router.get('/mine', authMiddleware.verifyTokenMiddleware, productController.getProductsByRestaurantId);
 
 // Rutas para operaciones con ID específico
-router.get('/:productId', authMiddleware.verifyToken, productController.getProductById);
-router.put('/:productId', authMiddleware.verifyToken, productController.updateProduct);
-router.delete('/:productId', authMiddleware.verifyToken, productController.deleteProduct);
+router.get('/:productId', authMiddleware.verifyTokenMiddleware, productController.getProductById);
+router.put('/:productId', authMiddleware.verifyTokenMiddleware, productController.updateProduct);
+router.delete('/:productId', authMiddleware.verifyTokenMiddleware, productController.deleteProduct);
 
 // Ruta para crear productos
-router.post('/', authMiddleware.verifyToken, productController.createProduct);
+router.post('/', authMiddleware.verifyTokenMiddleware, productController.createProduct);
 
 // Nueva ruta para productos disponibles
-router.get('/available', authMiddleware.verifyToken, (req, res) => {
+router.get('/available', authMiddleware.verifyTokenMiddleware, (req, res) => {
     productController.getProductsByRestaurantId(req, res);
 });
 
