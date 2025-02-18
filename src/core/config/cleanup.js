@@ -5,7 +5,7 @@
 // Programación: Ejecución cada hora vía setInterval    ///
 ////////////////////////////////////////////////////////////
 
-const Admin = require('../../modules/Admin/adminModel');
+const Admin = require('../../modules/Admin/admin.model');
 
 /**
  * @function cleanupExpiredRegistrations

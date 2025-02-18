@@ -4,7 +4,7 @@
 
 const express = require('express');
 const connectDB = require('./src/core/config/mongoDB'); // Importar la conexión a MongoDB
-const adminRouter = require('./src/modules/Admin/adminRouter'); // Importar las rutas de administradores
+const adminRouter = require('./src/modules/Admin/admin.routes'); // Importar las rutas de administradores
 const restaurantRouter = require('./src/modules/Restaurant/restaurantRouter'); // Importar las rutas de restaurantes
 const kioskRouter = require('./src/modules/Kiosk/kioskRouter'); // Importar las rutas de kioskos
 const orderRouter = require('./src/modules/Order/orderRouter'); // Importar las rutas de órdenes
@@ -36,7 +36,7 @@ app.use('/api/intern/products', productRouter); // Usar las rutas de productos
 app.use('/api/intern/categories', categoriesRouter); // Usar las rutas de categorías
 
 // Iniciar limpieza automática
-cleanupJob();
+//cleanupJob();
 
 // Puerto
 const PORT = process.env.PORT || 5000; // Usar el puerto definido en .env o 5000 por defecto

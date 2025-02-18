@@ -1,6 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); // Importación de mongoose
 
-// Definición del esquema para el modelo de administrador
+/**
+ * @description Definición del esquema para el modelo de administrador
+ */
 const adminSchema = new mongoose.Schema({
     firstName: {
         type: String, // Tipo de dato: cadena de caracteres
@@ -38,7 +40,6 @@ const adminSchema = new mongoose.Schema({
             },
             message: props => `${props.value} no es un correo válido!` // Mensaje de error
         },
-        index: true // Índice para búsquedas rápidas
     },
     password: {
         type: String, // Tipo de dato: cadena de caracteres
@@ -77,13 +78,21 @@ const adminSchema = new mongoose.Schema({
         default: null // Valor predeterminado
     },
 },
+
+/**
+ * @description Opciones del esquema
+ */
 {
     timestamps: true // Activación de los timestamps
 });
 
-// Creación de un índice compuesto para búsquedas rápidas
+/**
+ * @description Creación de un índice compuesto para búsquedas rápidas
+ */
 adminSchema.index({ email: 1, phone: 1, isVerified: 1 });
 
-// Exportación del modelo de administrador
+/**
+ * @description Exportación del modelo de administrador
+ */
 const Admin = mongoose.model('Admin', adminSchema);
 module.exports = Admin;

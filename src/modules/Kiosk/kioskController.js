@@ -10,7 +10,7 @@
 
 const kioskRepository = require('./kioskRepository'); // Importar el repositorio
 const Kiosk = require('./kioskModel'); // Importar el modelo de kiosko
-const { comparer, hasher } = require('../Auth/authService'); // Importar funciones de comparación y hashing
+const { comparer, hasher } = require('../Auth/auth.service'); // Importar funciones de comparación y hashing
 const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
 const { v4: uuidv4 } = require('uuid'); // Importar la función uuid
 require('dotenv').config(); // Cargar variables de entorno

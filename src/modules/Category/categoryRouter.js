@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { createCategory, getMyCategories } = require('./categoryController');
-const verifyToken = require('../Auth/authMiddleware');
+const categoryController = require('./categoryController');
+const authMiddleware = require('../Auth/auth.middleware');
 
-router.post('/', verifyToken, createCategory);
-router.get('/mine', verifyToken, getMyCategories);
+router.post('/', authMiddleware.verifyToken, categoryController.createCategory);
+router.get('/mine', authMiddleware.verifyToken, categoryController.getMyCategories);
 
 module.exports = router; 
