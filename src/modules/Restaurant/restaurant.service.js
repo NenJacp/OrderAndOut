@@ -2,7 +2,7 @@
 const Restaurant = require('./restaurantModel');
 
 // Función para crear un nuevo restaurante
-const createRestaurant = async (restaurantData) => {
+const createRestaurantById = async (restaurantData) => {
     const newRestaurant = new Restaurant(restaurantData); // Crear un nuevo objeto de restaurante con los datos proporcionados
     return await newRestaurant.save(); // Guardar el nuevo restaurante en la base de datos y devolver el resultado
 };
@@ -18,33 +18,20 @@ const getRestaurantById = async (id) => {
 };
 
 // Función para actualizar un restaurante
-const updateRestaurant = async (id, restaurantData) => {
+const updateRestaurantById = async (id, restaurantData) => {
     return await Restaurant.findByIdAndUpdate(id, restaurantData, { new: true }); // Actualizar un restaurante específico por su ID con los nuevos datos
 };
 
 // Función para eliminar un restaurante
-const deleteRestaurant = async (id) => {
+const deleteRestaurantById = async (id) => {
     return await Restaurant.findByIdAndDelete(id); // Eliminar un restaurante específico por su ID
-};
-
-// Función para obtener restaurantes por ID de administrador
-const getRestaurantsByAdminId = async (adminId) => {
-    return await Restaurant.find({ adminId }); // Buscar y devolver todos los restaurantes asociados a un administrador específico
-};
-
-// Función para obtener un restaurante por ID de administrador
-const getRestaurantByAdminId = async (adminId) => {
-    return await Restaurant.findOne({ adminId })
-        .populate('adminId', '-password'); // Buscar y devolver un restaurante específico asociado a un administrador, incluyendo el administrador
 };
 
 // Exportar las funciones del repositorio para su uso en otros módulos
 module.exports = {
-    createRestaurant,
+    createRestaurantById,
     getAllRestaurants,
     getRestaurantById,
-    updateRestaurant,
-    deleteRestaurant,
-    getRestaurantsByAdminId,
-    getRestaurantByAdminId,
+    updateRestaurantById,
+    deleteRestaurantById,
 };

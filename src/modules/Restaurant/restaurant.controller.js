@@ -1,14 +1,13 @@
-const restaurantRepository = require('./restaurantRepository'); // Importar el repositorio
-const adminService = require('../Admin/admin.service');  // Cambiar modelo por repositorio
-const categoryRepository = require('../Category/categoryRepository');  // Cambiar modelo por repositorio
-const jwt = require('jsonwebtoken'); // Importar jsonwebtoken para generar tokens
-const adminModel = require('../Admin/admin.model'); // Importar el modelo de Admin
+const adminService = require('../Admin/admin.service'); // Importar el servicio de Admin
+const authService = require('../Auth/auth.service'); // Importar jsonwebtoken para generar tokens
+const categoryService = require('../Category/category.service');  // Cambiar modelo por repositorio
+const restaurantService = require('./restaurant.service'); // Importar el repositorio
 
 // Función para crear un nuevo restaurante
-const createRestaurant = async (req, res) => {
+const createRestaurantByJWT = async (req, res) => {
     try {
         
-        const { name, image, location} = req.body;
+        const { name, image, location,} = req.body;
         const adminId = req.user.id; // obtencion del id del admin por el token
 
         
@@ -28,7 +27,7 @@ const createRestaurant = async (req, res) => {
         }
 
         // Crear nuevo restaurante
-        const newRestaurant = await restaurantRepository.createRestaurant({name, image, location, adminId});
+        const newRestaurant = await restaurantService.createRestaurantById({name, image, location, adminId});
         // Corregir la actualización del admin (faltaba asignar a variable)
         const updatedAdmin = await adminService.updateAdminById(
             adminId, 
@@ -89,8 +88,7 @@ const getRestaurantById = async (req, res) => {
 };
 
 // Función para obtener restaurantes por ID de administrador
-const getRestaurantsByAdminId = async (req, res) => {
-    console.log("hola");
+const getRestaurantsById = async (req, res) => {
     const { adminId } = req.params; // Obtener el ID del administrador desde los parámetros
 
     try {
@@ -105,7 +103,7 @@ const getRestaurantsByAdminId = async (req, res) => {
 }
 
 // Función para actualizar un restaurante
-const updateRestaurant = async (req, res) => {
+const updateRestaurantByJWT = async (req, res) => {
     try {
         const updatedRestaurant = await restaurantRepository.updateRestaurant(req.params.id, req.body);
         if (!updatedRestaurant) {
@@ -118,7 +116,7 @@ const updateRestaurant = async (req, res) => {
 }
 
 // Función para eliminar un restaurante
-const deleteRestaurant = async (req, res) => {
+const deleteRestaurantById = async (req, res) => {
     try {
         const deletedRestaurant = await restaurantRepository.deleteRestaurant(req.params.id);
         if (!deletedRestaurant) {
@@ -130,9 +128,9 @@ const deleteRestaurant = async (req, res) => {
     }
 }
 
-const getRestaurantByAdmin = async (req, res) => {
+const getRestaurantByJWT = async (req, res) => {
     try {
-        const admin = await adminModel.findById(req.user.id).populate('restaurant');
+        const admin = await adminModel.findById(req.user.id)
         
         if (!admin?.restaurant) {
             return res.status(404).json({ 

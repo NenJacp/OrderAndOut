@@ -20,10 +20,10 @@ const restaurantSchema = new mongoose.Schema({
         },
         address: {
             street: { type: String, required: true },
-            number: { type: String },
-            crossStreets: { type: String },
+            number: { type: String, required: true },
+            crossStreets: { type: String, required: true },
             colony: { type: String, required: true },
-            references: { type: String },
+            references: { type: String, required: true },
         },
         postalCode: {
             type: String,
@@ -34,11 +34,32 @@ const restaurantSchema = new mongoose.Schema({
             lng: { type: Number, required: true }
         }
     },
+    contact: {
+        phone: { type: String, required: false },
+        email: { type: String, required: false },
+        website: { type: String, required: false },
+    },
     adminId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Admin',
         required: true,
     },
+    stripeAccount: {
+        accountId: {
+            type: String,
+            required: false
+        },
+        detailsSubmitted: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        chargesEnabled: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
+    }
 },
 {
     timestamps: true

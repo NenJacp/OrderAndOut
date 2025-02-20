@@ -6,14 +6,6 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     numOrder: { type: String, required: true }, // Asegúrate de que sea único y requerido
-    creationDate: {
-        type: Date,
-        default: Date.now, // Fecha de creación por defecto
-    },
-    creationTime: {
-        type: String, // Hora de creación
-        required: true,
-    },
     products: [
         {
             productId: {
@@ -50,15 +42,20 @@ const orderSchema = new mongoose.Schema({
         enum: ['customer', 'admin', 'cashier', 'kiosk'], // Tipos de usuario permitidos
         required: true, // Este campo es requerido
     },
+    restaurantId: { // ID del restaurante al que pertenece la orden
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Restaurant', // Referencia al modelo Restaurant
+        required: true,
+    },
     paymentMethod: { // Método de pago
         type: String,
         enum: ['card', 'cash'], // Métodos de pago permitidos
         required: true,
     },
-    restaurantId: { // ID del restaurante al que pertenece la orden
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Restaurant', // Referencia al modelo Restaurant
-        required: true,
+    paymentStatus: { // Estado de pago
+        type: String,
+        enum: ['pending', 'paid', 'failed'], // Estados de pago permitidos
+        default: 'pending', // Estado por defecto
     },
 });
 

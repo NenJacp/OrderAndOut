@@ -33,13 +33,13 @@ const productSchema = new mongoose.Schema({
             message: 'El precio de venta debe ser mayor al de costo'
         }
     },
+    currency: {
+        type: String,
+        default: 'MXN',
+    },
     availability: {
         type: Boolean,
         default: true,
-    },
-    creationDate: {
-        type: Date,
-        default: Date.now,
     },
     restaurantId: {
         type: mongoose.Schema.Types.ObjectId,
