@@ -19,12 +19,19 @@ const restaurantSchema = new mongoose.Schema({
             required: true,
         },
         address: {
-            type: String,
-            required: true,
+            street: { type: String, required: true },
+            number: { type: String },
+            crossStreets: { type: String },
+            colony: { type: String, required: true },
+            references: { type: String },
         },
         postalCode: {
             type: String,
             required: true,
+        },
+        coordinates: {
+            lat: { type: Number, required: true },
+            lng: { type: Number, required: true }
         }
     },
     adminId: {
