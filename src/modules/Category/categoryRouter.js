@@ -6,6 +6,6 @@ const { updateCategory } = require('./categoryRepository');
 
 router.post('/', verifyToken, createCategory);
 router.get('/mine', verifyToken, getMyCategories);
-router.put('/', verifyToken, updateCategoryJWT);
+router.put('/', verifyToken, updateCategory);
 
 module.exports = router; 
