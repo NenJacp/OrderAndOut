@@ -47,8 +47,30 @@ const deactivateCategory = async (req, res) => {
     }
 };
 
+const updateCategory = async (req, res) => {
+    try {
+        const restaurantId = req.user.restaurant; // ID del restaurante desde JWT
+        const updatedCategory = await categoryRepository.updateByRestaurant(
+            restaurantId,
+            req.body // Datos a actualizar
+        );
+
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ message: 'Acceso solo para administradores' });
+        }
+        
+        if (!updatedCategory) {
+            return res.status(404).json({ message: 'Categoría no encontrada en tu restaurante' });
+        }
+        res.json(updatedCategory);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = { 
     createCategory, 
     getMyCategories, 
-    deactivateCategory 
+    deactivateCategory,
+    updateCategory
 }; 

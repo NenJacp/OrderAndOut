@@ -148,13 +148,15 @@ const getAdminById = async (req, res) => {
 // Ejemplo de función para actualizar los detalles de un administrador
 const updateAdmin = async (req, res) => {
     try {
-        const updatedAdmin = await adminRepository.updateAdmin(req.params.id, req.body); // Llamar al repositorio para actualizar administrador
+        const adminId = req.user.id; // Obtener ID del token JWT
+        const updatedAdmin = await adminRepository.updateAdmin(adminId, req.body);
+        
         if (!updatedAdmin) {
-            return res.status(404).json({ message: 'Administrador no encontrado' }); // Manejo de no encontrado
+            return res.status(404).json({ message: 'Administrador no encontrado' });
         }
-        res.status(200).json(updatedAdmin); // Responder con el administrador actualizado
+        res.status(200).json(updatedAdmin);
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar el administrador' }); // Manejo de errores
+        res.status(500).json({ message: 'Error al actualizar el administrador' });
     }
 }
 

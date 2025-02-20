@@ -84,17 +84,24 @@ const getAllOrders = async (req, res) => {
 };
 
 const updateOrder = async (req, res) => {
-    const { id } = req.params; // Obtener el ID de la orden de los parámetros
-    const updatedData = req.body; // Obtener los datos actualizados del cuerpo
-
     try {
-        const updatedOrder = await orderRepository.updateOrder(id, updatedData); // Llamar al repositorio para actualizar la orden
-        if (!updatedOrder) {
-            return res.status(404).json({ message: 'Orden no encontrada' });
+        // Verificar que es admin
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ message: 'Acceso restringido a administradores' });
         }
-        res.status(200).json(updatedOrder); // Responder con la orden actualizada
+        
+        const updatedOrder = await orderRepository.updateOrderByAdmin(
+            req.body.orderId,  // ID desde el body
+            req.user.restaurant, // Restaurant del JWT
+            req.body.updatedData
+        );
+        
+        if (!updatedOrder) {
+            return res.status(404).json({ message: 'Orden no encontrada en tu restaurante' });
+        }
+        res.status(200).json(updatedOrder);
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Manejo de errores
+        res.status(500).json({ message: error.message });
     }
 };
 

@@ -25,9 +25,21 @@ const deleteOrder = async (id) => {
     return await Order.findByIdAndDelete(id); // Eliminar la orden por ID
 };
 
+const updateOrderByAdmin = async (orderId, restaurantId, updatedData) => {
+    return await Order.findOneAndUpdate(
+        { 
+            _id: orderId,
+            restaurantId // Solo actualiza si coincide el restaurante
+        },
+        updatedData,
+        { new: true, runValidators: true }
+    );
+};
+
 module.exports = {
     createOrder,
     getAllOrders,
     getOrdersByRestaurantId, // Exportar la nueva función
     deleteOrder, // Asegúrate de que esté exportada
+    updateOrderByAdmin,
 };

@@ -12,7 +12,7 @@ router.get('/mine', verifyToken, productController.getProductsByRestaurantId);
 
 // Rutas para operaciones con ID específico
 router.get('/:productId', verifyToken, productController.getProductById);
-router.put('/:productId', verifyToken, productController.updateProduct);
+router.put('/', verifyToken, productController.updateProduct);
 router.delete('/:productId', verifyToken, productController.deleteProduct);
 
 // Ruta para crear productos

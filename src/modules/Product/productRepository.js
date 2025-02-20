@@ -49,6 +49,26 @@ const deleteProduct = async (id) => {
     return await Product.findByIdAndDelete(id); // Eliminar producto
 };
 
+const updateProductByAdmin = async (productId, restaurantId, updateData) => {
+    const allowedUpdates = ['name', 'description', 'image', 'costPrice', 
+                          'salePrice', 'category', 'ingredients', 'availability'];
+    const filteredUpdates = Object.keys(updateData)
+        .filter(key => allowedUpdates.includes(key))
+        .reduce((obj, key) => {
+            obj[key] = updateData[key];
+            return obj;
+        }, {});
+
+    return await Product.findOneAndUpdate(
+        { 
+            _id: productId,
+            restaurantId // Validar pertenencia al restaurante
+        },
+        filteredUpdates,
+        { new: true, runValidators: true }
+    );
+};
+
 module.exports = {
     createProduct,
     getAllProducts,
@@ -56,4 +76,5 @@ module.exports = {
     getProductsByRestaurantId,
     updateProduct,
     deleteProduct,
+    updateProductByAdmin,
 };

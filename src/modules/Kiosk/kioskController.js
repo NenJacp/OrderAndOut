@@ -91,8 +91,31 @@ const loginKiosk = async (req, res) => {
     }
 };
 
+const updateKiosk = async (req, res) => {
+    try {
+        // Verificar que el usuario es admin
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ message: 'Acceso solo para administradores' });
+        }
+        
+        const updatedKiosk = await kioskRepository.updateByAdmin(
+            req.body.kioskId, // ID del kiosko desde body
+            req.user.id,      // Admin ID desde JWT
+            req.body.updateData
+        );
+        
+        if (!updatedKiosk) {
+            return res.status(404).json({ message: 'Kiosko no encontrado en tu restaurante' });
+        }
+        res.json(updatedKiosk);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     createKiosk,
     loginKiosk,
     getKiosksByRestaurantId,
+    updateKiosk,
 };

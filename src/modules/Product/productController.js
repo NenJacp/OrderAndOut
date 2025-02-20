@@ -153,9 +153,19 @@ const getProductsByRestaurantId = async (req, res) => {
 // Función para actualizar un producto
 const updateProduct = async (req, res) => {
     try {
-        const updatedProduct = await productRepository.updateProduct(req.params.id, req.body);
+        // Verificar que es admin
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ message: 'Acceso solo para administradores' });
+        }
+        
+        const updatedProduct = await productRepository.updateProductByAdmin(
+            req.body.productId,  // ID desde el body
+            req.user.restaurant, // Restaurant del JWT
+            req.body.updateData
+        );
+        
         if (!updatedProduct) {
-            return res.status(404).json({ message: 'Producto no encontrado' });
+            return res.status(404).json({ message: 'Producto no encontrado en tu restaurante' });
         }
         res.status(200).json(updatedProduct);
     } catch (error) {

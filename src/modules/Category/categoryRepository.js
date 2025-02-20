@@ -24,10 +24,19 @@ const deactivateCategory = async (id) => {
     );
 };
 
+const updateByRestaurant = async (restaurantId, updateData) => {
+    return await Category.findOneAndUpdate(
+        { restaurantId }, // Filtro por restaurante
+        updateData,
+        { new: true, runValidators: true }
+    );
+};
+
 module.exports = {
     createCategory,
     getCategoriesByRestaurant,
     getCategoryById,
     updateCategory,
-    deactivateCategory
+    deactivateCategory,
+    updateByRestaurant
 }; 

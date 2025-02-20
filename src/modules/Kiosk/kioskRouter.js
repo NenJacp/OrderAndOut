@@ -11,5 +11,6 @@ const verifyToken = require('../Auth/authMiddleware'); // Importar el middleware
 router.post('/', verifyToken, kioskController.createKiosk);
 router.get('/mine', verifyToken, kioskController.getKiosksByRestaurantId);
 router.post('/login/kiosk', kioskController.loginKiosk); // Iniciar sesión como kiosko (sin verifyToken)
+router.put('/', verifyToken, kioskController.updateKiosk);
 
 module.exports = router;

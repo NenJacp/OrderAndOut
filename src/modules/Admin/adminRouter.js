@@ -8,7 +8,7 @@ router.post('/login/admin', adminController.loginAdmin);
 
 router.get('/', verifyToken, adminController.getAllAdmins); // Obtener todos los administradores
 router.get('/:id', verifyToken, adminController.getAdminById); // Obtener un administrador por ID
-router.put('/:id', verifyToken, adminController.updateAdmin); // Actualizar un administrador
+router.put('/', verifyToken, adminController.updateAdmin); // Actualizar usando ID del token
 router.delete('/:id', verifyToken, adminController.deleteAdmin); // Eliminar un administrador
 router.get('/restaurants', verifyToken, restaurantController.getRestaurantsByAdminId); // Obtener restaurantes por adminId desde el token
 
