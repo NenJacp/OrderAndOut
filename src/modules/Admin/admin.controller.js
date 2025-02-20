@@ -1,5 +1,3 @@
-require('dotenv').config(); // Cargar variables de entorno
-
 const adminService = require('./admin.service'); // Importar el repositorio
 const authService = require('../Auth/auth.service'); // Importar el servicio de autenticación
 const emailService = require('../Auth/email.service'); // Importar el servicio de envío de correo

@@ -46,6 +46,18 @@ const generateAdminAuthToken = (payload) => {
     );
 };
 
+const generateKioscoAuthToken = (payload) => {
+    return jwt.sign(
+        {
+            id: payload.id,
+            type: payload.type,
+            restaurant: payload.restaurant || null
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+    );
+};
+
 /**
  * @description Verificar un token
  * @param {string} token
@@ -72,5 +84,6 @@ module.exports = {
     comparer,
     generateCode,
     generateAdminAuthToken,
+    generateKioscoAuthToken,
     verifyToken
 };

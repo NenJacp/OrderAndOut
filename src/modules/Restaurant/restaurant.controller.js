@@ -1,159 +1,433 @@
-const adminService = require('../Admin/admin.service'); // Importar el servicio de Admin
-const authService = require('../Auth/auth.service'); // Importar jsonwebtoken para generar tokens
-const categoryService = require('../Category/category.service');  // Cambiar modelo por repositorio
-const restaurantService = require('./restaurant.service'); // Importar el repositorio
+const adminService = require('../Admin/admin.service'); 
+const authService = require('../Auth/auth.service'); 
+const categoryService = require('../Category/category.service'); 
+const restaurantService = require('./restaurant.service'); 
 
-// Función para crear un nuevo restaurante
+//////////////////////////////////////////////////////////////////////////////////////////
+//              █ █ ▄▀▀ ██▀ █▀▄   ▄▀▀ ▄▀▄ █▄ █ ▀█▀ █▀▄ ▄▀▄ █   █   ██▀ █▀▄ ▄▀▀          //
+//              ▀▄█ ▄██ █▄▄ █▀▄   ▀▄▄ ▀▄▀ █ ▀█  █  █▀▄ ▀▄▀ █▄▄ █▄▄ █▄▄ █▀▄ ▄██          // 
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 const createRestaurantByJWT = async (req, res) => {
-    try {
-        
-        const { name, image, location,} = req.body;
-        const adminId = req.user.id; // obtencion del id del admin por el token
 
-        
-        if (req.user.type !== 'admin' || req.user.restaurant !== null) {
+    /**
+     * @description Intentar crear un nuevo restaurante
+     */
+    try {
+       
+        /**
+         * @description Obtener los datos necesarios para crear un nuevo restaurante y ...rest son los datos que no son necesarios o requeridos
+         * @param {string} name
+         * @param {string} image
+         * @param {object} location
+         * @param {object} rest
+         */
+        const { name, image, location, ...rest } = req.body;
+
+        /**
+         * @description Obtener el id del administrador por el token
+         * @const {string} adminId
+         * @const {object} adminRestaurant
+         * @const {string} adminType
+         */
+        const { id: adminId, type: adminType, restaurant: adminRestaurant } = req.user;
+
+        /**
+         * @description Verificar si el usuario es administrador y no tiene restaurante
+         */
+        if (adminType !== 'admin') {
             return res.status(403).json({ message: 'Solo administradores sin restaurante pueden crear nuevos restaurantes' });
         }
 
-        // Validar campos requeridos
-        if (!name || !image || !location?.country || !location?.city || !location?.address || !location?.postalCode) {
+        /**
+         * @description Verificar si el administrador ya tiene un restaurante
+         */
+        if ( adminRestaurant !== null) {
+            return res.status(403).json({ message: 'Solo puedes tener un restaurante por cuenta' });
+        }
+
+        /**
+         * @description Verificar si los campos requeridos son correctos
+         */
+        if (!name || !image || !location?.country || !location?.city || !location?.address?.street || !location?.address?.number || !location?.address?.crossStreets || !location?.address?.colony || !location?.address?.references || !location?.postalCode) {
             return res.status(400).json({ message: 'Todos los campos son requeridos' });            
         }
 
-        // Verificar si el admin ya tiene restaurante
-        const admin = await adminService.getAdminById(adminId);
-        if (admin.restaurant) {
-            return res.status(400).json({ message: 'Ya tienes un restaurante registrado' });
-        }
+        /**
+         * @description Crear nuevo restaurante
+         * @param {string} name
+         * @param {string} image
+         * @param {object} location
+         * @param {string} adminId
+         * @param {object} ...rest
+         * @const {<Promise>object} newRestaurant
+         */
+        const newRestaurant = await restaurantService.createRestaurantById({name, image, location, adminId, ...rest});
 
-        // Crear nuevo restaurante
-        const newRestaurant = await restaurantService.createRestaurantById({name, image, location, adminId});
-        // Corregir la actualización del admin (faltaba asignar a variable)
-        const updatedAdmin = await adminService.updateAdminById(
-            adminId, 
-            { restaurant: newRestaurant._id }
-        );
+        /**
+         * @description Corregir la actualización del admin (faltaba asignar a variable)
+         * @param {string} adminId
+         * @param {<Promise>object} updatedAdmin
+         */
+        const updatedAdmin = await adminService.updateAdminById(adminId, { restaurant: newRestaurant._id });
 
+        /**
+         * @description Si el administrador no se actualiza, eliminar el restaurante
+         * @param {string} newRestaurant._id
+         * @const {string} updatedAdmin
+         */
         if (!updatedAdmin) {
-            await restaurantRepository.deleteRestaurant(newRestaurant._id);            
+            await restaurantService.deleteRestaurantById(newRestaurant._id);            
             return res.status(404).json({ message: 'Administrador no encontrado' });
         }
 
-        // Generar nuevo token con los datos actualizados
-        const token = jwt.sign(
-            {
-                id: updatedAdmin._id,
-                type: 'admin',
-                restaurant: newRestaurant._id // ← Usar el ID del nuevo restaurante
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '2h' }
-        );    
+        /**
+         * @description Generar nuevo token con los datos actualizados
+         * @param {string} updatedAdmin._id
+         * @param {string} 'admin'
+         * @param {string} newRestaurant._id
+         * @const {string} token
+         */
+        const token = authService.generateAdminAuthToken
+        ({
+            id: updatedAdmin._id,
+            type: 'admin',
+            restaurant: newRestaurant._id // ← Usar el ID del nuevo restaurante
+        });    
 
+        /**
+         * @description Devolver el token
+         * @response {string} token
+         */
         res.status(201).json({ token });
 
     } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
         res.status(500).json({ message: 'Error al crear el restaurante' });
     }
 }
 
-// Función para obtener todos los restaurantes
-const getAllRestaurants = async (req, res) => {
-    try {
-        const restaurants = await restaurantRepository.getAllRestaurants();
-        res.status(200).json(restaurants);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al obtener los restaurantes' });
-    }
-};
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+const getRestaurantByJWT = async (req, res) => {
 
-// Función para obtener un restaurante por ID
-const getRestaurantById = async (req, res) => {
-    const { id } = req.params; // Obtener el ID de los parámetros
+    /**
+     * @description Obtener el ID del restaurante
+     * @const {string} adminId
+     * @const {string} adminType
+     * @const {string} adminRestaurant
+     */
+    const { id: adminId, type: adminType, restaurant: adminRestaurant } = req.user;
 
+    /**
+     * @description Intentar obtener el restaurante por ID
+     */
     try {
-        const restaurant = await restaurantRepository.getRestaurantById(id); // Buscar restaurante por ID
+
+        /**
+         * @description Obtener el restaurante por ID
+         * @param {string} adminRestaurant
+         * @const {<Promise>object} restaurant
+         */
+        const restaurant = await restaurantService.getRestaurantById(adminRestaurant); // Buscar restaurante por ID
         if (!restaurant) {
             return res.status(404).json({ message: 'Restaurante no encontrado' });
         }
         
-        // Nuevo: Populate de categorías del restaurante
-        const categories = await categoryRepository.getCategoriesByRestaurant(restaurant._id);
+        /**
+         * @description Obtener las categorías del restaurante
+         * @param {string} restaurant._id
+         * @const {<Promise>object} categories
+         */
+        const categories = await categoryService.getCategoriesByRestaurant(restaurant._id);
+
+        /**
+         * @description Devolver el restaurante con las categorías
+         * @response {object} restaurantWithCategories
+         */
         const restaurantWithCategories = { ...restaurant._doc, categories };
-        
+
+        /**
+         * @description Devolver el restaurante con las categorías
+         * @response {object} restaurantWithCategories
+         */
         res.status(200).json(restaurantWithCategories);
     } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
         res.status(500).json({ message: 'Error al obtener el restaurante' });
     }
 };
 
-// Función para obtener restaurantes por ID de administrador
-const getRestaurantsById = async (req, res) => {
-    const { adminId } = req.params; // Obtener el ID del administrador desde los parámetros
-
-    try {
-        const restaurants = await restaurantRepository.getRestaurantsByAdminId(adminId); // Buscar restaurantes por adminId
-        if (!restaurants || restaurants.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron restaurantes para este administrador' });
-        }
-        res.status(200).json(restaurants);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
-
-// Función para actualizar un restaurante
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
 const updateRestaurantByJWT = async (req, res) => {
+
+    /**
+     * @description Intentar actualizar el restaurante por JWT
+     */
     try {
-        const updatedRestaurant = await restaurantRepository.updateRestaurant(req.params.id, req.body);
+
+        /**
+         * @description Actualizar el restaurante por JWT
+         * @param {string} req.user.restaurant
+         * @param {object} req.body
+         * @const {<Promise>object} updatedRestaurant
+         */
+        const updatedRestaurant = await restaurantService.updateRestaurantByJWT(req.user.restaurant, req.body);
         if (!updatedRestaurant) {
             return res.status(404).json({ message: 'Restaurante no encontrado' });
         }
+
+        /**
+         * @description Devolver el restaurante actualizado
+         * @response {object} updatedRestaurant
+         */
         res.status(200).json(updatedRestaurant);
     } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
         res.status(500).json({ message: error.message });
     }
 }
 
-// Función para eliminar un restaurante
-const deleteRestaurantById = async (req, res) => {
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+const deleteRestaurantByJWT = async (req, res) => {
+
+    /**
+     * @description Intentar eliminar el restaurante por JWT
+     */
     try {
-        const deletedRestaurant = await restaurantRepository.deleteRestaurant(req.params.id);
+
+        /**
+         * @description Eliminar el restaurante por JWT
+         * @param {string} req.user.restaurant
+         * @const {<Promise>object} deletedRestaurant
+         */
+        const deletedRestaurant = await restaurantService.deleteRestaurantById(req.user.restaurant);
         if (!deletedRestaurant) {
             return res.status(404).json({ message: 'Restaurante no encontrado' });
         }
+
+        /**
+         * @description Devolver el restaurante eliminado
+         * @response {object} deletedRestaurant
+         */
         res.status(204).send();
     } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
         res.status(500).json({ message: error.message });
     }
 }
 
-const getRestaurantByJWT = async (req, res) => {
+//////////////////////////////////////////////////////////////////////////////////////////
+//  █▀▄ ██▀ █ █ ██▀ █   ▄▀▄ █▀▄ ██▀ █▀▄   ▄▀▀ ▄▀▄ █▄ █ ▀█▀ █▀▄ ▄▀▄ █   █   ██▀ █▀▄ ▄▀▀  //
+//  █▄▀ █▄▄ ▀▄▀ █▄▄ █▄▄ ▀▄▀ █▀  █▄▄ █▀▄   ▀▄▄ ▀▄▀ █ ▀█  █  █▀▄ ▀▄▀ █▄▄ █▄▄ █▄▄ █▀▄ ▄██  //
+//////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+const getAllRestaurants = async (req, res) => {
+
+    /**
+     * @description Intentar obtener todos los restaurantes
+     */
     try {
-        const admin = await adminModel.findById(req.user.id)
-        
-        if (!admin?.restaurant) {
-            return res.status(404).json({ 
-                code: 'RESTAURANT_NOT_FOUND',
-                message: 'Administrador no tiene restaurante asignado' 
-            });
-        }
-        
-        res.status(200).json(admin.restaurant);
+
+        /**
+         * @description Obtener todos los restaurantes
+         * @const {<Promise>object} restaurants
+         */
+        const restaurants = await restaurantService.getAllRestaurants();
+
+        /**
+         * @description Devolver los restaurantes
+         * @response {object} restaurants
+         */
+        res.status(200).json(restaurants);
     } catch (error) {
-        res.status(500).json({ 
-            code: 'SERVER_ERROR',
-            message: error.message 
-        });
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
+        res.status(500).json({ message: 'Error al obtener los restaurantes' });
     }
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+const getRestaurantById = async (req, res) => {
+
+    /**
+     * @description Obtener el ID del restaurante
+     * @const {string} restaurantId
+     */
+    const { restaurantId } = req.params; 
+
+    /**
+     * @description Intentar obtener el restaurante por ID
+     */
+    try {
+
+        /**
+         * @description Obtener el restaurante por ID
+         * @param {string} restaurantId
+         * @const {<Promise>object} restaurant
+         */
+        const restaurant = await restaurantService.getRestaurantById(restaurantId); // Buscar restaurante por ID
+        if (!restaurant) {
+            return res.status(404).json({ message: 'Restaurante no encontrado' });
+        }
+        
+        /**
+         * @description Obtener las categorías del restaurante
+         * @param {string} restaurant._id
+         * @const {<Promise>object} categories
+         */
+        const categories = await categoryService.getCategoriesByRestaurant(restaurant._id);
+
+        /**
+         * @description Devolver el restaurante con las categorías
+         * @response {object} restaurantWithCategories
+         */
+        const restaurantWithCategories = { ...restaurant._doc, categories };
+
+        /**
+         * @description Devolver el restaurante con las categorías
+         * @response {object} restaurantWithCategories
+         */
+        res.status(200).json(restaurantWithCategories);
+    } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
+        res.status(500).json({ message: 'Error al obtener el restaurante' });
+    }
+};
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+const updateRestaurantById = async (req, res) => {
+
+    /**
+     * @description Intentar actualizar el restaurante por ID
+     */
+    try {
+
+        /**
+         * @description Actualizar el restaurante por ID
+         * @param {string} req.params.id
+         * @param {object} req.body
+         * @const {<Promise>object} updatedRestaurant
+         */
+        const updatedRestaurant = await restaurantService.updateRestaurantById(req.params.id, req.body);
+        if (!updatedRestaurant) {
+            return res.status(404).json({ message: 'Restaurante no encontrado' });
+        }
+
+        /**
+         * @description Devolver el restaurante actualizado
+         * @response {object} updatedRestaurant
+         */
+        res.status(200).json(updatedRestaurant);
+    } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
+        res.status(500).json({ message: error.message });
+    }
+}
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+const deleteRestaurantById = async (req, res) => {
+
+    /**
+     * @description Intentar eliminar el restaurante por ID
+     */
+    try {
+
+        /**
+         * @description Eliminar el restaurante por ID
+         * @param {string} req.params.id
+         * @const {<Promise>object} deletedRestaurant
+         */
+        const deletedRestaurant = await restaurantService.deleteRestaurantById(req.params.id);
+        if (!deletedRestaurant) {
+            return res.status(404).json({ message: 'Restaurante no encontrado' });
+        }
+
+        /**
+         * @description Devolver el restaurante eliminado
+         * @response {object} deletedRestaurant
+         */
+        res.status(204).send();
+    } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
-    createRestaurant,
+    createRestaurantByJWT,
     getAllRestaurants,
     getRestaurantById,
-    updateRestaurant,
-    deleteRestaurant,
-    getRestaurantsByAdminId,
-    getRestaurantByAdmin
+    getRestaurantByJWT,
+    updateRestaurantById,
+    updateRestaurantByJWT,
+    deleteRestaurantById,
+    deleteRestaurantByJWT
 };
