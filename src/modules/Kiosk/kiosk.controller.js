@@ -12,7 +12,7 @@ const deviceService = require('../Device/device.service'); // Importar el servic
  * @param {object} req
  * @param {object} res
  */
-const createKiosk = async (req, res) => {
+const createKioskByJWT = async (req, res) => {
 
     /**
      * @description Obtener la contraseña del kiosko
@@ -384,14 +384,22 @@ const deleteKioskByJWT = async (req, res) => {
 
         /**
          * @description Eliminar el kiosko por JWT
+         * @param {string} req.user.id
+         * @const {<Promise>object} deletedKiosk
          */
-        const kiosk = await kioskService.deleteKioskById(req.user.id);
+        const deletedKiosk = await kioskService.deleteKioskById(req.user.id);
 
+        /**
+         * @description Verificar si el kiosko existe
+         */
+        if (!deletedKiosk) {
+            return res.status(404).json({ message: 'Kiosko no encontrado' });
+        }
         /**
          * @description Devolver el kiosko eliminado
          * @response {object} kiosk
          */
-        res.status(200).json(kiosk);
+        res.status(200).json({ message: 'Kiosko eliminado correctamente' });
     } catch (error) {
 
         /**
@@ -413,17 +421,25 @@ const deleteKioskByJWT = async (req, res) => {
  * @param {object} res
  */
 const getAllKiosks = async (req, res) => {
+    try {
+        /**
+         * @description Obtener todos los kioskos
+         */
+        const kiosks = await kioskService.getAllKiosks();
 
-    /**
-     * @description Obtener todos los kioskos
-     */
-    const kiosks = await kioskService.getAllKiosks();
+        /**
+         * @description Devolver los kioskos
+         * @response {object} kiosks
+         */
+        res.status(200).json(kiosks);
+    } catch (error) {
 
-    /**
-     * @description Devolver los kioskos
-     * @response {object} kiosks
-     */
-    res.status(200).json(kiosks);
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
+        res.status(500).json({ message: 'Error al obtener los kioskos' });
+    }
 }; 
 
 /**
@@ -528,14 +544,23 @@ const deleteKioskById = async (req, res) => {
 
         /**
          * @description Eliminar el kiosko por ID
+         * @param {string} req.params.id
+         * @const {<Promise>object} deletedKiosk
          */
-        const kiosk = await kioskService.deleteKioskById(req.params.id);
+        const deletedKiosk = await kioskService.deleteKioskById(req.params.id);
+
+        /**
+         * @description Verificar si el kiosko existe
+         */
+        if (!deletedKiosk) {
+            return res.status(404).json({ message: 'Kiosko no encontrado' });
+        }
 
         /**
          * @description Devolver el kiosko eliminado
          * @response {object} kiosk
          */
-        res.status(200).json(kiosk);
+        res.status(200).json({ message: 'Kiosko eliminado correctamente' });
     } catch (error) {
 
         /**
@@ -561,7 +586,7 @@ module.exports = {
     deleteKioskById,
     updateKioskByJWT,
     deleteKioskByJWT,
-    createKiosk,
+    createKioskByJWT,
     loginKiosk,
     logoutKiosk
 };

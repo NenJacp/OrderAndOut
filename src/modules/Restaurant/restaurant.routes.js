@@ -12,22 +12,22 @@ const authMiddleware = require('../Auth/auth.middleware'); // Importar el middle
 /**
  * @description Ruta para crear un nuevo restaurante por JWT
  */
-router.post('/', authMiddleware.verifyTokenMiddleware, restaurantController.createRestaurantByJWT); // Crear un nuevo restaurante por JWT
+router.post('/myRestaurant', authMiddleware.verifyTokenMiddleware, restaurantController.createRestaurantByJWT); // Crear un nuevo restaurante por JWT
 
 /**
  * @description Ruta para obtener el restaurante del usuario actual por JWT
  */
-router.get('/mine', authMiddleware.verifyTokenMiddleware, restaurantController.getRestaurantByJWT); // Obtener el restaurante del usuario actual por JWT
+router.get('/myRestaurant', authMiddleware.verifyTokenMiddleware, restaurantController.getRestaurantByJWT); // Obtener el restaurante del usuario actual por JWT
 
 /**
  * @description Ruta para actualizar un restaurante por JWT
  */
-router.put('/mine', authMiddleware.verifyTokenMiddleware, restaurantController.updateRestaurantByJWT); // Actualizar un restaurante por JWT
+router.put('/myRestaurant', authMiddleware.verifyTokenMiddleware, restaurantController.updateRestaurantByJWT); // Actualizar un restaurante por JWT
 
 /**
  * @description Ruta para eliminar un restaurante por JWT
  */
-router.delete('/mine', authMiddleware.verifyTokenMiddleware, restaurantController.deleteRestaurantByJWT); // Eliminar un restaurante por JWT
+router.delete('/myRestaurant', authMiddleware.verifyTokenMiddleware, restaurantController.deleteRestaurantByJWT); // Eliminar un restaurante por JWT
 
 //////////////////////////////////////////////////////////////////////////////////
 //          █▀▄ ██▀ █ █ ██▀ █   ▄▀▄ █▀▄ ██▀ █▀▄   █▀▄ ▄▀▄ █ █ ▀█▀ ██▀ ▄▀▀       //

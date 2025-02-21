@@ -4,7 +4,7 @@
 
 const productRepository = require('./productRepository'); // Importar el repositorio
 const { hasher } = require('../Auth/auth.service'); // Importar funciones de hashing
-const Category = require('../Category/categoryModel'); // Importar el modelo de categoría
+const Category = require('../Category/category.model'); // Importar el modelo de categoría
 const mongoose = require('mongoose');
 
 ////////////////////////////////////////////////////////////

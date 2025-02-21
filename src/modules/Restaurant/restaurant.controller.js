@@ -106,7 +106,7 @@ const createRestaurantByJWT = async (req, res) => {
          * @description Devolver el token
          * @response {string} token
          */
-        res.status(201).json({ token });
+        res.status(201).json({ token, restaurant: newRestaurant });
 
     } catch (error) {
 
@@ -210,7 +210,7 @@ const updateRestaurantByJWT = async (req, res) => {
          * @description Devolver el error
          * @response {string} error.message
          */
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al actualizar el restaurante' });
     }
 }
 
@@ -233,6 +233,7 @@ const deleteRestaurantByJWT = async (req, res) => {
          * @const {<Promise>object} deletedRestaurant
          */
         const deletedRestaurant = await restaurantService.deleteRestaurantById(req.user.restaurant);
+        
         if (!deletedRestaurant) {
             return res.status(404).json({ message: 'Restaurante no encontrado' });
         }
@@ -241,14 +242,14 @@ const deleteRestaurantByJWT = async (req, res) => {
          * @description Devolver el restaurante eliminado
          * @response {object} deletedRestaurant
          */
-        res.status(204).send();
+        res.status(204).send({ message: 'Restaurante eliminado correctamente' });
     } catch (error) {
 
         /**
          * @description Devolver el error
          * @response {string} error.message
          */
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al eliminar el restaurante' });
     }
 }
 
@@ -389,7 +390,7 @@ const updateRestaurantById = async (req, res) => {
          * @description Devolver el error
          * @response {string} error.message
          */
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al actualizar el restaurante' });
     }
 }
 
@@ -411,6 +412,7 @@ const deleteRestaurantById = async (req, res) => {
          * @const {<Promise>object} deletedRestaurant
          */
         const deletedRestaurant = await restaurantService.deleteRestaurantById(req.params.id);
+
         if (!deletedRestaurant) {
             return res.status(404).json({ message: 'Restaurante no encontrado' });
         }
@@ -419,14 +421,14 @@ const deleteRestaurantById = async (req, res) => {
          * @description Devolver el restaurante eliminado
          * @response {object} deletedRestaurant
          */
-        res.status(204).send();
+        res.status(204).send({ message: 'Restaurante eliminado correctamente' });
     } catch (error) {
 
         /**
          * @description Devolver el error
          * @response {string} error.message
          */
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error al eliminar el restaurante' });
     }
 }
 
