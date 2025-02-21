@@ -1,9 +1,8 @@
-////////////////////////////////////////////////////////////
-//                     Product Model                     ///
-////////////////////////////////////////////////////////////
+const mongoose = require('mongoose'); // Importar mongoose
 
-const mongoose = require('mongoose');
-
+/**
+ * @description Esquema de producto
+ */
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -11,11 +10,11 @@ const productSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true, // Este campo es requerido
+        required: true,
     },
     image: {
         type: String,
-        required: true, // Este campo es requerido
+        required: true,
     },
     costPrice: {  
         type: Number,
@@ -30,7 +29,7 @@ const productSchema = new mongoose.Schema({
             validator: function(v) {
                 return v > this.costPrice;
             },
-            message: 'El precio de venta debe ser mayor al de costo'
+            message: 'El precio de venta debe ser mayor al de costo' // El precio de venta debe ser mayor al de costo
         }
     },
     currency: {
@@ -47,7 +46,7 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     ingredients: {
-        type: [String], // Array de ingredientes
+        type: [String],
         default: [],
     },
     category: {

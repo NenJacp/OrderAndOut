@@ -18,7 +18,7 @@ const createKioskByJWT = async (req, res) => {
      * @description Obtener la contraseña del kiosko
      * @const {string} password
      */
-    const { password } = req.body;
+    const password = req.body;
 
     /**
      * @description Verificar si el usuario es administrador
@@ -110,6 +110,13 @@ const loginKiosk = async (req, res) => {
          */
         if (!kiosk) {
             return res.status(404).json({ message: 'Kiosko no encontrado' });
+        }
+
+        /**
+         * @description Verificar si el kiosko está deshabilitado
+         */
+        if (kiosk.status !== 'active') {
+            return res.status(403).json({ message: 'Kiosko deshabilitado' });
         }
 
         /**

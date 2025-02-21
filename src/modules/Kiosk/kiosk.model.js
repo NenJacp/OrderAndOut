@@ -21,6 +21,7 @@ const kioskSchema = new mongoose.Schema({
     // Campo para el estado del kiosk
     status: {
         type: String,
+        required: [true, 'El estado es requerido'],
         enum: ['active', 'maintenance', 'disabled'],
         default: 'active'
     },

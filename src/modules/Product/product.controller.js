@@ -1,11 +1,6 @@
-////////////////////////////////////////////////////////////
-//                     Product Controller                ///
-////////////////////////////////////////////////////////////
-
-const productRepository = require('./productRepository'); // Importar el repositorio
-const { hasher } = require('../Auth/auth.service'); // Importar funciones de hashing
-const Category = require('../Category/category.model'); // Importar el modelo de categoría
-const mongoose = require('mongoose');
+const productService = require('./product.service'); // Importar el repositorio
+const authService = require('../Auth/auth.service'); // Importar funciones de hashing
+const categoryService = require('../Category/category.service'); // Importar el modelo de categoría
 
 ////////////////////////////////////////////////////////////
 //                     CREATE SECTION                    ///
@@ -24,22 +19,13 @@ const createProduct = async (req, res) => {
     } = req.body;
 
     // Validar campos obligatorios
-    const requiredFields = ['name', 'image', 'costPrice', 'salePrice', 'category'];
-    const missingFields = requiredFields.filter(field => !req.body[field]);
-    
-    if (missingFields.length > 0) {
+    if (!name || !description || !image || !costPrice || !salePrice || !category || !ingredients) {
         return res.status(400).json({
-            message: `Campos requeridos faltantes: ${missingFields.join(', ')}`
+            message: 'Campos requeridos faltantes'
         });
     }
 
     try {
-        // Validar formato de ID de categoría
-        if (!mongoose.Types.ObjectId.isValid(category)) {
-            return res.status(400).json({ 
-                message: 'Formato de ID de categoría inválido' 
-            });
-        }
 
         // Convertir y validar precios
         const numericCost = parseFloat(costPrice);

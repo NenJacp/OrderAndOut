@@ -47,7 +47,7 @@ const createCategoryByJWT = async (req, res) => {
          *  @param {String} categoryData.restaurantId
          * @const {Object} newCategory
          */
-        const newCategory = await categoryService.createCategoryById({
+        const newCategory = await categoryService.createCategoryByRestaurantId({
             name,
             description,
             restaurantId: req.user.restaurant
