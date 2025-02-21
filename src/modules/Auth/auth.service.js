@@ -46,7 +46,19 @@ const generateAdminAuthToken = (payload) => {
     );
 };
 
-const generateKioscoAuthToken = (payload) => {
+/**
+ * @description Generar un token de autenticación para un kiosco
+ * @param {Object} payload
+ * @param {string} duration
+ * @returns {string}
+ */
+const generateKioscoAuthToken = (payload, duration) => {
+    const options = {};
+    
+    if (duration && duration !== 'none') {
+        options.expiresIn = duration;
+    }
+    
     return jwt.sign(
         {
             id: payload.id,
@@ -54,7 +66,7 @@ const generateKioscoAuthToken = (payload) => {
             restaurant: payload.restaurant || null
         },
         process.env.JWT_SECRET,
-        { expiresIn: '7d' }
+        options
     );
 };
 

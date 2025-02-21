@@ -37,21 +37,21 @@ router.delete('/mine', authMiddleware.verifyTokenMiddleware, restaurantControlle
 /**
  * @description Ruta para obtener todos los restaurantes
  */
-router.get('/', authMiddleware.verifyTokenMiddleware, restaurantController.getAllRestaurants); // Obtener todos los restaurantes
+router.get('/', authMiddleware.verifyDeveloperToken, restaurantController.getAllRestaurants); // Obtener todos los restaurantes
 
 /**
  * @description Ruta para obtener un restaurante por ID
  */
-router.get('/:id', authMiddleware.verifyTokenMiddleware, restaurantController.getRestaurantById); // Obtener un restaurante por ID
+router.get('/:id', authMiddleware.verifyDeveloperToken, restaurantController.getRestaurantById); // Obtener un restaurante por ID
 
 /**
  * @description Ruta para actualizar un restaurante por ID
  */
-router.put('/:id', authMiddleware.verifyTokenMiddleware, restaurantController.updateRestaurantById); // Actualizar un restaurante por ID
+router.put('/:id', authMiddleware.verifyDeveloperToken, restaurantController.updateRestaurantById); // Actualizar un restaurante por ID
 
 /**
  * @description Ruta para eliminar un restaurante por ID
  */
-router.delete('/:id', authMiddleware.verifyTokenMiddleware, restaurantController.deleteRestaurantById); // Eliminar un restaurante por ID
+router.delete('/:id', authMiddleware.verifyDeveloperToken, restaurantController.deleteRestaurantById); // Eliminar un restaurante por ID
 
 module.exports = router;

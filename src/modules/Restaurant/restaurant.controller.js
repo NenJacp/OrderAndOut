@@ -265,18 +265,27 @@ const deleteRestaurantByJWT = async (req, res) => {
 const getAllRestaurants = async (req, res) => {
 
     /**
-     * @description Intentar obtener todos los restaurantes
+     * @description Intentar obtener todos los restaurantes con paginación
      */
     try {
 
         /**
-         * @description Obtener todos los restaurantes
-         * @const {<Promise>object} restaurants
+         * @description Obtener los parámetros de paginación
+         * @const {number} page
+         * @const {number} limit
          */
-        const restaurants = await restaurantService.getAllRestaurants();
+        const { page = 1, limit = 10 } = req.query;
 
         /**
-         * @description Devolver los restaurantes
+         * @description Obtener todos los restaurantes con paginación
+         * @param {number} page
+         * @param {number} limit
+         * @const {<Promise>object} restaurants
+         */
+        const restaurants = await restaurantService.getAllRestaurants(page, limit);
+
+        /**
+         * @description Devolver los restaurantes con paginación
          * @response {object} restaurants
          */
         res.status(200).json(restaurants);
