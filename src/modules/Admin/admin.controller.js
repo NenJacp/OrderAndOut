@@ -284,7 +284,7 @@ const loginAdmin = async (req, res) => {
          * @description Devolver un error
          * @const {string} error.message
          */
-        res.status(500).json({ message: 'Error al iniciar sesión' + error.message });
+        res.status(500).json({ message: 'Error al iniciar sesión' });
     }
 };
 

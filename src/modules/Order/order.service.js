@@ -2,7 +2,7 @@
 //                     Order Repository                    ///
 ////////////////////////////////////////////////////////////
 
-const Order = require('./orderModel'); // Importar el modelo de orden
+const Order = require('./order.model'); // Importar el modelo de orden
 
 // Función para crear una nueva orden
 const createOrder = async (orderData) => {
@@ -16,18 +16,30 @@ const getAllOrders = async () => {
     return await Order.find(); // Obtener todas las órdenes
 };
 
+// Función para obtener una orden específica por ID
+const getOrderById = async (id) => {
+    return await Order.findById(id); // Obtener una orden específica por ID
+};
+
 // Nueva función para obtener órdenes por ID de restaurante
 const getOrdersByRestaurantId = async (restaurantId) => {
     return await Order.find({ restaurantId }); // Obtener órdenes filtradas por restaurantId
 };
 
-const deleteOrder = async (id) => {
+// Función para actualizar una orden
+const updateOrderById = async (id, orderData) => {
+    return await Order.findByIdAndUpdate(id, orderData, { new: true, runValidators: true }); // Actualizar una orden
+};
+
+const deleteOrderById = async (id) => {
     return await Order.findByIdAndDelete(id); // Eliminar la orden por ID
 };
 
 module.exports = {
     createOrder,
     getAllOrders,
-    getOrdersByRestaurantId, // Exportar la nueva función
-    deleteOrder, // Asegúrate de que esté exportada
+    getOrderById, // Exportar la función para obtener una orden específica
+    getOrdersByRestaurantId, // Exportar la función para obtener órdenes por ID de restaurante
+    updateOrderById, // Exportar la función para actualizar una orden
+    deleteOrderById, // Exportar la función para eliminar una orden
 };
