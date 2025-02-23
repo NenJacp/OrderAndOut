@@ -24,7 +24,11 @@ const getAllProducts = async () => {
  * @returns {Promise<Object>}
  */
 const getProductById = async (productId) => {
-    return await Product.findById(productId);
+    try {
+        return await Product.findById(productId);
+    } catch (error) {
+        return null;
+    }
 };
 
 /**
@@ -45,7 +49,11 @@ const getProductsByRestaurantId = async (restaurantId) => {
  * @returns {Promise<Object>}
  */
 const updateProduct = async (id, productData) => {
-    return await Product.findByIdAndUpdate(id, productData, { new: true, runValidators: true });
+    try {
+        return await Product.findByIdAndUpdate(id, productData);
+    } catch (error) {
+        return null;
+    }
 };
 
 /**

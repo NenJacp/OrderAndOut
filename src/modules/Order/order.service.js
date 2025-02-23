@@ -6,9 +6,12 @@ const Order = require('./order.model'); // Importar el modelo de orden
 
 // Función para crear una nueva orden
 const createOrder = async (orderData) => {
-    console.log("estoy en repository");
     const newOrder = new Order(orderData);
-    return await newOrder.save(); // Guardar en la base de datos
+    try {
+        return await newOrder.save(); // Guardar en la base de datos
+    } catch (error) {
+        throw new Error("Error al crear la orden");
+    }
 };
 
 // Función para obtener todas las órdenes
@@ -18,7 +21,11 @@ const getAllOrders = async () => {
 
 // Función para obtener una orden específica por ID
 const getOrderById = async (id) => {
-    return await Order.findById(id); // Obtener una orden específica por ID
+    try {
+        return await Order.findById(id); // Obtener una orden específica por ID
+    } catch (error) {
+        throw new Error("Error al obtener la orden");
+    }
 };
 
 // Nueva función para obtener órdenes por ID de restaurante
@@ -28,7 +35,11 @@ const getOrdersByRestaurantId = async (restaurantId) => {
 
 // Función para actualizar una orden
 const updateOrderById = async (id, orderData) => {
-    return await Order.findByIdAndUpdate(id, orderData, { new: true, runValidators: true }); // Actualizar una orden
+    try {
+        return await Order.findByIdAndUpdate(id, orderData); // Actualizar una orden
+    } catch (error) {
+        throw new Error("Error al actualizar la orden");
+    }
 };
 
 const deleteOrderById = async (id) => {

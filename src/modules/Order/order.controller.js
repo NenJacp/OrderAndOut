@@ -10,7 +10,7 @@ async function createOrder(req, res) {
     /**
      * @description Verificación de permisos para crear una orden
      */
-    if (req.user.role !== 'admin') {
+    if (req.user.type !== 'admin') {
         return res.status(403).send('Solo los administradores pueden crear órdenes.');
     }
 
@@ -25,15 +25,13 @@ async function createOrder(req, res) {
          */
         const orderData = req.body;
         orderData.createdById = req.user.id;
-        orderData.createdByType = req.user.role;
+        orderData.createdByType = req.user.type;
         orderData.restaurantId = req.user.restaurant;
-
         /**
          * @description Creación de la orden
          * @constant {Object} newOrder
          */
         const newOrder = await orderService.createOrder(orderData);
-        
         res.status(201).send(newOrder);
     } catch (error) {
 
@@ -49,35 +47,33 @@ async function createOrder(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getOrderById(req, res) {
-
-    /**
-     * @description Obtención de la orden
-     */
+async function getOrderById_JWT(req, res) {
     try {
-
-        /**
-         * @description Obtención de la orden
-         * @constant {String} orderId
-         */
-        const orderId = req.body.id;
-
-        /**
-         * @description Obtención de la orden
-         * @constant {Object} order
-         */
+        // Corregir nombre del campo (orderId en lugar de id)
+        const { orderId } = req.body;
+        
+        if (!orderId) {
+            return res.status(400).json({ message: 'Se requiere ID de orden' });
+        }
+        
         const order = await orderService.getOrderById(orderId);
 
-        /**
-         * @description Envío de la orden
-         */
-        res.status(200).send(order);
-    } catch (error) {
+        if (!order) {
+            return res.status(404).json({ message: 'Orden no encontrada' });
+        }
 
-        /**
-         * @description Manejo de errores
-         */
-        res.status(500).send('Error al obtener la orden.');
+        // Verificar pertenencia al restaurante
+        if (order.restaurantId.toString() !== req.user.restaurant.toString()) {
+            return res.status(403).json({ message: 'Orden no pertenece a tu restaurante' });
+        }
+
+        res.status(200).json(order);
+    } catch (error) {
+        console.error("Error completo:", error);
+        res.status(500).json({ 
+            message: 'Error al obtener orden',
+            error: error.message
+        });
     }
 }
 
@@ -139,7 +135,7 @@ async function getOrdersByRestaurantId(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function updateOrder(req, res) {
+async function updateOrderById_JWT(req, res) {
 
     /**
      * @description Verificación de permisos para actualizar una orden
@@ -150,20 +146,18 @@ async function updateOrder(req, res) {
          * @description Obtención de la orden
          * @constant {String} orderId
          */
-        const orderId = req.body.id;
+        const { orderId, ...orderData } = req.body;
 
         /**
          * @description Obtención de la orden
          * @constant {Object} orderData
          */
-        const orderData = req.body;
 
         /**
          * @description Obtención de la orden
          * @constant {Object} order
          */
         const order = await orderService.getOrderById(orderId);
-
         /**
          * @description Verificación de la orden
          */
@@ -203,12 +197,12 @@ async function updateOrder(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function deleteOrder(req, res) {
+async function deleteOrderById_JWT(req, res) {
 
     /**
      * @description Verificación de permisos para eliminar una orden
      */
-    if (req.user.role !== 'admin') {
+    if (req.user.type !== 'admin') {
         return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
     }
 
@@ -221,7 +215,7 @@ async function deleteOrder(req, res) {
          * @description Obtención de la orden
          * @constant {String} orderId
          */
-        const orderId = req.body.id;
+        const { orderId } = req.body;
 
         /**
          * @description Obtención de la orden
@@ -253,9 +247,9 @@ async function deleteOrder(req, res) {
 
 module.exports = {
     createOrder,
-    getOrderById,
+    getOrderById_JWT,
     getAllOrders,
     getOrdersByRestaurantId,
-    updateOrder,
-    deleteOrder,
+    updateOrderById_JWT,
+    deleteOrderById_JWT,
 };
