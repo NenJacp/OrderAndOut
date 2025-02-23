@@ -1,4 +1,4 @@
-const Restaurant = require('./restaurantModel'); // Importar el modelo de restaurante
+const Restaurant = require('./restaurant.model'); // Importar el modelo de restaurante
 
 /**
  * @description Función para crear un nuevo restaurante

@@ -4,7 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const productController = require('./productController'); // Importar el controlador
+const productController = require('./product.controller'); // Importar el controlador
 const authMiddleware = require('../Auth/auth.middleware'); // Importar el middleware
 
 // Ruta para productos del restaurante actual

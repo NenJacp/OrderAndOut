@@ -1,4 +1,4 @@
-const Kiosk = require('./kioskModel'); // Importar el modelo de kiosko
+const Kiosk = require('./kiosk.model'); // Importar el modelo de kiosko
 
 /**
 * @description Crear un nuevo kiosko

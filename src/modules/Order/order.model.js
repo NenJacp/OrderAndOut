@@ -57,7 +57,16 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending', 'paid', 'failed'], // Estados de pago permitidos
         default: 'pending', // Estado por defecto
     },
-});
+    currency: {
+        type: String,
+        default: 'MXN',
+        required: true,
+    },
+},
+{
+    timestamps: true,
+}
+);
 
 const Order = mongoose.model('Order', orderSchema);
 module.exports = Order;
