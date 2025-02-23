@@ -6,8 +6,14 @@ const Kiosk = require('./kiosk.model'); // Importar el modelo de kiosko
 * @returns {Promise<Object>} - Kiosko creado
 */
 const createKioskById = async (kioskData) => {
-    const newKiosk = new Kiosk(kioskData);
-    return await newKiosk.save(); // Guardar en la base de datos
+    console.log("kioskData", kioskData);
+    try {
+        const newKiosk = new Kiosk(kioskData);
+        console.log("newKiosk", newKiosk);
+        return await newKiosk.save(); // Guardar en la base de datos
+    } catch (error) {
+        throw new Error(`Error al crear el kiosko: ${error.message}`);
+    }
 };
 
 /**

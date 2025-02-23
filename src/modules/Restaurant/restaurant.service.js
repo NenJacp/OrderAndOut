@@ -29,6 +29,7 @@ const getAllRestaurants = async (page, limit) => {
  * @returns {Promise<object>}
  */
 const getRestaurantById = async (id) => {
+    console.log("getRestaurantById");
     return await Restaurant.findById(id); // Buscar y devolver un restaurante específico por su ID
 };
 
@@ -39,7 +40,28 @@ const getRestaurantById = async (id) => {
  * @returns {Promise<object>}
  */
 const updateRestaurantById = async (id, restaurantData) => {
-    return await Restaurant.findByIdAndUpdate(id, restaurantData, { new: true }); // Actualizar un restaurante específico por su ID con los nuevos datos
+
+    /**
+     * @description Intentar actualizar el restaurante
+     */ 
+    try {
+
+        /**
+         * @description Actualizar el restaurante
+         */
+        return await Restaurant.findByIdAndUpdate(
+            id,
+            { $set: restaurantData },  // ← Usar operador $set para actualizaciones parciales
+            { new: true, runValidators: true }  // ← Activar validaciones de esquema
+        );
+    } catch (error) {
+
+        /**
+         * @description Devolver el error
+         */
+        console.error('Error en updateRestaurantById:', error);
+        throw new Error(`Error al actualizar restaurante: ${error.message}`);
+    }
 };
 
 /**
@@ -60,5 +82,29 @@ module.exports = {
     getAllRestaurants,
     getRestaurantById,
     updateRestaurantById,
+    deleteRestaurantById,
+};
+
+// Agregar nuevo método para actualizar por JWT
+const updateRestaurantByJWT = async (restaurantId, updateData) => {
+    try {
+        return await Restaurant.findByIdAndUpdate(
+            restaurantId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+    } catch (error) {
+        console.error('Error en updateRestaurantByJWT:', error);
+        throw error;
+    }
+};
+
+// Actualizar exports para incluir el nuevo método
+module.exports = {
+    createRestaurantById,
+    getAllRestaurants,
+    getRestaurantById,
+    updateRestaurantById,
+    updateRestaurantByJWT,  // ← ¡Nuevo método agregado!
     deleteRestaurantById,
 };

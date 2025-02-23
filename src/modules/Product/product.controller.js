@@ -44,10 +44,7 @@ const createProduct = async (req, res) => {
         }
 
         // Verificar existencia de categoría
-        const categoriaValida = await Category.findOne({
-            _id: category,
-            restaurantId: req.user.restaurant
-        });
+        const categoriaValida = await categoryService.getCategoryById(category);
 
         if (!categoriaValida) {
             return res.status(400).json({ 
@@ -56,7 +53,7 @@ const createProduct = async (req, res) => {
         }
 
         // Crear nuevo producto
-        const nuevoProducto = await productRepository.createProduct({
+        const nuevoProducto = await productService.createProductByRestaurantId({
             name,
             description: description || '',
             image,
@@ -92,7 +89,7 @@ const createProduct = async (req, res) => {
 // Función para obtener todos los productos
 const getAllProducts = async (req, res) => {
     try {
-        const products = await productRepository.getAllProducts();
+        const products = await productService.getAllProducts();
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -102,7 +99,7 @@ const getAllProducts = async (req, res) => {
 // Función para obtener un producto por ID
 const getProductById = async (req, res) => {
     try {
-        const product = await productRepository.getProductById(req.params.productId);
+        const product = await productService.getProductById(req.params.productId);
         if (!product) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
@@ -125,7 +122,7 @@ const getProductsByRestaurantId = async (req, res) => {
             return res.status(400).json({ message: 'Primero debes crear un restaurante' });
         }
         
-        const products = await productRepository.getProductsByRestaurantId(req.user.restaurant);
+        const products = await productService.getProductsByRestaurantId(req.user.restaurant);
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -139,7 +136,7 @@ const getProductsByRestaurantId = async (req, res) => {
 // Función para actualizar un producto
 const updateProduct = async (req, res) => {
     try {
-        const updatedProduct = await productRepository.updateProduct(req.params.id, req.body);
+        const updatedProduct = await productService.updateProduct(req.params.id, req.body);
         if (!updatedProduct) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
@@ -156,7 +153,7 @@ const updateProduct = async (req, res) => {
 // Función para eliminar un producto
 const deleteProduct = async (req, res) => {
     try {
-        const deletedProduct = await productRepository.deleteProduct(req.params.id);
+        const deletedProduct = await productService.deleteProduct(req.params.id);
         if (!deletedProduct) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }

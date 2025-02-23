@@ -16,7 +16,7 @@ router.put('/:productId', authMiddleware.verifyTokenMiddleware, productControlle
 router.delete('/:productId', authMiddleware.verifyTokenMiddleware, productController.deleteProduct);
 
 // Ruta para crear productos
-router.post('/', authMiddleware.verifyTokenMiddleware, productController.createProduct);
+router.post('/myProduct', authMiddleware.verifyTokenMiddleware, productController.createProduct);
 
 // Nueva ruta para productos disponibles
 router.get('/available', authMiddleware.verifyTokenMiddleware, (req, res) => {

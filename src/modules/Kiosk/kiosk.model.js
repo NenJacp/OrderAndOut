@@ -9,7 +9,6 @@ const kioskSchema = new mongoose.Schema({
         type: String,
         required: [true, 'La contraseña es requerida'],
         minlength: [8, 'La contraseña debe tener al menos 8 caracteres'],
-        select: false // No se devuelve en consultas por defecto para seguridad
     },
     // Campo para la referencia al restaurante
     restaurantId: {

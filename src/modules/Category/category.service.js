@@ -32,8 +32,25 @@ const getAllCategories = async () => {
  * @param {String} restaurantId
  * @returns {Promise<Object>}
  */
-const getCategoryById = async (id, restaurantId) => {
-    return await Category.findOne({ _id: id, restaurantId });
+const getCategoryById = async (id) => {
+    
+    /**console.log(id);
+     * @description Obtener la categoría
+     * @const {Object} category
+     */
+    const category = await Category.findOne({ _id: id});
+    /**
+     * @description Verificar si la categoría existe
+     */
+    if (!category) {
+        throw new Error('Categoría no encontrada');
+    }
+
+    /**
+     * @description Devolver la categoría
+     * @returns {Object} category
+     */
+    return category;
 };
 
 /**
@@ -43,7 +60,11 @@ const getCategoryById = async (id, restaurantId) => {
  * @returns {Promise<Object>}
  */
 const updateCategoryById = async (id, categoryData) => {
-    return await Category.findByIdAndUpdate(id, categoryData, { new: true });
+    try {
+        return await Category.findByIdAndUpdate(id, categoryData);
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 /**

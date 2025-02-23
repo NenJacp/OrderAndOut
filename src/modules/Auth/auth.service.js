@@ -7,7 +7,21 @@ const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
  * @returns {Promise<string>}
  */
 const hasher = async (password) => {
-    return await bcrypt.hash(password, 10); // Hashear la contraseña con un factor de coste de 10
+    /**
+     * @description Intentar hashear la contraseña
+     */ 
+    try {
+        /**
+         * @description Hashear la contraseña con un factor de coste de 10
+         */
+        const hashedPassword = await bcrypt.hash(password, 10); // Hashear la contraseña con un factor de coste de 10
+        return hashedPassword;
+    } catch (error) {
+        /**
+         * @description Devolver el error
+         */
+        throw new Error(`Error al hashear la contraseña: ${error.message}`);
+    }
 };
 
 /**
@@ -17,7 +31,21 @@ const hasher = async (password) => {
  * @returns {Promise<boolean>}
  */
 const comparer = async (candidatePassword, storedPassword) => {
-    return await bcrypt.compare(candidatePassword, storedPassword); // Comparar la contraseña candidata con la contraseña almacenada
+    /**
+     * @description Comparar la contraseña candidata con la contraseña almacenada
+     */
+    try {
+        /**
+         * @description Comparar la contraseña candidata con la contraseña almacenada
+         */
+        const isPasswordValid = await bcrypt.compare(candidatePassword, storedPassword); // Comparar la contraseña candidata con la contraseña almacenada
+        return isPasswordValid;
+    } catch (error) {
+        /**
+         * @description Devolver el error
+         */
+        throw new Error(`Error al comparar la contraseña: ${error.message}`);
+    }
 };
 
 /**

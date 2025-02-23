@@ -17,22 +17,22 @@ router.post('/myCategory', authMiddleware.verifyTokenMiddleware, categoryControl
 /**
  * @description Ruta para obtener una categoría por JWT
  */
-router.get('/myCategory', authMiddleware.verifyTokenMiddleware, categoryController.getCategoryByJWT);
+router.get('/myCategory', authMiddleware.verifyTokenMiddleware, categoryController.getCategoryById_JWT);
 
 /**
  * @description Ruta para obtener todas las categorías de un restaurante por JWT
  */
-router.get('/restaurant/mineCategory', authMiddleware.verifyTokenMiddleware, categoryController.getCategoriesByRestaurantByJWT);
+router.get('/mineCategory', authMiddleware.verifyTokenMiddleware, categoryController.getCategoriesByRestaurantByJWT);
 
 /**
  * @description Ruta para actualizar una categoría por JWT
  */
-router.put('/myCategory', authMiddleware.verifyTokenMiddleware, categoryController.updateCategoryByJWT);
+router.put('/myCategory', authMiddleware.verifyTokenMiddleware, categoryController.updateCategoryById_JWT);
 
 /**
  * @description Ruta para eliminar una categoría por JWT
  */
-router.delete('/myCategory', authMiddleware.verifyTokenMiddleware, categoryController.deleteCategoryByJWT);
+router.delete('/myCategory', authMiddleware.verifyTokenMiddleware, categoryController.deleteCategoryById_JWT);
 
 //////////////////////////////////////////////////////////////////////////////////
 //          █▀▄ ██▀ █ █ ██▀ █   ▄▀▄ █▀▄ ██▀ █▀▄   █▀▄ ▄▀▄ █ █ ▀█▀ ██▀ ▄▀▀       //

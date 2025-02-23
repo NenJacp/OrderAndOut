@@ -107,31 +107,58 @@ const getCategoriesByRestaurantByJWT = async (req, res) => {
  * @param {Object} req
  * @param {Object} res
  */
-const getCategoryByJWT = async (req, res) => {
+const getCategoryById_JWT = async (req, res) => {
 
     /**
      * @description Obtener una categoría por JWT
      */
     try {
+        
+        /**
+         * @description Obtener categoryId del body
+         * @const {String} categoryId
+         */
+        const { categoryId } = req.body;
 
         /**
-         * @description Obtener una categoría por JWT
-         * @param {String} req.user.restaurant
+         * @description Verificar si categoryId existe
+         */
+        if (!categoryId) {
+            return res.status(400).json({ message: 'Se requiere ID de categoría' });
+        }
+
+        /**
+         * @description Obtener la categoría
          * @const {Object} category
          */
-        const category = await categoryService.getCategoryById(req.user.restaurant);
+        const category = await categoryService.getCategoryById(categoryId);
+
+        /**
+         * @description Verificar si la categoría existe
+         */
+        if (!category) {
+            return res.status(404).json({ message: 'Categoría no encontrada' });
+        }
+
+        /**
+         * @description Verificar si la categoría pertenece al restaurante
+         */
+        if (category.restaurantId.toString() !== req.user.restaurant.toString()) {
+            return res.status(403).json({ message: 'No autorizado para ver esta categoría' });
+        }
 
         /**
          * @description Devolver la categoría
          * @response {Object} category
          */
+        res.status(200).json({ category });
     } catch (error) {
 
         /**
          * @description Devolver el error
          * @response {String} error.message
          */
-        res.status(500).json({ message: 'Error al obtener la categoría' });
+        res.status(500).json({ message: 'Error al obtener categoría' });
     }
 };
 
@@ -140,33 +167,31 @@ const getCategoryByJWT = async (req, res) => {
  * @param {Object} req
  * @param {Object} res
  */
-const updateCategoryByJWT = async (req, res) => {
-
-    /**
-     * @description Actualizar una categoría por JWT
-     */
+const updateCategoryById_JWT = async (req, res) => {
     try {
+        // Corregir la desestructuración
+        const { categoryId, ...updateData } = req.body; // ← Usar rest operator
 
-        /**
-         * @description Actualizar una categoría por JWT
-         * @param {String} req.user.restaurant
-         * @param {Object} req.body
-         * @const {Object} updatedCategory
-         */
-        const updatedCategory = await categoryService.updateCategoryById(req.user.restaurant, req.body);
+        if (!categoryId) {
+            return res.status(400).json({ message: 'Se requiere ID de categoría' });
+        }
 
-        /**
-         * @description Devolver la categoría actualizada
-         * @response {Object} updatedCategory
-         */
+       
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ message: 'Permisos insuficientes' });
+        }
+
+        const updatedCategory = await categoryService.updateCategoryById(categoryId, updateData);
+        if (!updatedCategory) {
+            return res.status(404).json({ message: 'Categoría no encontrada' });
+        }
+
         res.status(200).json(updatedCategory);
     } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {String} error.message
-         */
-        res.status(500).json({ message: 'Error al actualizar la categoría' });
+        res.status(500).json({ 
+            message: 'Error al actualizar',
+            error: error.message
+        });
     }
 };
 
@@ -175,7 +200,7 @@ const updateCategoryByJWT = async (req, res) => {
  * @param {Object} req
  * @param {Object} res
  */
-const deleteCategoryByJWT = async (req, res) => {
+const deleteCategoryById_JWT = async (req, res) => {
 
     /**
      * @description Eliminar una categoría por JWT
@@ -184,23 +209,48 @@ const deleteCategoryByJWT = async (req, res) => {
 
         /**
          * @description Eliminar una categoría por JWT
-         * @param {String} req.user.restaurant
-         * @const {<Promise>object} deletedCategory
          */
-        const deletedCategory = await categoryService.deleteCategoryById(req.user.restaurant);
+        const { categoryId } = req.body;
+
+        /**
+         * @description Verificar si categoryId existe
+         */
+        if (!categoryId) {
+            return res.status(400).json({ message: 'Se requiere ID de categoría' });
+        }
+
+        /**
+         * @description Obtener la categoría
+         */
+        const category = await categoryService.getCategoryById(categoryId);
 
         /**
          * @description Verificar si la categoría existe
          */
-        if (!deletedCategory) {
+        if (!category) {
             return res.status(404).json({ message: 'Categoría no encontrada' });
         }
 
         /**
-         * @description Devolver la categoría eliminada
-         * @response {String} message
+         * @description Verificar si la categoría pertenece al restaurante
          */
-        res.status(200).json({ message: 'Categoría eliminada correctamente' });
+        if (category.restaurantId.toString() !== req.user.restaurant.toString()) {
+            return res.status(403).json({ message: 'No autorizado para eliminar esta categoría' });
+        }
+
+        /**
+         * @description Eliminar la categoría
+         */
+        const deletedCategory = await categoryService.deleteCategoryById(categoryId);
+
+        /**
+         * @description Devolver la categoría eliminada
+         * @response {Object} deletedCategory
+         */
+        res.status(200).json({ 
+            message: 'Categoría eliminada correctamente',
+            deletedCategory
+        });
     } catch (error) {
 
         /**
@@ -378,8 +428,21 @@ const deleteCategoryById = async (req, res) => {
         }
 
         /**
+         * @description Verificar si el usuario es administrador
+         */
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ message: 'No tienes permisos para eliminar categorías' });
+        }
+
+        /**
+         * @description Verificar si la categoría pertenece al restaurante
+         */
+        if (deletedCategory.restaurantId !== req.user.restaurant) {
+            return res.status(403).json({ message: 'No tienes permisos para eliminar esta categoría' });
+        }
+
+        /**
          * @description Devolver la categoría eliminada
-         * @response {Object} deletedCategory
          * @response {String} message
          */
         res.status(200).json({ message: 'Categoría eliminada correctamente' });
@@ -399,9 +462,9 @@ module.exports = {
     getCategoriesByRestaurantId, 
     getAllCategories, 
     getCategoryById, 
-    getCategoryByJWT, 
+    getCategoryById_JWT,
     updateCategoryById, 
-    updateCategoryByJWT, 
+    updateCategoryById_JWT, 
     deleteCategoryById, 
-    deleteCategoryByJWT
+    deleteCategoryById_JWT
 }; 

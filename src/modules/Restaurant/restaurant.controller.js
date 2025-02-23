@@ -126,53 +126,46 @@ const createRestaurantByJWT = async (req, res) => {
 const getRestaurantByJWT = async (req, res) => {
 
     /**
-     * @description Obtener el ID del restaurante
-     * @const {string} adminId
-     * @const {string} adminType
-     * @const {string} adminRestaurant
-     */
-    const { id: adminId, type: adminType, restaurant: adminRestaurant } = req.user;
-
-    /**
-     * @description Intentar obtener el restaurante por ID
+     * @description Intentar obtener el restaurante por JWT
      */
     try {
 
+        /**
+         * @description Obtener el restaurante por JWT
+         * @const {string} adminRestaurant
+         */
+        const { restaurant: adminRestaurant } = req.user;
+        
         /**
          * @description Obtener el restaurante por ID
          * @param {string} adminRestaurant
          * @const {<Promise>object} restaurant
          */
-        const restaurant = await restaurantService.getRestaurantById(adminRestaurant); // Buscar restaurante por ID
+        const restaurant = await restaurantService.getRestaurantById(adminRestaurant);
+        
+        /**
+         * @description Si el restaurante no existe, devolver un error
+         */
         if (!restaurant) {
-            return res.status(404).json({ message: 'Restaurante no encontrado' });
+            return res.status(404).json({ 
+                message: 'Restaurante no encontrado',
+                debugInfo: `ID buscado: ${adminRestaurant || 'undefined'}`
+            });
         }
         
         /**
-         * @description Obtener las categorías del restaurante
-         * @param {string} restaurant._id
-         * @const {<Promise>object} categories
+         * @description Devolver el restaurante
+         * @response {object} restaurant
          */
-        const categories = await categoryService.getCategoriesByRestaurant(restaurant._id);
+        res.status(200).json(restaurant);
 
-        /**
-         * @description Devolver el restaurante con las categorías
-         * @response {object} restaurantWithCategories
-         */
-        const restaurantWithCategories = { ...restaurant._doc, categories };
-
-        /**
-         * @description Devolver el restaurante con las categorías
-         * @response {object} restaurantWithCategories
-         */
-        res.status(200).json(restaurantWithCategories);
     } catch (error) {
-
+        
         /**
          * @description Devolver el error
          * @response {string} error.message
          */
-        res.status(500).json({ message: 'Error al obtener el restaurante' });
+        res.status(500).json({ message: 'Error al obtener el restaurante', error: error.message });
     }
 };
 
@@ -182,12 +175,11 @@ const getRestaurantByJWT = async (req, res) => {
  * @param {*} res 
  */
 const updateRestaurantByJWT = async (req, res) => {
-
+    
     /**
      * @description Intentar actualizar el restaurante por JWT
      */
     try {
-
         /**
          * @description Actualizar el restaurante por JWT
          * @param {string} req.user.restaurant

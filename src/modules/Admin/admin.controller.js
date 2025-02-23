@@ -215,30 +215,34 @@ const loginAdmin = async (req, res) => {
      * @description Intentar iniciar sesión como administrador
      */ 
     try {
-
+        
         /**
          * @description Buscar un administrador por email
          * @param {string} email
          * @const {<promise>object} admin
          */
         const admin = await adminService.getAdminByEmail(email);
-
+        
         /**
          * @description Si no existe un administrador, devolver un error
          * @param {object} admin
          */
+        
         if (!admin) {
-            return res.status(401).json({ message: 'Credenciales inválidas' + error.message });
+            
+            return res.status(401).json({ message: 'Credenciales inválidas' });
+            
         }
-
+        
         /**
          * @description Si el administrador no está verificado, devolver un error
          * @param {object} admin
          */
+        
         if (!admin.isVerified) {
-            return res.status(403).json({ message: 'Cuenta no verificada' + error.message });
+            return res.status(403).json({ message: 'Cuenta no verificada' });
         }
-
+        
         /**
          * @description Verificar si la contraseña es válida
          * @param {string} password
@@ -246,22 +250,19 @@ const loginAdmin = async (req, res) => {
          * @const {<promise>boolean} isPasswordValid
          */
         const isPasswordValid = await authService.comparer(password, admin.password);
-
         /**
          * @description Si la contraseña no es válida, devolver un error
          * @param {boolean} isPasswordValid
          */
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Credenciales inválidas' + error.message });
+            return res.status(401).json({ message: 'Credenciales inválidas' });
         }
-
         /**
          * @description Obtener datos frescos del administrador
          * @param {string} admin._id
          * @const {<promise>object} currentAdmin
          */ 
         const currentAdmin = await adminService.getAdminById(admin._id);
-
         /**
          * @description Generar un token actualizado de autenticación
          * @param {string} admin._id
@@ -272,7 +273,6 @@ const loginAdmin = async (req, res) => {
             type: 'admin', // Tipo de usuario
             restaurant: currentAdmin.restaurant?.toString() // Convertir el ID del restaurante a una cadena
         });
-
         /**
          * @description Devolver el token actualizado de autenticación
          * @const {string} token
