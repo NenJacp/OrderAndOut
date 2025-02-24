@@ -354,7 +354,7 @@ const updateKioskById_JWT = async (req, res) => {
 const deleteKioskById_JWT = async (req, res) => {
     try {
         // Corregir la extracción del ID
-        const { kioskId } = req.body;
+        const { kioskId } = req.params;
         
         const deletedKiosk = await kioskService.deleteKioskById(kioskId);
         
