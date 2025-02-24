@@ -352,36 +352,18 @@ const updateKioskById_JWT = async (req, res) => {
  * @param {object} res
  */
 const deleteKioskById_JWT = async (req, res) => {
-
-    /**
-     * @description Eliminar el kiosko por JWT
-     */
     try {
-
-        /**
-         * @description Eliminar el kiosko por JWT
-         * @param {string} req.user.id
-         * @const {<Promise>object} deletedKiosk
-         */
-        const deletedKiosk = await kioskService.deleteKioskById(req.user.id);
-
-        /**
-         * @description Verificar si el kiosko existe
-         */
+        // Corregir la extracción del ID
+        const { kioskId } = req.body;
+        
+        const deletedKiosk = await kioskService.deleteKioskById(kioskId);
+        
         if (!deletedKiosk) {
             return res.status(404).json({ message: 'Kiosko no encontrado' });
         }
-        /**
-         * @description Devolver el kiosko eliminado
-         * @response {object} kiosk
-         */
         res.status(200).json({ message: 'Kiosko eliminado correctamente' });
     } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {string} error.message
-         */
+        console.error("Error en eliminación:", error);
         res.status(500).json({ message: 'Error al eliminar el kiosko' });
     }
 };

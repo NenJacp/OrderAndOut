@@ -62,7 +62,15 @@ const updateKioskById = async (id, kioskData) => {
 * @returns {Promise<Object>} - Kiosko eliminado
 */
 const deleteKioskById = async (id) => {
-    return await Kiosk.findByIdAndDelete(id); // Eliminar kiosko por ID
+    try {
+        // Asegurar que el ID sea una cadena válida
+        if (typeof id !== 'string' || !id.match(/^[0-9a-fA-F]{24}$/)) {
+            throw new Error('ID de kiosko inválido');
+        }
+        return await Kiosk.findByIdAndDelete(id);
+    } catch (error) {
+        throw new Error(`Error al eliminar el kiosko: ${error.message}`);
+    }
 };
 
 /**
