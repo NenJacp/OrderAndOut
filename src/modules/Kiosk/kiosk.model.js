@@ -5,6 +5,11 @@ const mongoose = require('mongoose'); // Importar mongoose
  */
 const kioskSchema = new mongoose.Schema({
     // Campo para la contraseña
+    name: {
+        type: String,
+        required: [true, 'El nombre es requerido'],
+        trim: true,
+    },
     password: {
         type: String,
         required: [true, 'La contraseña es requerida'],
