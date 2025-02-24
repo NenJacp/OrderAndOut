@@ -34,10 +34,12 @@ router.get('/mykiosk', authMiddleware.verifyTokenMiddleware, kioskController.get
  */
 router.get('/mineKiosks', authMiddleware.verifyTokenMiddleware, kioskController.getKiosksByRestaurantByJWT);
 
+router.put('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.updateKioskById_JWT);
+
 /**
  * @description Ruta para eliminar un kiosko por JWT
  */
-router.delete('/mykiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.deleteKioskById_JWT);
+router.delete('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.deleteKioskById_JWT);
 
 /**
  * @description Ruta para obtener todos los kioskos de un restaurante por JWT

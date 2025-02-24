@@ -331,10 +331,17 @@ const updateKioskById_JWT = async (req, res) => {
      */
     try {
 
+        const { kioskId } = req.params;
         /**
          * @description Actualizar el kiosko por JWT
          */
-        const kiosk = await kioskService.updateKioskById(req.user.id, req.body);
+        const kiosk = await kioskService.updateKioskById(kioskId, req.body);
+
+        /**
+         * @description Devolver el kiosko actualizado
+         * @response {object} kiosk
+         */
+        res.status(200).json(kiosk);
 
     } catch (error) {
 
