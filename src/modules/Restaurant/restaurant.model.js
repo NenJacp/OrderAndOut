@@ -41,8 +41,8 @@ const restaurantSchema = new mongoose.Schema({
         },
         // Campo para las coordenadas del restaurante
         coordinates: {
-            lat: { type: Number, required: true },
-            lng: { type: Number, required: true }
+            lat: { type: Number, required: false },
+            lng: { type: Number, required: false }
         }
     },
     // Campo para el contacto del restaurante

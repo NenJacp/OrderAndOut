@@ -62,6 +62,11 @@ const orderSchema = new mongoose.Schema({
         default: 'MXN',
         required: true,
     },
+    orderType: { // Nuevo campo agregado
+        type: String,
+        default: 'takeaway', // Valor por defecto
+        required: true
+    }
 },
 {
     timestamps: true,
