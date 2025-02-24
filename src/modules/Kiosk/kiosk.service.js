@@ -39,7 +39,11 @@ const getKioskById = async (id) => {
 * @returns {Promise<Array>} - Array de kioskos
 */
 const getKiosksByRestaurantId = async (restaurantId) => {
-    return await Kiosk.find({ restaurantId: restaurantId }); // Buscar kioskos por ID del restaurante
+    try {
+        return await Kiosk.find({ restaurantId: restaurantId }).populate('restaurantId');
+    } catch (error) {
+        throw new Error(`Error al obtener kioskos: ${error.message}`);
+    }
 };
 
 /**

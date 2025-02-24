@@ -296,11 +296,13 @@ const getKiosksByRestaurantByJWT = async (req, res) => {
      */
     try {
 
+        console.log("req.user.restaurant", req.user.restaurant);
         /**
          * @description Obtener todos los kioskos por ID del restaurante
          */
         const kiosks = await kioskService.getKiosksByRestaurantId(req.user.restaurant);
 
+        console.log("kiosks", kiosks);
         /**
          * @description Devolver los kioskos
          * @response {object} kiosks
