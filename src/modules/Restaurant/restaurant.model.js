@@ -20,6 +20,7 @@ const restaurantSchema = new mongoose.Schema({
         country: {
             type: String,
             required: true,
+            default: "Mexico",
         },
         // Campo para la ciudad
         city: {
