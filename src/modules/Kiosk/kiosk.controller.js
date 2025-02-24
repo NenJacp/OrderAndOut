@@ -18,7 +18,7 @@ const createKioskByJWT = async (req, res) => {
      * @description Obtener la contraseña del kiosko
      * @const {string} password
      */
-    const { password } = req.body;
+    const { name, password } = req.body;
     /**
      * @description Verificar si el usuario es administrador
      */
@@ -49,6 +49,7 @@ const createKioskByJWT = async (req, res) => {
          * @const {object} newKiosk
          */
         const newKiosk = await kioskService.createKioskById({
+            name,
             password: hashedPassword,
             restaurantId: req.user.restaurant
         });
