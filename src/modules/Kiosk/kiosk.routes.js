@@ -64,7 +64,7 @@ router.get('/', authMiddleware.verifyTokenMiddleware, kioskController.getAllKios
 /**
  * @description Ruta para obtener todos los kioskos de un restaurante por ID
  */
-router.get('/restaurant/:restaurantId', authMiddleware.verifyTokenMiddleware, kioskController.getKiosksByRestaurantById);
+router.get('/:restaurantId', authMiddleware.verifyTokenMiddleware, kioskController.getKiosksByRestaurantById);
 
 /**
  * @description Ruta para obtener un kiosko por ID
