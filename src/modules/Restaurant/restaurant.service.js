@@ -29,7 +29,6 @@ const getAllRestaurants = async (page, limit) => {
  * @returns {Promise<object>}
  */
 const getRestaurantById = async (id) => {
-    console.log("getRestaurantById");
     return await Restaurant.findById(id); // Buscar y devolver un restaurante específico por su ID
 };
 
@@ -82,29 +81,5 @@ module.exports = {
     getAllRestaurants,
     getRestaurantById,
     updateRestaurantById,
-    deleteRestaurantById,
-};
-
-// Agregar nuevo método para actualizar por JWT
-const updateRestaurantByJWT = async (restaurantId, updateData) => {
-    try {
-        return await Restaurant.findByIdAndUpdate(
-            restaurantId,
-            { $set: updateData },
-            { new: true, runValidators: true }
-        );
-    } catch (error) {
-        console.error('Error en updateRestaurantByJWT:', error);
-        throw error;
-    }
-};
-
-// Actualizar exports para incluir el nuevo método
-module.exports = {
-    createRestaurantById,
-    getAllRestaurants,
-    getRestaurantById,
-    updateRestaurantById,
-    updateRestaurantByJWT,  // ← ¡Nuevo método agregado!
     deleteRestaurantById,
 };

@@ -2,17 +2,16 @@ const kioskService = require('./kiosk.service'); // Importar el servicio
 const authService = require('../Auth/auth.service'); // Importar funciones de comparación y hashing
 const deviceService = require('../Device/device.service'); // Importar el servicio de dispositivo
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//              █ █ ▄▀▀ ██▀ █▀▄   ▄▀▀ ▄▀▄ █▄ █ ▀█▀ █▀▄ ▄▀▄ █   █   ██▀ █▀▄ ▄▀▀          //
-//              ▀▄█ ▄██ █▄▄ █▀▄   ▀▄▄ ▀▄▀ █ ▀█  █  █▀▄ ▀▄▀ █▄▄ █▄▄ █▄▄ █▀▄ ▄██          // 
-//////////////////////////////////////////////////////////////////////////////////////////
+
+//ADMIN CONTROLLERS
+
 
 /**
  * @description Crear un nuevo kiosko
  * @param {object} req
  * @param {object} res
  */
-const createKioskByJWT = async (req, res) => {
+const createKiosk = async (req, res) => {
 
     /**
      * @description Obtener la contraseña del kiosko
@@ -68,6 +67,10 @@ const createKioskByJWT = async (req, res) => {
     }
 };
 
+
+// KIOSKO CONTROLLERS
+
+
 /**
  * @description Iniciar sesión en el kiosko
  * @param {object} req
@@ -81,15 +84,13 @@ const loginKiosk = async (req, res) => {
      * @const {string} password
      */
     const { serial , password } = req.body;
-    console.log("serial", serial);
+
     /**
      * @description Verificar si el ID y la contraseña son requeridos
      */
     if (!serial || !password) {
-        console.log("no tiene serial o password");
         return res.status(400).json({ message: 'Serial y contraseña requeridos' });
     }
-    console.log("tiene serial y password");
     /**
      * @description Obtener el kiosko por serial
      */
@@ -147,17 +148,6 @@ const loginKiosk = async (req, res) => {
                 restaurantId: kiosk.restaurantId._id
             });
         }
-
-        /**
-         * @description Verificar límite de conexiones
-         * @param {string} kiosk.restaurantId._id
-         * @param {boolean} isConnected
-         * @const {number} connectedKiosks
-         */
-        const connectedKiosks = await kioskService.countDocuments({ 
-            restaurantId: kiosk.restaurantId._id,
-            isConnected: true
-        });
         /**
          * @description Verificar si la contraseña es válida
          * @param {string} password
@@ -258,7 +248,7 @@ const logoutKiosk = async (req, res) => {
  * @param {object} req
  * @param {object} res
  */
-const getKioskByJWT = async (req, res) => {
+const getCurrentKiosk = async (req, res) => {
 
     /**
      * @description Obtener el kiosko por JWT
@@ -290,20 +280,21 @@ const getKioskByJWT = async (req, res) => {
  * @param {object} req
  * @param {object} res
  */
-const getKiosksByRestaurantByJWT = async (req, res) => {
+const getKiosks_CurrentAdmin = async (req, res) => {
 
     /**
      * @description Obtener todos los kioskos por ID del restaurante
      */
     try {
 
-        console.log("req.user.restaurant", req.user.restaurant);
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ message: 'No tienes permisos para obtener los kioskos, solo los administradores pueden hacerlo' });
+        }
         /**
          * @description Obtener todos los kioskos por ID del restaurante
          */
         const kiosks = await kioskService.getKiosksByRestaurantId(req.user.restaurant);
 
-        console.log("kiosks", kiosks);
         /**
          * @description Devolver los kioskos
          * @response {object} kiosks
@@ -544,14 +535,14 @@ const deleteKioskById = async (req, res) => {
 module.exports = {
     getAllKiosks,
     getKioskById,
-    getKioskByJWT,
-    getKiosksByRestaurantByJWT,
+    getCurrentKiosk,
+    getKiosks_CurrentAdmin,
     getKiosksByRestaurantById,
     updateKioskById,
     deleteKioskById,
     updateKioskById_JWT,
     deleteKioskById_JWT,
-    createKioskByJWT,
+    createKiosk,
     loginKiosk,
     logoutKiosk
 };

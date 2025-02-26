@@ -10,10 +10,16 @@ const kioskSchema = new mongoose.Schema({
         required: [true, 'El nombre es requerido'],
         trim: true,
     },
+    // Campo para la contraseña
     password: {
         type: String,
         required: [true, 'La contraseña es requerida'],
         minlength: [8, 'La contraseña debe tener al menos 8 caracteres'],
+    },
+    description: {
+        type: String,
+        required: [true, 'La descripción es requerida'],
+        trim: true,
     },
     // Campo para la referencia al restaurante
     restaurantId: {
@@ -43,17 +49,6 @@ const kioskSchema = new mongoose.Schema({
     disconnected_at: {
         type: Date,
         default: null
-    },
-    // Campo para indicar la duración del token
-    tokenDuration: {
-        type: String,
-        validate: {
-            validator: function(v) {
-                return /^(\d+[hdm]|none)$/.test(v);
-            },
-            message: props => `${props.value} no es un formato válido. Ejemplos: 1h, 2d, none`
-        },
-        default: '7d'
     },
 }, 
 

@@ -4,15 +4,9 @@ const router = express.Router(); // Crear un enrutador
 const kioskController = require('./kiosk.controller'); // Importar el controlador
 const authMiddleware = require('../Auth/auth.middleware'); // Importar el middleware
 
-//////////////////////////////////////////////////////////////////////////////////
-//                 █ █ ▄▀▀ ██▀ █▀▄   █▀▄ ▄▀▄ █ █ ▀█▀ ██▀ ▄▀▀                    //
-//                 ▀▄█ ▄██ █▄▄ █▀▄   █▀▄ ▀▄▀ ▀▄█  █  █▄▄ ▄██                    //
-//////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @description Ruta para crear un nuevo kiosko
- */
-router.post('/myKiosk', authMiddleware.verifyTokenMiddleware, kioskController.createKioskByJWT);
+//KIOSKO ROUTES
+
 
 /**
  * @description Ruta para iniciar sesión en un kiosko
@@ -27,53 +21,50 @@ router.post('/logout', authMiddleware.verifyTokenMiddleware, kioskController.log
 /**
  * @description Ruta para obtener un kiosko por JWT
  */
-router.get('/mykiosk', authMiddleware.verifyTokenMiddleware, kioskController.getKioskByJWT);
+router.get('/me', authMiddleware.verifyTokenMiddleware, kioskController.getCurrentKiosk); //Para probar el token
+
+
+//ADMIN ROUTES
+
+
+/**
+ * @description Ruta para crear un nuevo kiosko
+ */
+router.post('/myKiosk', authMiddleware.verifyTokenMiddleware, kioskController.createKiosk);
 
 /**
  * @description Ruta para obtener todos los kioskos de un restaurante por JWT
  */
-router.get('/mineKiosks', authMiddleware.verifyTokenMiddleware, kioskController.getKiosksByRestaurantByJWT);
-
-router.put('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.updateKioskById_JWT);
-
-/**
- * @description Ruta para eliminar un kiosko por JWT
- */
-router.delete('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.deleteKioskById_JWT);
-
-/**
- * @description Ruta para obtener todos los kioskos de un restaurante por JWT
- */
-router.get('/restaurant/myKiosk', authMiddleware.verifyTokenMiddleware, kioskController.getKiosksByRestaurantByJWT);
-
-//////////////////////////////////////////////////////////////////////////////////
-//          █▀▄ ██▀ █ █ ██▀ █   ▄▀▄ █▀▄ ██▀ █▀▄   █▀▄ ▄▀▄ █ █ ▀█▀ ██▀ ▄▀▀       //
-//          █▄▀ █▄▄ ▀▄▀ █▄▄ █▄▄ ▀▄▀ █▀  █▄▄ █▀▄   █▀▄ ▀▄▀ ▀▄█  █  █▄▄ ▄██       //
-//////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @description Ruta para obtener todos los kioskos
- */
-router.get('/', authMiddleware.verifyDeveloperToken, kioskController.getAllKiosks);
+router.get('/mineKiosks', authMiddleware.verifyTokenMiddleware, kioskController.getKiosks_CurrentAdmin);
 
 /**
  * @description Ruta para obtener un kiosko por ID
  */
-router.get('/:id', authMiddleware.verifyDeveloperToken, kioskController.getKioskById);
+router.get('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.getKioskById);
 
 /**
- * @description Ruta para actualizar un kiosko por ID
+ * @description Ruta para actualizar un kiosko por Id del kiosko
  */
-router.put('/:id', authMiddleware.verifyDeveloperToken, kioskController.updateKioskById);
+router.put('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.updateKioskById);
 
 /**
- * @description Ruta para eliminar un kiosko por ID
+ * @description Ruta para eliminar un kiosko por Id del kiosko
  */
-router.delete('/:id', authMiddleware.verifyDeveloperToken, kioskController.deleteKioskById);
+router.delete('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.deleteKioskById);
 
 /**
  * @description Ruta para obtener todos los kioskos de un restaurante por ID
  */
-router.get('/restaurant/:restaurantId', authMiddleware.verifyDeveloperToken, kioskController.getKiosksByRestaurantById);
+router.get('/restaurant/:restaurantId', authMiddleware.verifyTokenMiddleware, kioskController.getKiosksByRestaurantById);
+
+
+//DEVELOPER ROUTES
+
+
+/**
+ * @description Ruta para obtener todos los kioskos
+ */
+router.get('/', authMiddleware.verifyTokenMiddleware, kioskController.getAllKiosks);
+
 
 module.exports = router;
