@@ -5,7 +5,7 @@ const Product = require('./product.model'); // Importar el modelo de producto
  * @param {*} productData 
  * @returns {Promise<Object>}
  */
-const createProductByRestaurantId = async (productData) => {
+const createProduct = async (productData) => {
     const product = new Product(productData);
     return await product.save();
 };
@@ -69,7 +69,7 @@ const deleteProduct = async (id) => {
  * @description Exportar las funciones del repositorio para su uso en otros módulos
  */
 module.exports = {
-    createProductByRestaurantId,
+    createProduct,
     getAllProducts,
     getProductById,
     getProductsByRestaurantId,

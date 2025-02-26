@@ -1,9 +1,5 @@
-////////////////////////////////////////////////////////////
-//                     Main Application                    ///
-////////////////////////////////////////////////////////////
-
 const express = require('express');
-const connectDB = require('./src/core/config/mongoDB'); // Importar la conexión a MongoDB
+const connectDB = require('./src/config/mongoDB'); // Importar la conexión a MongoDB
 const adminRouter = require('./src/modules/Admin/admin.routes'); // Importar las rutas de administradores
 const restaurantRouter = require('./src/modules/Restaurant/restaurant.routes'); // Importar las rutas de restaurantes
 const kioskRouter = require('./src/modules/Kiosk/kiosk.routes'); // Importar las rutas de kioskos
@@ -11,16 +7,16 @@ const orderRouter = require('./src/modules/Order/order.routes'); // Importar las
 const productRouter = require('./src/modules/Product/product.routes'); // Importar las rutas de productos
 const categoriesRouter = require('./src/modules/Category/category.routes'); // Importar las rutas de categorías
 const app = express();
-const cleanupJob = require('./src/core/config/cleanup');
+const cleanupJob = require('./src/config/cleanup');
 const cors = require('cors');
 
-// Conectar a la base de datos
+// Conexion a la base de datos
 connectDB();
 
-// Middleware
-app.use(express.json()); // Para parsear el cuerpo de las solicitudes JSON
+// Middleware para parsear el cuerpo de las solicitudes JSON
+app.use(express.json()); 
 
-// Configurar CORS (versión modificada)
+// Configurar CORS ( Acceso a la API desde cualquier origen)
 app.use(cors({
   origin: '*', // Permitir cualquier origen
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos

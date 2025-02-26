@@ -38,16 +38,17 @@ const productSchema = new mongoose.Schema({
     },
     availability: {
         type: Boolean,
+        required: true,
         default: true,
+    },
+    ingredients: {
+        type: [String],
+        default: [],
     },
     restaurantId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant',
         required: true
-    },
-    ingredients: {
-        type: [String],
-        default: [],
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
