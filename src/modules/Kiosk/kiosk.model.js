@@ -35,6 +35,11 @@ const kioskSchema = new mongoose.Schema({
         enum: ['active', 'maintenance', 'disabled'],
         default: 'active'
     },
+    // Campo para indicar la duración del token
+    tokenDuration: {
+        type: String,
+        default: '7d'
+    },
     // Campo para indicar si el kiosk está conectado
     isConnected: {
         type: Boolean,

@@ -52,11 +52,6 @@ router.put('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskContr
  */
 router.delete('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.deleteKioskById);
 
-/**
- * @description Ruta para obtener todos los kioskos de un restaurante por ID
- */
-router.get('/restaurant/:restaurantId', authMiddleware.verifyTokenMiddleware, kioskController.getKiosksByRestaurantById);
-
 
 //DEVELOPER ROUTES
 
@@ -66,5 +61,24 @@ router.get('/restaurant/:restaurantId', authMiddleware.verifyTokenMiddleware, ki
  */
 router.get('/', authMiddleware.verifyTokenMiddleware, kioskController.getAllKiosks);
 
+/**
+ * @description Ruta para obtener todos los kioskos de un restaurante por ID
+ */
+router.get('/restaurant/:restaurantId', authMiddleware.verifyTokenMiddleware, kioskController.getKiosksByRestaurantById);
+
+/**
+ * @description Ruta para obtener un kiosko por ID
+ */
+router.get('/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.getKioskById);
+
+/**
+ * @description Ruta para actualizar un kiosko por ID
+ */
+router.put('/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.updateKioskById);
+
+/**
+ * @description Ruta para eliminar un kiosko por ID
+ */
+router.delete('/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.deleteKioskById);
 
 module.exports = router;

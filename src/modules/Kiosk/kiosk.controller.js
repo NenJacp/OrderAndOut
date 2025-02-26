@@ -3,71 +3,6 @@ const authService = require('../Auth/auth.service'); // Importar funciones de co
 const deviceService = require('../Device/device.service'); // Importar el servicio de dispositivo
 
 
-//ADMIN CONTROLLERS
-
-
-/**
- * @description Crear un nuevo kiosko
- * @param {object} req
- * @param {object} res
- */
-const createKiosk = async (req, res) => {
-
-    /**
-     * @description Obtener la contraseña del kiosko
-     * @const {string} password
-     */
-    const { name, password } = req.body;
-    /**
-     * @description Verificar si el usuario es administrador
-     */
-    if (req.user.type !== 'admin') {
-        return res.status(403).json({ message: 'No tienes permisos para crear un kiosko, solo los administradores pueden hacerlo' });
-    }
-    /**
-     * @description Verificar si el usuario tiene un restaurante asignado
-     */
-    if (!req.user?.restaurant) {
-        return res.status(400).json({ message: 'Restaurante no asignado' });
-    }
-    /**
-     * @description Crear un nuevo kiosko
-     */
-    try {
-        console.log("try");
-        /**
-         * @description Hashear la contraseña
-         * @param {string} password
-         * @const {string} hashedPassword
-         */
-        const hashedPassword = await authService.hasher(password);
-        /**
-         * @description Crear un nuevo kiosko
-         * @param {string} password
-         * @param {string} restaurantId
-         * @const {object} newKiosk
-         */
-        const newKiosk = await kioskService.createKioskById({
-            name,
-            password: hashedPassword,
-            restaurantId: req.user.restaurant
-        });
-        /**
-         * @description Devolver el kiosko creado
-         * @response {object} newKiosk
-         */
-        res.status(201).json({ message: 'Kiosko creado exitosamente', kiosk: newKiosk });
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {string} error.message
-         */
-        res.status(500).json({ message: 'Error al crear el kiosko' });
-    }
-};
-
-
 // KIOSKO CONTROLLERS
 
 
@@ -102,15 +37,28 @@ const loginKiosk = async (req, res) => {
          * @const {object} kiosk
          */
         const kiosk = await kioskService.getKioskById(serial);
+
         /**
          * @description Verificar si el kiosko existe
          */
         if (!kiosk) {
             return res.status(404).json({ message: 'Kiosko no encontrado' });
         }
+
+        /**
+         * @description Verificar si la contraseña es válida
+         * @param {string} password
+         * @param {string} kiosk.password
+         * @const {boolean} isPasswordValid
+         */
+        const isPasswordValid = await authService.comparer(password, kiosk.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
+        }
         /**
          * @description Verificar si el kiosko está deshabilitado
          */
+
         if (kiosk.status !== 'active') {
             return res.status(403).json({ message: 'Kiosko deshabilitado' });
         }
@@ -128,7 +76,7 @@ const loginKiosk = async (req, res) => {
             /**
              * @description Generar un token de autenticación
              * @param {string} kiosk._id
-             * @param {string} 'kiosk'
+             * @param {string} kiosk
              * @param {string} kiosk.restaurantId._id
              * @const {string} token
              */
@@ -148,16 +96,7 @@ const loginKiosk = async (req, res) => {
                 restaurantId: kiosk.restaurantId._id
             });
         }
-        /**
-         * @description Verificar si la contraseña es válida
-         * @param {string} password
-         * @param {string} kiosk.password
-         * @const {boolean} isPasswordValid
-         */
-        const isPasswordValid = await authService.comparer(password, kiosk.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Contraseña incorrecta' });
-        }
+
         /**
          * @description Actualizar el estado de conexión
          * @param {string} kiosk._id
@@ -190,11 +129,7 @@ const loginKiosk = async (req, res) => {
          * @description Devolver el token de autenticación
          * @response {string} token
          */
-        res.status(200).json({ 
-            token,
-            kioskId: kiosk._id,
-            restaurantId: kiosk.restaurantId._id
-        });
+        res.status(200).json({ token });
     } catch (error) {
 
         /**
@@ -275,6 +210,71 @@ const getCurrentKiosk = async (req, res) => {
     }
 };
 
+
+//ADMIN CONTROLLERS
+
+
+/**
+ * @description Crear un nuevo kiosko
+ * @param {object} req
+ * @param {object} res
+ */
+const createKiosk = async (req, res) => {
+
+    /**
+     * @description Obtener la contraseña del kiosko
+     * @const {string} password
+     */
+    const { name, password } = req.body;
+    /**
+     * @description Verificar si el usuario es administrador
+     */
+    if (req.user.type !== 'admin') {
+        return res.status(403).json({ message: 'No tienes permisos para crear un kiosko, solo los administradores pueden hacerlo' });
+    }
+    /**
+     * @description Verificar si el usuario tiene un restaurante asignado
+     */
+    if (!req.user?.restaurant) {
+        return res.status(400).json({ message: 'Restaurante no asignado' });
+    }
+    /**
+     * @description Crear un nuevo kiosko
+     */
+    try {
+        console.log("try");
+        /**
+         * @description Hashear la contraseña
+         * @param {string} password
+         * @const {string} hashedPassword
+         */
+        const hashedPassword = await authService.hasher(password);
+        /**
+         * @description Crear un nuevo kiosko
+         * @param {string} password
+         * @param {string} restaurantId
+         * @const {object} newKiosk
+         */
+        const newKiosk = await kioskService.createKioskById({
+            name,
+            password: hashedPassword,
+            restaurantId: req.user.restaurant
+        });
+        /**
+         * @description Devolver el kiosko creado
+         * @response {object} newKiosk
+         */
+        res.status(201).json({ message: 'Kiosko creado exitosamente', kiosk: newKiosk });
+    } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
+        res.status(500).json({ message: 'Error al crear el kiosko' });
+    }
+};
+
 /**
  * @description Obtener todos los kioskos por ID del restaurante
  * @param {object} req
@@ -310,19 +310,53 @@ const getKiosks_CurrentAdmin = async (req, res) => {
     }
 };
 
+const getKioskById_CurrentAdmin = async (req, res) => {
+
+    if (req.user.type !== 'admin') {
+        return res.status(403).json({ message: 'No tienes permisos para obtener el kiosko, solo los administradores pueden hacerlo' });
+    }
+
+    try {
+
+        const { kioskId } = req.params.kioskId;
+        /**
+         * @description Obtener el kiosko por ID
+         */
+        const kiosk = await kioskService.getKioskById(kioskId);
+
+        /**
+         * @description Devolver el kiosko
+         * @response {object} kiosk
+         */
+        res.status(200).json(kiosk);
+
+    } catch (error) {
+
+        /**
+         * @description Devolver el error
+         * @response {string} error.message
+         */
+        res.status(500).json({ message: 'Error al obtener el kiosko' });
+    }
+}
+
 /**
  * @description Actualizar el kiosko por JWT
  * @param {object} req
  * @param {object} res
  */
-const updateKioskById_JWT = async (req, res) => {
+const updateKioskById_CurrentAdmin = async (req, res) => {
+
+    if (req.user.type !== 'admin') {
+        return res.status(403).json({ message: 'No tienes permisos para actualizar el kiosko, solo los administradores pueden hacerlo' });
+    }
 
     /**
      * @description Actualizar el kiosko por JWT
      */
     try {
 
-        const { kioskId } = req.params;
+        const { kioskId } = req.params.kioskId;
         /**
          * @description Actualizar el kiosko por JWT
          */
@@ -349,10 +383,15 @@ const updateKioskById_JWT = async (req, res) => {
  * @param {object} req
  * @param {object} res
  */
-const deleteKioskById_JWT = async (req, res) => {
+const deleteKioskById_CurrentAdmin = async (req, res) => {
+
+    if (req.user.type !== 'admin') {
+        return res.status(403).json({ message: 'No tienes permisos para eliminar el kiosko, solo los administradores pueden hacerlo' });
+    }
+
     try {
         // Corregir la extracción del ID
-        const { kioskId } = req.params;
+        const { kioskId } = req.params.kioskId;
         
         const deletedKiosk = await kioskService.deleteKioskById(kioskId);
         
@@ -361,15 +400,12 @@ const deleteKioskById_JWT = async (req, res) => {
         }
         res.status(200).json({ message: 'Kiosko eliminado correctamente' });
     } catch (error) {
-        console.error("Error en eliminación:", error);
         res.status(500).json({ message: 'Error al eliminar el kiosko' });
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//  █▀▄ ██▀ █ █ ██▀ █   ▄▀▄ █▀▄ ██▀ █▀▄   ▄▀▀ ▄▀▄ █▄ █ ▀█▀ █▀▄ ▄▀▄ █   █   ██▀ █▀▄ ▄▀▀  //
-//  █▄▀ █▄▄ ▀▄▀ █▄▄ █▄▄ ▀▄▀ █▀  █▄▄ █▀▄   ▀▄▄ ▀▄▀ █ ▀█  █  █▀▄ ▀▄▀ █▄▄ █▄▄ █▄▄ █▀▄ ▄██  //
-//////////////////////////////////////////////////////////////////////////////////////////
+
+//DEVELOPER CONTROLLERS
 
 /**
  * @description Obtener todos los kioskos
@@ -377,6 +413,11 @@ const deleteKioskById_JWT = async (req, res) => {
  * @param {object} res
  */
 const getAllKiosks = async (req, res) => {
+
+    if (req.user.type !== 'developer') {
+        return res.status(403).json({ message: 'No tienes permisos para obtener los kioskos, solo los desarrolladores pueden hacerlo' });
+    }
+
     try {
         /**
          * @description Obtener todos los kioskos
@@ -405,6 +446,10 @@ const getAllKiosks = async (req, res) => {
  */
 const getKioskById = async (req, res) => {
 
+    if (req.user.type !== 'developer') {
+        return res.status(403).json({ message: 'No tienes permisos para obtener el kiosko, solo los desarrolladores pueden hacerlo' });
+    }
+
     /**
      * @description Obtener el kiosko por ID
      */
@@ -432,6 +477,10 @@ const getKioskById = async (req, res) => {
 
 
 const getKiosksByRestaurantById = async (req, res) => {
+
+    if (req.user.type !== 'developer') {
+        return res.status(403).json({ message: 'No tienes permisos para obtener los kioskos, solo los desarrolladores pueden hacerlo' });
+    }
 
     /**
      * @description Obtener el ID del restaurante
@@ -466,6 +515,10 @@ const getKiosksByRestaurantById = async (req, res) => {
 
 const updateKioskById = async (req, res) => {
 
+    if (req.user.type !== 'developer') {
+        return res.status(403).json({ message: 'No tienes permisos para actualizar el kiosko, solo los desarrolladores pueden hacerlo' });
+    }
+
     /**
      * @description Actualizar el kiosko por ID
      */
@@ -492,6 +545,10 @@ const updateKioskById = async (req, res) => {
 };
 
 const deleteKioskById = async (req, res) => {
+
+    if (req.user.type !== 'developer') {
+        return res.status(403).json({ message: 'No tienes permisos para eliminar el kiosko, solo los desarrolladores pueden hacerlo' });
+    }
 
     /**
      * @description Eliminar el kiosko por ID
@@ -533,16 +590,26 @@ const deleteKioskById = async (req, res) => {
  * @description Exportar las funciones del controlador
  */
 module.exports = {
-    getAllKiosks,
-    getKioskById,
+
+    //KIOSKO CONTROLLERS
+
     getCurrentKiosk,
+    loginKiosk,
+    logoutKiosk,
+
+    //ADMIN CONTROLLERS
+
+    createKiosk,
     getKiosks_CurrentAdmin,
+    getKioskById_CurrentAdmin,
+    updateKioskById_CurrentAdmin,
+    deleteKioskById_CurrentAdmin,
+
+    //DEVELOPER CONTROLLERS
+
+    getAllKiosks,
     getKiosksByRestaurantById,
+    getKioskById,
     updateKioskById,
     deleteKioskById,
-    updateKioskById_JWT,
-    deleteKioskById_JWT,
-    createKiosk,
-    loginKiosk,
-    logoutKiosk
 };
