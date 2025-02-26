@@ -2,7 +2,6 @@ const kioskService = require('./kiosk.service'); // Importar el servicio
 const authService = require('../Auth/auth.service'); // Importar funciones de comparación y hashing
 const deviceService = require('../Device/device.service'); // Importar el servicio de dispositivo
 
-
 // KIOSKO CONTROLLERS
 
 
@@ -357,6 +356,11 @@ const updateKioskById_CurrentAdmin = async (req, res) => {
     try {
 
         const { kioskId } = req.params.kioskId;
+
+        if (req.body.password) {
+            req.body.password = await authService.hasher(req.body.password);
+        }
+
         /**
          * @description Actualizar el kiosko por JWT
          */
@@ -527,6 +531,11 @@ const updateKioskById = async (req, res) => {
         /**
          * @description Actualizar el kiosko por ID
          */
+        // Hashear la contraseña si viene en el body
+        if (req.body.password) {
+            req.body.password = await authService.hasher(req.body.password);
+        }
+
         const kiosk = await kioskService.updateKioskById(req.params.id, req.body);
 
         /**

@@ -151,6 +151,11 @@ const getCurrentAdmin = async (req, res) => {
  * @description Actualiza un administrador por el JWT
  */
 const updateCurrentAdmin = async (req, res) => {
+
+    if (req.body.password) {
+        req.body.password = await authService.hasher(req.body.password);
+    }
+
     try {
         const adminId = req.user.id;
         const updatedAdmin = await adminService.updateAdminById(adminId, req.body);
@@ -204,6 +209,10 @@ const updateAdminById = async (req, res) => {
 
     if (req.user.type !== 'developer') {
         return res.status(403).json({ message: 'No tienes permisos para acceder a esta ruta' });
+    }
+
+    if (req.body.password) {
+        req.body.password = await authService.hasher(req.body.password)
     }
 
     try {

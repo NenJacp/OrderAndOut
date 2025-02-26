@@ -11,12 +11,12 @@ const authMiddleware = require('../Auth/auth.middleware'); // Importar el middle
 /**
  * @description Ruta para iniciar sesión en un kiosko
  */
-router.post('/login/kiosk', kioskController.loginKiosk);
+router.post('/login/myKiosk', kioskController.loginKiosk);
 
 /**
  * @description Ruta para cerrar sesión en un kiosko
  */
-router.post('/logout', authMiddleware.verifyTokenMiddleware, kioskController.logoutKiosk);
+router.post('/logout/myKiosk', authMiddleware.verifyTokenMiddleware, kioskController.logoutKiosk);
 
 /**
  * @description Ruta para obtener un kiosko por JWT
@@ -46,6 +46,7 @@ router.get('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskContr
  * @description Ruta para actualizar un kiosko por Id del kiosko
  */
 router.put('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.updateKioskById);
+
 
 /**
  * @description Ruta para eliminar un kiosko por Id del kiosko
