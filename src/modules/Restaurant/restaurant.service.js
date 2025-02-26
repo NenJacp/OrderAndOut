@@ -5,7 +5,7 @@ const Restaurant = require('./restaurant.model'); // Importar el modelo de resta
  * @param {object} restaurantData
  * @returns {Promise<object>}
  */
-const createRestaurantById = async (restaurantData) => {
+const createRestaurant = async (restaurantData) => {
     const newRestaurant = new Restaurant(restaurantData); // Crear un nuevo objeto de restaurante con los datos proporcionados
     return await newRestaurant.save(); // Guardar el nuevo restaurante en la base de datos y devolver el resultado
 };
@@ -77,7 +77,7 @@ const deleteRestaurantById = async (id) => {
  * @returns {object}
  */
 module.exports = {
-    createRestaurantById,
+    createRestaurant,
     getAllRestaurants,
     getRestaurantById,
     updateRestaurantById,

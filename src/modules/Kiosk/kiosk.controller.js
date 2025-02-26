@@ -1,6 +1,5 @@
-const kioskService = require('./kiosk.service'); // Importar el servicio
 const authService = require('../Auth/auth.service'); // Importar funciones de comparación y hashing
-const deviceService = require('../Device/device.service'); // Importar el servicio de dispositivo
+const kioskService = require('./kiosk.service'); // Importar el servicio de kiosko
 
 // KIOSKO CONTROLLERS
 

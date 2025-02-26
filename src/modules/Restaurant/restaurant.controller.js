@@ -33,7 +33,7 @@ const createRestaurant_CurrentAdmin = async (req, res) => {
          * @description Crear un nuevo restaurante con los datos del body
          * @const {Object} newRestaurant - Nuevo restaurante creado
          */
-        const newRestaurant = await restaurantService.createRestaurantById({name, image, location, adminId: req.user._id, ...rest});
+        const newRestaurant = await restaurantService.createRestaurant({name, image, location, adminId: req.user._id, ...rest});
 
         /**
          * @description Actualizar el administrador con el id del nuevo restaurante

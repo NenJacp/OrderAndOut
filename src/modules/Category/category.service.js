@@ -5,7 +5,7 @@ const Category = require('./category.model'); // Importar el modelo de la catego
  * @param {Object} categoryData
  * @returns {Promise<Object>}
  */
-const createCategoryByRestaurantId = async (categoryData) => {
+const createCategory = async (categoryData) => {
     return await Category.create(categoryData);
 };
 
@@ -77,7 +77,7 @@ const deleteCategoryById = async (id) => {
 };
 
 module.exports = {
-    createCategoryByRestaurantId,
+    createCategory,
     getAllCategories,
     getCategoriesByRestaurantId,
     getCategoryById,
