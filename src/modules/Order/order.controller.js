@@ -47,10 +47,10 @@ async function createOrder(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getOrderById_JWT(req, res) {
+async function getOrderById_CurrentUser(req, res) {
     try {
         // Corregir nombre del campo (orderId en lugar de id)
-        const { orderId } = req.body;
+        const { orderId } = req.params.orderId;
         
         if (!orderId) {
             return res.status(400).json({ message: 'Se requiere ID de orden' });
@@ -84,6 +84,10 @@ async function getOrderById_JWT(req, res) {
  */
 async function getAllOrders(req, res) {
 
+    if (req.user.type !== 'developer') {
+        return res.status(403).send('Solo los desarrolladores pueden obtener todas las órdenes.');
+    }
+
     /**
      * @description Obtención de todas las órdenes
      */
@@ -112,14 +116,21 @@ async function getAllOrders(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getOrdersByRestaurantId(req, res) {
+async function getOrdersByRestaurant_CurrentUser(req, res) {
 
     /**
      * @description Obtención de las órdenes por ID de restaurante
      */
     try {
+
         const restaurantId = req.user.restaurant;
+
         const orders = await orderService.getOrdersByRestaurantId(restaurantId);
+
+        if (!orders) {
+            return res.status(404).send('No se encontraron órdenes para este restaurante.');
+        }
+
         res.status(200).send(orders);
     } catch (error) {
 
@@ -135,7 +146,11 @@ async function getOrdersByRestaurantId(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function updateOrderById_JWT(req, res) {
+async function updateOrderById_CurrentAdmin(req, res) {
+
+    if (req.user.type !== 'admin') {
+        return res.status(403).send('Solo los administradores pueden actualizar órdenes.');
+    }
 
     /**
      * @description Verificación de permisos para actualizar una orden
@@ -146,7 +161,8 @@ async function updateOrderById_JWT(req, res) {
          * @description Obtención de la orden
          * @constant {String} orderId
          */
-        const { orderId, ...orderData } = req.body;
+        const { orderId } = req.params.orderId;
+        const { ...orderData } = req.body;
 
         /**
          * @description Obtención de la orden
@@ -197,7 +213,7 @@ async function updateOrderById_JWT(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function deleteOrderById_JWT(req, res) {
+async function deleteOrderById_CurrentAdmin(req, res) {
 
     /**
      * @description Verificación de permisos para eliminar una orden
@@ -215,7 +231,7 @@ async function deleteOrderById_JWT(req, res) {
          * @description Obtención de la orden
          * @constant {String} orderId
          */
-        const { orderId } = req.body;
+        const { orderId } = req.params.orderId;
 
         /**
          * @description Obtención de la orden
@@ -245,11 +261,82 @@ async function deleteOrderById_JWT(req, res) {
     }
 }
 
+//DEVELOPER CONTROLLERS
+
+const getOrderById = async (req, res) => {
+    if (req.user.type !== 'developer') {
+        return res.status(403).send('Solo los desarrolladores pueden obtener una orden.');
+    }
+    
+    try {
+        const { orderId } = req.params.orderId;
+
+        const order = await orderService.getOrderById(orderId);
+
+        if (!order) {
+            return res.status(404).send('Orden no encontrada.');
+        }
+
+        res.status(200).send(order);
+    } catch (error) {
+        res.status(500).send('Error al obtener la orden.');
+    }
+}   
+
+const updateOrderById = async (req, res) => {
+    if (req.user.type !== 'developer') {
+        return res.status(403).send('Solo los desarrolladores pueden actualizar una orden.');
+    }
+
+    try {
+
+        const { orderId } = req.params.orderId;
+
+        const { ...orderData } = req.body;
+
+        const updatedOrder = await orderService.updateOrderById(orderId, orderData);
+
+        if (!updatedOrder) {
+            return res.status(404).send('Orden no encontrada.');
+        }
+
+        res.status(200).send(updatedOrder);
+    } catch (error) {
+
+        res.status(500).send('Error al actualizar la orden.');
+    }
+}
+
+const deleteOrderById = async (req, res) => {
+
+    if (req.user.type !== 'developer') {
+        return res.status(403).send('Solo los desarrolladores pueden eliminar una orden.');
+    }
+
+    try {
+
+        const { orderId } = req.params.orderId;
+
+        await orderService.deleteOrderById(orderId);
+
+        res.status(200).send('Orden eliminada con éxito.');
+    } catch (error) {
+
+        res.status(500).send('Error al eliminar la orden.');
+    }
+}
 module.exports = {
+
+    //ADMIN CONTROLLERS
     createOrder,
-    getOrderById_JWT,
+    getOrderById_CurrentUser,
+    getOrdersByRestaurant_CurrentUser,
+    updateOrderById_CurrentAdmin,
+    deleteOrderById_CurrentAdmin,
+
+    //DEVELOPER CONTROLLERS
     getAllOrders,
-    getOrdersByRestaurantId,
-    updateOrderById_JWT,
-    deleteOrderById_JWT,
+    getOrderById,
+    updateOrderById,
+    deleteOrderById,
 };

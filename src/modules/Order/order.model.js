@@ -1,11 +1,10 @@
-////////////////////////////////////////////////////////////
-//                     Order Model                         ///
-////////////////////////////////////////////////////////////
-
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-    numOrder: { type: String, required: true }, // Asegúrate de que sea único y requerido
+    numOrder: {
+        type: String,
+        required: true,
+    },
     products: [
         {
             productId: {
@@ -60,12 +59,10 @@ const orderSchema = new mongoose.Schema({
     currency: {
         type: String,
         default: 'MXN',
-        required: true,
     },
     orderType: { // Nuevo campo agregado
         type: String,
-        default: 'takeaway', // Valor por defecto
-        required: true
+        default: 'llevar', // Valor por defecto
     }
 },
 {
