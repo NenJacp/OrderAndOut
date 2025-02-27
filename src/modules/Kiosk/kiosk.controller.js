@@ -57,7 +57,7 @@ const loginKiosk = async (req, res) => {
          * @description Verificar si el kiosko está deshabilitado
          */
 
-        if (kiosk.status !== 'active') {
+        if (kiosk.status !== 'activo') {
             return res.status(403).json({ message: 'Kiosko deshabilitado' });
         }
         /**

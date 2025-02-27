@@ -32,8 +32,7 @@ const kioskSchema = new mongoose.Schema({
     status: {
         type: String,
         required: [true, 'El estado es requerido'],
-        enum: ['active', 'maintenance', 'disabled'],
-        default: 'active'
+        default: 'activo'
     },
     // Campo para indicar la duración del token
     tokenDuration: {

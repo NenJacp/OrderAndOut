@@ -24,8 +24,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'in preparation', 'completed', 'waiting for payment'], // Estados permitidos
-        default: 'pending', // Estado por defecto
+        default: 'pendiente', // Estado por defecto
     },
     notes: { // Campo opcional para notas
         type: String,
@@ -48,13 +47,12 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: { // Método de pago
         type: String,
-        enum: ['card', 'cash'], // Métodos de pago permitidos
+        enum: ['tarjeta', 'efectivo'], // Métodos de pago permitidos
         required: true,
     },
     paymentStatus: { // Estado de pago
         type: String,
-        enum: ['pending', 'paid', 'failed'], // Estados de pago permitidos
-        default: 'pending', // Estado por defecto
+        default: 'pendiente', // Estado por defecto
     },
     currency: {
         type: String,
