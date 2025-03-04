@@ -1,8 +1,8 @@
-const express = require('express'); // Importación de express
+import express from 'express'; // Importación de express
 const router = express.Router(); // Creación de un enrutador
 
-const adminController = require('./admin.controller'); // Importar el controlador
-const authMiddleware = require('../Auth/auth.middleware'); // Importar el middleware
+import adminController from './admin.controller.js'; // Importar el controlador
+import authMiddleware from '../Auth/auth.middleware.js'; // Importar el middleware
 
 
 //USERS ROUTES
@@ -52,19 +52,4 @@ router.put('/me', authMiddleware.verifyTokenMiddleware, adminController.updateCu
  */
 router.get('/', authMiddleware.verifyTokenMiddleware, adminController.getAllAdmins);
 
-/**
- * @description Ruta para obtener un administrador por ID
- */
-router.get('/:id', authMiddleware.verifyTokenMiddleware, adminController.getAdminById);
-
-/**
- * @description Ruta para actualizar un administrador
- */
-router.put('/:id', authMiddleware.verifyTokenMiddleware, adminController.updateAdminById);
-
-/**
- * @description Ruta para eliminar un administrador
- */
-router.delete('/:id', authMiddleware.verifyTokenMiddleware, adminController.deleteAdminById);
-
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const Category = require('./category.model'); // Importar el modelo de la categoría
+import Category from './category.model.js'; // Importar el modelo de la categoría
 
 /**
  * @description Crear una categoría por ID
@@ -34,22 +34,17 @@ const getAllCategories = async () => {
  */
 const getCategoryById = async (id) => {
     
-    /**console.log(id);
-     * @description Obtener la categoría
-     * @const {Object} category
-     */
+    // console.log(id);
+    // @description Obtener la categoría
+    // @const {Object} category
     const category = await Category.findOne({ _id: id});
-    /**
-     * @description Verificar si la categoría existe
-     */
+    // @description Verificar si la categoría existe
     if (!category) {
         throw new Error('Categoría no encontrada');
     }
 
-    /**
-     * @description Devolver la categoría
-     * @returns {Object} category
-     */
+    // @description Devolver la categoría
+    // @returns {Object} category
     return category;
 };
 
@@ -76,7 +71,7 @@ const deleteCategoryById = async (id) => {
     return await Category.findByIdAndDelete(id);
 };
 
-module.exports = {
+export default {
     createCategory,
     getAllCategories,
     getCategoriesByRestaurantId,

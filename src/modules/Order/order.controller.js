@@ -1,4 +1,4 @@
-const orderService = require('./order.service'); // Importar el servicio
+import orderService from './order.service.js'; // Importar el servicio
 
 /**
  * @description Función para crear una nueva orden
@@ -74,40 +74,6 @@ async function getOrderById_CurrentUser(req, res) {
             message: 'Error al obtener orden',
             error: error.message
         });
-    }
-}
-
-/**
- * @description Función para obtener todas las órdenes
- * @param {Object} req 
- * @param {Object} res 
- */
-async function getAllOrders(req, res) {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).send('Solo los desarrolladores pueden obtener todas las órdenes.');
-    }
-
-    /**
-     * @description Obtención de todas las órdenes
-     */
-    try {
-
-        /**
-         * @description Obtención de todas las órdenes
-         */
-        const orders = await orderService.getAllOrders();
-
-        /**
-         * @description Envío de las órdenes
-         */
-        res.status(200).send(orders);
-    } catch (error) {
-
-        /**
-         * @description Manejo de errores
-         */
-        res.status(500).send('Error al obtener las órdenes.');
     }
 }
 
@@ -261,82 +227,43 @@ async function deleteOrderById_CurrentAdmin(req, res) {
     }
 }
 
-//DEVELOPER CONTROLLERS
+// DEVELOPER CONTROLLERS
+/**
+ * @description Función para obtener todas las órdenes
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+async function getAllOrders(req, res) {
 
-const getOrderById = async (req, res) => {
-    if (req.user.type !== 'developer') {
-        return res.status(403).send('Solo los desarrolladores pueden obtener una orden.');
-    }
-    
-    try {
-        const { orderId } = req.params.orderId;
-
-        const order = await orderService.getOrderById(orderId);
-
-        if (!order) {
-            return res.status(404).send('Orden no encontrada.');
-        }
-
-        res.status(200).send(order);
-    } catch (error) {
-        res.status(500).send('Error al obtener la orden.');
-    }
-}   
-
-const updateOrderById = async (req, res) => {
-    if (req.user.type !== 'developer') {
-        return res.status(403).send('Solo los desarrolladores pueden actualizar una orden.');
-    }
-
+    /**
+     * @description Obtención de todas las órdenes
+     */
     try {
 
-        const { orderId } = req.params.orderId;
+        /**
+         * @description Obtención de todas las órdenes
+         */
+        const orders = await orderService.getAllOrders();
 
-        const { ...orderData } = req.body;
-
-        const updatedOrder = await orderService.updateOrderById(orderId, orderData);
-
-        if (!updatedOrder) {
-            return res.status(404).send('Orden no encontrada.');
-        }
-
-        res.status(200).send(updatedOrder);
+        /**
+         * @description Envío de las órdenes
+         */
+        res.status(200).send(orders);
     } catch (error) {
 
-        res.status(500).send('Error al actualizar la orden.');
+        /**
+         * @description Manejo de errores
+         */
+        res.status(500).send('Error al obtener las órdenes.');
     }
 }
 
-const deleteOrderById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).send('Solo los desarrolladores pueden eliminar una orden.');
-    }
-
-    try {
-
-        const { orderId } = req.params.orderId;
-
-        await orderService.deleteOrderById(orderId);
-
-        res.status(200).send('Orden eliminada con éxito.');
-    } catch (error) {
-
-        res.status(500).send('Error al eliminar la orden.');
-    }
-}
-module.exports = {
-
-    //ADMIN CONTROLLERS
+export default {
     createOrder,
     getOrderById_CurrentUser,
     getOrdersByRestaurant_CurrentUser,
     updateOrderById_CurrentAdmin,
     deleteOrderById_CurrentAdmin,
 
-    //DEVELOPER CONTROLLERS
     getAllOrders,
-    getOrderById,
-    updateOrderById,
-    deleteOrderById,
 };

@@ -8,8 +8,9 @@
 // - MONGODB_URI: URI de conexión con credenciales
 ////////////////////////////////////////////////////////////
 
-const mongoose = require('mongoose');
-require('dotenv').config(); // Cargar variables de entorno
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config(); // Cargar variables de entorno
 
 const connectDB = async () => {
     try {
@@ -24,4 +25,4 @@ const connectDB = async () => {
     }
 };
 
-module.exports = connectDB;
+export default connectDB;

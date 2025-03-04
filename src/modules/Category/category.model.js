@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // Importar mongoose
+import mongoose from 'mongoose'; // Importar mongoose
 
 /**
  * @description Definición del esquema de la categoría
@@ -37,11 +37,7 @@ const categorySchema = new mongoose.Schema({
 });
 
 /**
- * @description Modelo de la categoría
- */
-const Category = mongoose.model('Category', categorySchema);
-
-/**
  * @description Exportar el modelo de la categoría
  */
-module.exports = Category; 
+const Category = mongoose.model('Category', categorySchema);
+export default Category; 

@@ -1,8 +1,8 @@
-const express = require('express'); // Importar express
+import express from 'express'; // Importar express
 const router = express.Router(); // Crear un router
 
-const orderController = require('./order.controller'); // Importar el controlador
-const authMiddleware = require('../Auth/auth.middleware'); // Importar el middleware
+import orderController from './order.controller.js'; // Importar el controlador
+import authMiddleware from '../Auth/auth.middleware.js'; // Importar el middleware
 
 //ADMIN ROUTES
 router.post('/myOrder', authMiddleware.verifyTokenMiddleware, orderController.createOrder); // Crear una nueva orden
@@ -14,8 +14,4 @@ router.delete('/myOrder/:orderId', authMiddleware.verifyTokenMiddleware, orderCo
 
 //DEVELOPER ROUTES
 router.get('/', authMiddleware.verifyTokenMiddleware, orderController.getAllOrders); // Obtener todas las órdenes
-router.get('/:orderId', authMiddleware.verifyTokenMiddleware, orderController.getOrderById); // Obtener una orden por ID
-router.put('/:orderId', authMiddleware.verifyTokenMiddleware, orderController.updateOrderById); // Actualizar una orden
-router.delete('/:orderId', authMiddleware.verifyTokenMiddleware, orderController.deleteOrderById); // Eliminar una orden
-
-module.exports = router;
+export default router;

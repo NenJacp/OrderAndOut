@@ -1,4 +1,4 @@
-const Restaurant = require('./restaurant.model'); // Importar el modelo de restaurante
+import Restaurant from './restaurant.model.js'; // Importar el modelo de restaurante
 
 /**
  * @description Función para crear un nuevo restaurante
@@ -76,7 +76,7 @@ const deleteRestaurantById = async (id) => {
  * @description Exportar las funciones del repositorio para su uso en otros módulos
  * @returns {object}
  */
-module.exports = {
+export default {
     createRestaurant,
     getAllRestaurants,
     getRestaurantById,

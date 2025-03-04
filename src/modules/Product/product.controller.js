@@ -1,6 +1,6 @@
-const productService = require('./product.service'); // Importar el repositorio
-const authService = require('../Auth/auth.service'); // Importar funciones de hashing
-const categoryService = require('../Category/category.service'); // Importar el modelo de categoría
+import productService from './product.service.js'; // Importar el repositorio
+
+import categoryService from '../Category/category.service.js'; // Importar el modelo de categoría
 
 
 //ADMIN CONTROLLERS
@@ -213,10 +213,6 @@ const getProductsByRestaurant_CurrentUser = async (req, res) => {
  */
 const getAllProducts = async (req, res) => {
 
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permiso para obtener productos' });
-    }
-
     try {
         const products = await productService.getAllProducts();
         res.status(200).json(products);
@@ -225,52 +221,10 @@ const getAllProducts = async (req, res) => {
     }
 };
 
-const getProductsById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permiso para obtener productos' });
-    }
-
-    try {
-        const { productId } = req.params.productId;
-        const product = await productService.getProductById(productId);
-        res.status(200).json(product);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
-
-const updateProductById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permiso para actualizar productos' });
-    }
-
-    try {
-        const { productId } = req.params.productId;
-        const { ...productData } = req.body;
-        const updatedProduct = await productService.updateProduct(productId, productData);
-        res.status(200).json(updatedProduct);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
-
-const deleteProductById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permiso para eliminar productos' });
-    }
-
-    try {
-        const { productId } = req.params.productId;
-        const deletedProduct = await productService.deleteProduct(productId);
-        res.status(204).json({ message: 'Producto eliminado correctamente' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}   
-module.exports = {
+/**
+ * @description importacion
+ */
+export default {
 
     //ADMIN CONTROLLERS
     createProduct,
@@ -285,7 +239,4 @@ module.exports = {
     //DEVELOPER CONTROLLERS
 
     getAllProducts,
-    getProductsById,
-    updateProductById,
-    deleteProductById,
 };

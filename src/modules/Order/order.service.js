@@ -1,4 +1,4 @@
-const Order = require('./order.model'); // Importar el modelo de orden
+import Order from './order.model.js'; // Importar el modelo de orden
 
 // Función para crear una nueva orden
 const createOrder = async (orderData) => {
@@ -42,7 +42,7 @@ const deleteOrderById = async (id) => {
     return await Order.findByIdAndDelete(id); // Eliminar la orden por ID
 };
 
-module.exports = {
+export default {
     createOrder,
     getAllOrders,
     getOrderById, // Exportar la función para obtener una orden específica

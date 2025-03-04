@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // Importar mongoose
+import mongoose from 'mongoose'; // Importar mongoose
 
 /**
  * @description Definición del esquema de Kiosk
@@ -67,4 +67,5 @@ const kioskSchema = new mongoose.Schema({
 /**
  * @description Exportación del modelo de Kiosk
  */
-module.exports = mongoose.model('Kiosk', kioskSchema);
+const Kiosk = mongoose.model('Kiosk', kioskSchema);
+export default Kiosk;

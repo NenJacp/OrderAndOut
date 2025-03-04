@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // Importar mongoose
+import mongoose from 'mongoose'; // Importar mongoose
 
 /**
  * @description Esquema de producto
@@ -71,4 +71,4 @@ const productSchema = new mongoose.Schema({
 });
 
 const Product = mongoose.model('Product', productSchema);
-module.exports = Product;
+export default Product;

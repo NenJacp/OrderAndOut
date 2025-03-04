@@ -1,6 +1,7 @@
-require('dotenv').config(); // Importación de dotenv
+import dotenv from 'dotenv'; // Importación de dotenv
+dotenv.config(); // Configuración de dotenv
 
-const nodemailer = require('nodemailer'); // Importación de nodemailer
+import nodemailer from 'nodemailer'; // Importación de nodemailer
 
 /**
  * @description Creación del transporte de correo electrónico
@@ -90,7 +91,7 @@ const sendPasswordResetEmail = async (email, code) => {
  * @description Exportación de las funciones para su uso en otros módulos
  * @returns {object} sendVerificationEmail, sendPasswordResetEmail
  */ 
-module.exports = { 
+export default{ 
     sendVerificationEmail, 
     sendPasswordResetEmail 
 }; 

@@ -5,7 +5,7 @@
 // Programación: Ejecución cada hora vía setInterval    ///
 ////////////////////////////////////////////////////////////
 
-const Admin = require('../../modules/Admin/admin.model');
+import Admin from '../modules/Admin/admin.model.js';
 
 /**
  * @function cleanupExpiredRegistrations
@@ -27,4 +27,4 @@ const cleanupExpiredRegistrations = async () => {
 // Programar ejecución cada 1 hora (3600000 ms)
 setInterval(cleanupExpiredRegistrations, 3600000);
 
-module.exports = cleanupExpiredRegistrations; 
+export default cleanupExpiredRegistrations; 

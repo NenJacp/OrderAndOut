@@ -1,5 +1,5 @@
-const authService = require('../Auth/auth.service'); // Importar funciones de comparación y hashing
-const kioskService = require('./kiosk.service'); // Importar el servicio de kiosko
+import authService from '../Auth/auth.service.js'; // Importar funciones de comparación y hashing
+import kioskService from './kiosk.service.js'; // Importar el servicio de kiosko
 
 // KIOSKO CONTROLLERS
 
@@ -417,9 +417,6 @@ const deleteKioskById_CurrentAdmin = async (req, res) => {
  */
 const getAllKiosks = async (req, res) => {
 
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para obtener los kioskos, solo los desarrolladores pueden hacerlo' });
-    }
 
     try {
         /**
@@ -443,161 +440,9 @@ const getAllKiosks = async (req, res) => {
 }; 
 
 /**
- * @description Obtener el kiosko por ID
- * @param {object} req
- * @param {object} res
- */
-const getKioskById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para obtener el kiosko, solo los desarrolladores pueden hacerlo' });
-    }
-
-    /**
-     * @description Obtener el kiosko por ID
-     */
-    try {
-
-        /**
-         * @description Obtener el kiosko por ID
-         */
-        const kiosk = await kioskService.getKioskById(req.params.id);
-
-        /**
-         * @description Devolver el kiosko
-         * @response {object} kiosk
-         */
-        res.status(200).json(kiosk);
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {string} error.message
-         */
-        res.status(500).json({ message: 'Error al obtener el kiosko' });
-    }
-};  
-
-
-const getKiosksByRestaurantById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para obtener los kioskos, solo los desarrolladores pueden hacerlo' });
-    }
-
-    /**
-     * @description Obtener el ID del restaurante
-     * @param {string} req.params.restaurantId
-     */
-    const restaurantId = req.params;
-
-    /**
-     * @description Obtener todos los kioskos por ID del restaurante
-     */
-    try {
-
-        /**
-         * @description Obtener todos los kioskos por ID del restaurante
-         */
-        const kiosks = await kioskService.getKiosksByRestaurantId(restaurantId);
-
-        /**
-         * @description Devolver los kioskos
-         * @response {object} kiosks
-         */
-        res.status(200).json(kiosks);
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {string} error.message
-         */
-        res.status(500).json({ message: 'Error al obtener los kioskos' });
-    }
-};
-
-const updateKioskById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para actualizar el kiosko, solo los desarrolladores pueden hacerlo' });
-    }
-
-    /**
-     * @description Actualizar el kiosko por ID
-     */
-    try {
-
-        /**
-         * @description Actualizar el kiosko por ID
-         */
-        // Hashear la contraseña si viene en el body
-        if (req.body.password) {
-            req.body.password = await authService.hasher(req.body.password);
-        }
-
-        const kiosk = await kioskService.updateKioskById(req.params.id, req.body);
-
-        /**
-         * @description Devolver el kiosko actualizado
-         * @response {object} kiosk
-         */
-        res.status(200).json(kiosk);
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {string} error.message
-         */
-        res.status(500).json({ message: 'Error al actualizar el kiosko' });
-    }
-};
-
-const deleteKioskById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para eliminar el kiosko, solo los desarrolladores pueden hacerlo' });
-    }
-
-    /**
-     * @description Eliminar el kiosko por ID
-     */
-    try {
-
-        /**
-         * @description Eliminar el kiosko por ID
-         * @param {string} req.params.id
-         * @const {<Promise>object} deletedKiosk
-         */
-        const deletedKiosk = await kioskService.deleteKioskById(req.params.id);
-
-        /**
-         * @description Verificar si el kiosko existe
-         */
-        if (!deletedKiosk) {
-            return res.status(404).json({ message: 'Kiosko no encontrado' });
-        }
-
-        /**
-         * @description Devolver el kiosko eliminado
-         * @response {object} kiosk
-         */
-        res.status(200).json({ message: 'Kiosko eliminado correctamente' });
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {string} error.message
-         */
-        res.status(500).json({ message: 'Error al eliminar el kiosko' });
-    }
-};
-
-
-
-/**
  * @description Exportar las funciones del controlador
  */
-module.exports = {
+export default {
 
     //KIOSKO CONTROLLERS
 
@@ -615,9 +460,5 @@ module.exports = {
 
     //DEVELOPER CONTROLLERS
 
-    getAllKiosks,
-    getKiosksByRestaurantById,
-    getKioskById,
-    updateKioskById,
-    deleteKioskById,
+    getAllKiosks
 };

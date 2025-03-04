@@ -1,4 +1,4 @@
-const Product = require('./product.model'); // Importar el modelo de producto
+import Product from './product.model.js'; // Importar el modelo de producto
 
 /**
  * @description Función para crear un nuevo producto
@@ -68,7 +68,7 @@ const deleteProduct = async (id) => {
 /**
  * @description Exportar las funciones del repositorio para su uso en otros módulos
  */
-module.exports = {
+export default {
     createProduct,
     getAllProducts,
     getProductById,

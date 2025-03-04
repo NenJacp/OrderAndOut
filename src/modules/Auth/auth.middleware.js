@@ -1,6 +1,7 @@
-require('dotenv').config(); // Cargar variables de entorno
+import dotenv from 'dotenv'; // Cargar variables de entorno
+dotenv.config();
 
-const AuthService = require('./auth.service'); // Importar el servicio de autenticación
+import AuthService from './auth.service.js'; // Importar el servicio de autenticación
 
 /**
  * Middleware para verificar el token de autenticación.
@@ -47,7 +48,7 @@ const verifyTokenMiddleware = (req, res, next) => {
          * @description Decodificar el token
          * @param {string} token - Token de autenticación.
          * @param {string} process.env.JWT_SECRET - Clave secreta para el token.
-         * @param {string} jwt.verify - Verificar el token.a
+         * @param {string} jwt.verify - Verificar el token.
          * @const {string} decoded - Token decodificado.
          */
         const decoded = AuthService.verifyToken(token);
@@ -108,45 +109,7 @@ const verifyTokenMiddleware = (req, res, next) => {
 };
 
 /**
- * Middleware para verificar token de desarrollador
- * @param {string} req - Objeto de solicitud.
- * @param {string} res - Objeto de respuesta.
- * @const {NextFunction} next - Función para continuar el flujo.
- */
-const verifyDeveloperToken = (req, res, next) => {
-    
-    /**
-     * @description Verificar el token
-     * @param {string} req - Objeto de solicitud.
-     * @param {string} res - Objeto de respuesta.
-     * @param {string} next - Función para continuar el flujo.
-     */
-    verifyTokenMiddleware(req, res, (err) => {
-        if (err) return next(err);
-        
-        /**
-         * @description Validar el tipo de usuario
-         * @param {string} req - Objeto de solicitud.
-         * @param {string} req.user - Usuario autenticado.
-         * @param {string} req.user.type - Tipo de usuario.
-         * @returns {string} - Mensaje de error.
-         */
-        if (req.user.type !== 'developer') {
-            return res.status(403).json({ code: 'DEVELOPER_ACCESS_REQUIRED', message: 'Acceso exclusivo para desarrolladores' });
-        }
-        
-        /**
-         * @description Continuar con el flujo de la aplicación
-         */
-        next();
-    });
-};
-
-/**
  * @description Exportar las funciones de autenticación
  * @returns {object} - Funciones de autenticación.
  */
-module.exports = {
-    verifyTokenMiddleware,
-    verifyDeveloperToken
-}; 
+export default { verifyTokenMiddleware }; 

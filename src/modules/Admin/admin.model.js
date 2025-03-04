@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // Importación de mongoose
+import mongoose from 'mongoose'; // Importación de mongoose
 
 /**
  * @description Definición del esquema para el modelo de administrador
@@ -102,4 +102,4 @@ adminSchema.index({ email: 1, phone: 1, isVerified: 1 });
  * @description Exportación del modelo de administrador
  */
 const Admin = mongoose.model('Admin', adminSchema);
-module.exports = Admin;
+export default Admin;

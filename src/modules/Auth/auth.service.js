@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt'); // Importar bcrypt
-const jwt = require('jsonwebtoken'); // Importar jsonwebtoken
+import bcrypt from 'bcrypt'; // Importar bcrypt
+import jwt from 'jsonwebtoken'; // Importar jsonwebtoken
 
 /**
  * @description Hashear la contraseña
@@ -52,7 +52,7 @@ const comparer = async (candidatePassword, storedPassword) => {
  * @description Generar un código de verificación aleatorio
  * @returns {string}
  */
-const generateCode = () => {
+const generateAdminCode = () => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     return code;
 };
@@ -119,10 +119,10 @@ const verifyToken = (token) => {
  * @description Exportar como objeto con métodos
  * @returns {Object}
  */
-module.exports = {
+export default {
     hasher,
     comparer,
-    generateCode,
+    generateAdminCode,
     generateAdminAuthToken,
     generateKioscoAuthToken,
     verifyToken

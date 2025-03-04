@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 /**
  * @description Definición del esquema de Restaurant
@@ -89,4 +89,4 @@ const restaurantSchema = new mongoose.Schema({
  * @description Exportación del modelo de Restaurant
  */
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
-module.exports = Restaurant;
+export default Restaurant;

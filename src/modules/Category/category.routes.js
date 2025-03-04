@@ -1,8 +1,8 @@
-const express = require('express'); // Importar express
+import express from 'express'; // Importar express
 const router = express.Router(); // Crear un router
 
-const categoryController = require('./category.controller'); // Importar el controlador de categorías
-const authMiddleware = require('../Auth/auth.middleware'); // Importar el middleware de autenticación
+import categoryController from './category.controller.js'; // Importar el controlador de categorías
+import authMiddleware from '../Auth/auth.middleware.js'; // Importar el middleware de autenticación
 
 // ADMIN ROUTES
 
@@ -40,24 +40,4 @@ router.delete('/myCategory/:categoryId', authMiddleware.verifyTokenMiddleware, c
  */
 router.get('/', authMiddleware.verifyTokenMiddleware, categoryController.getAllCategories);
 
-/**
- * @description Ruta para obtener una categoría por ID
- */
-router.get('/:categoryId', authMiddleware.verifyTokenMiddleware, categoryController.getCategoryById);
-
-/**
- * @description Ruta para obtener todas las categorías de un restaurante por ID
- */
-router.get('/:restaurantId', authMiddleware.verifyTokenMiddleware, categoryController.getCategoriesByRestaurantId);
-
-/**
- * @description Ruta para actualizar una categoría por ID
- */
-router.put('/:categoryId', authMiddleware.verifyTokenMiddleware, categoryController.updateCategoryById);
-
-/**
- * @description Ruta para eliminar una categoría por ID
- */
-router.delete('/:categoryId', authMiddleware.verifyTokenMiddleware, categoryController.deleteCategoryById);
-
-module.exports = router; 
+export default router; 

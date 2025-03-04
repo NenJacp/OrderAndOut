@@ -1,4 +1,4 @@
-const categoryService = require('./category.service');
+import categoryService from './category.service.js';
 
 
 //ADMIN CONTROLLERS
@@ -249,7 +249,7 @@ const getCategoryById_CurrentUser = async (req, res) => {
         /**
          * @description Verificar si la categoría pertenece al restaurante
          */
-        if (category.restaurantId.toString() !== req.user.restaurant.toString()) {
+         if (category.restaurantId.toString() !== req.user.restaurant.toString()) {
             return res.status(403).json({ message: 'No autorizado para ver esta categoría' });
         }
 
@@ -305,186 +305,7 @@ const getAllCategories = async (req, res) => {
     }
 };
 
-/**
- * @description Obtener todas las categorías por ID
- * @param {Object} req
- * @param {Object} res
- */
-const getCategoriesByRestaurantId = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para obtener las categorías' });
-    }
-
-    /**
-     * @description Obtener todas las categorías por ID
-     */
-    try {
-
-        /**
-         * @description Obtener todas las categorías por ID
-         * @const {Object} categories
-         */
-        const categories = await categoryService.getCategoriesByRestaurantId(req.params.restaurantId);
-
-        /**
-         * @description Devolver las categorías
-         * @response {Object} categories
-         */
-        res.status(200).json(categories);
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {String} error.message
-         */
-        res.status(500).json({ message: 'Error al obtener las categorías' });
-    }
-};
-
-/**
- * @description Obtener una categoría por ID
- * @param {Object} req
- * @param {Object} res
- */
-const getCategoryById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para obtener una categoría' });
-    }
-
-    /**
-     * @description Obtener una categoría por ID
-     */     
-    try {
-
-        /**
-         * @description Obtener una categoría por ID
-         * @param {String} req.params.id
-         * @const {Object} category
-         */
-        const category = await categoryService.getCategoryById(req.params.categoryId);
-
-        /**
-         * @description Devolver la categoría
-         * @response {Object} category
-         */
-        res.status(200).json(category);
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {String} error.message
-         */
-        res.status(500).json({ message: 'Error al obtener la categoría' });
-    }
-};
-
-/**
- * @description Actualizar una categoría por ID
- * @param {Object} req
- * @param {Object} res
- */
-const updateCategoryById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para actualizar una categoría' });
-    }
-
-    /**
-     * @description Actualizar una categoría por ID 
-     */
-    try {
-
-        /**
-         * @description Obtener categoryId del body
-         * @const {String} categoryId
-         */
-        const { categoryId } = req.params.categoryId;
-
-        /**
-         * @description Obtener los datos a actualizar
-         * @const {Object} updateData
-         */
-        const { ...updateData } = req.body; // los datos a actualizar
-
-        /**
-         * @description Verificar si categoryId existe
-         */
-        if (!categoryId) {
-            return res.status(400).json({ message: 'Se requiere ID de categoría' });
-        }
-
-        /**
-         * @description Actualizar una categoría por ID 
-         * @param {String} req.params.id
-         * @param {Object} req.body
-         * @const {Object} updatedCategory
-         */
-        const updatedCategory = await categoryService.updateCategoryById(categoryId, updateData);
-
-        /**
-         * @description Devolver la categoría actualizada
-         * @response {Object} updatedCategory
-         */
-        res.status(200).json(updatedCategory);
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {String} error.message
-         */
-        res.status(500).json({ message: 'Error al actualizar la categoría' });
-    }
-};
-
-/**
- * @description Eliminar una categoría por ID
- * @param {Object} req
- * @param {Object} res
- */
-const deleteCategoryById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para eliminar una categoría' });
-    }
-
-    /**
-     * @description Eliminar una categoría por ID
-     */
-    try {
-
-        /**
-         * @description Eliminar una categoría por ID
-         * @param {String} req.params.categoryId
-         * @const {<Promise>object} deletedCategory
-         */
-        const deletedCategory = await categoryService.deleteCategoryById(req.params.categoryId);
-
-        /**
-         * @description Verificar si la categoría existe
-         */
-        if (!deletedCategory) {
-            return res.status(404).json({ message: 'Categoría no encontrada' });
-        }
-
-        /**
-         * @description Devolver la categoría eliminada
-         * @response {String} message
-         */
-        res.status(200).json({ message: 'Categoría eliminada correctamente' });
-    } catch (error) {
-
-        /**
-         * @description Devolver el error
-         * @response {String} error.message
-         */
-        res.status(500).json({ message: 'Error al eliminar la categoría' });
-    }
-};
-
-module.exports = { 
-
+export default {
     //ADMIN CONTROLLERS 
     createCategory, 
     updateCategoryById_CurrentAdmin, 
@@ -497,9 +318,5 @@ module.exports = {
 
     //DEVELOPER CONTROLLERS
 
-    getCategoriesByRestaurantId, 
     getAllCategories, 
-    getCategoryById, 
-    updateCategoryById,
-    deleteCategoryById
 }; 

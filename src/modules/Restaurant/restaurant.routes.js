@@ -1,8 +1,8 @@
-const express = require('express'); // Importar express
+import express from 'express'; // Importar express
 const router = express.Router(); // Crear un router
 
-const restaurantController = require('./restaurant.controller'); // Importar el controlador
-const authMiddleware = require('../Auth/auth.middleware'); // Importar el middleware
+import restaurantController from './restaurant.controller.js'; // Importar el controlador
+import authMiddleware from '../Auth/auth.middleware.js'; // Importar el middleware
 
 
 //ADMIN ROUTES
@@ -37,19 +37,4 @@ router.delete('/myRestaurant', authMiddleware.verifyTokenMiddleware, restaurantC
  */
 router.get('/', authMiddleware.verifyTokenMiddleware, restaurantController.getAllRestaurants); //req.body.query.page, req.body.query.limit
 
-/**
- * @description Ruta para obtener un restaurante por ID
- */
-router.get('/:restaurantId', authMiddleware.verifyTokenMiddleware, restaurantController.getRestaurantById); //req.params.restaurantId
-
-/**
- * @description Ruta para actualizar un restaurante por ID
- */
-router.put('/:restaurantId', authMiddleware.verifyTokenMiddleware, restaurantController.updateRestaurantById); //req.params.restaurantId, req.body
-
-/**
- * @description Ruta para eliminar un restaurante por ID
- */
-router.delete('/:restaurantId', authMiddleware.verifyTokenMiddleware, restaurantController.deleteRestaurantById); //req.params.restaurantId
-
-module.exports = router;
+export default router;

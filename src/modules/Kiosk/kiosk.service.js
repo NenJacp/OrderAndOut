@@ -1,4 +1,4 @@
-const Kiosk = require('./kiosk.model'); // Importar el modelo de kiosko
+import Kiosk from './kiosk.model.js'; // Importar el modelo de kiosko
 
 /**
 * @description Crear un nuevo kiosko
@@ -58,7 +58,7 @@ const getKiosksByRestaurantId = async (restaurantId) => {
 };
 
 /**
-* @description Actualizar un kiosko por I   D
+* @description Actualizar un kiosko por ID
 * @param {Object} id - ID del kiosko
 * @param {Object} kioskData - Datos del kiosko
 * @const {Promise<Object>} updateKioskById actualiza el kiosko por ID
@@ -87,7 +87,7 @@ const deleteKioskById = async (id) => {
 /**
  * @description Exportar las funciones del servicio
  */
-module.exports = {
+export default{
     createKiosk,
     getAllKiosk,
     getKioskById,

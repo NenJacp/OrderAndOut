@@ -1,35 +1,36 @@
-const express = require('express');
-const connectDB = require('./src/config/mongoDB'); // Importar la conexión a MongoDB
-const adminRouter = require('./src/modules/Admin/admin.routes'); // Importar las rutas de administradores
-const restaurantRouter = require('./src/modules/Restaurant/restaurant.routes'); // Importar las rutas de restaurantes
-const kioskRouter = require('./src/modules/Kiosk/kiosk.routes'); // Importar las rutas de kioskos
-const orderRouter = require('./src/modules/Order/order.routes'); // Importar las rutas de órdenes
-const productRouter = require('./src/modules/Product/product.routes'); // Importar las rutas de productos
-const categoriesRouter = require('./src/modules/Category/category.routes'); // Importar las rutas de categorías
-const app = express();
-const cleanupJob = require('./src/config/cleanup');
-const cors = require('cors');
+import express from 'express';
+import connectDB from './src/config/mongoDB.js'; // Importar la conexión a MongoDB
+import adminRouter from './src/modules/Admin/admin.routes.js'; // Importar las rutas de administradores
+import restaurantRouter from './src/modules/Restaurant/restaurant.routes.js'; // Importar las rutas de restaurantes
+import kioskRouter from './src/modules/Kiosk/kiosk.routes.js'; // Importar las rutas de kioskos
+import orderRouter from './src/modules/Order/order.routes.js'; // Importar las rutas de órdenes
+import productRouter from './src/modules/Product/product.routes.js'; // Importar las rutas de productos
+import categoriesRouter from './src/modules/Category/category.routes.js'; // Importar las rutas de categorías
+import cleanupJob from './src/config/cleanup.js';
+import cors from 'cors';
 
 // Conexion a la base de datos
 connectDB();
 
+const app = express(); // Crear una instancia de la aplicación Express
+
 // Middleware para parsear el cuerpo de las solicitudes JSON
-app.use(express.json()); 
+app.use(express.json()); // Usar la instancia de la aplicación
 
 // Configurar CORS ( Acceso a la API desde cualquier origen)
-app.use(cors({
+app.use(cors({ // Usar la instancia de la aplicación
   origin: '*', // Permitir cualquier origen
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'] // Headers permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'] // Headers permitidos 
 }));
 
 // Rutas
-app.use('/api/admins', adminRouter); // Usar las rutas de administradores
-app.use('/api/restaurants', restaurantRouter); // Usar las rutas de restaurantes
-app.use('/api/kiosks', kioskRouter); // Usar las rutas de kioskos
-app.use('/api/orders', orderRouter); // Usar las rutas de órdenes
-app.use('/api/products', productRouter); // Usar las rutas de productos
-app.use('/api/categories', categoriesRouter); // Usar las rutas de categorías
+app.use('/api/admins', adminRouter); // Usar la instancia de la aplicación
+app.use('/api/restaurants', restaurantRouter); // Usar la instancia de la aplicación
+app.use('/api/kiosks', kioskRouter); // Usar la instancia de la aplicación
+app.use('/api/orders', orderRouter); // Usar la instancia de la aplicación
+app.use('/api/products', productRouter); // Usar la instancia de la aplicación
+app.use('/api/categories', categoriesRouter); // Usar la instancia de la aplicación
 
 // Iniciar limpieza automática
 //cleanupJob();

@@ -1,4 +1,4 @@
-const Admin = require('./admin.model'); // Importar el modelo de administrador
+import Admin from './admin.model.js'; // Importar el modelo de administrador
 
 /**
  * @description Crear un nuevo administrador
@@ -147,7 +147,7 @@ const findAdminForReset = async (email, code) => {
 /**
  * @description Exportar las funciones para su uso en otros módulos
  */ 
-module.exports = {
+export default {
     createAdmin,
     getAdminByEmail,
     getAllAdmins,

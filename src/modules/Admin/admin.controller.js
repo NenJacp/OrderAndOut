@@ -1,6 +1,6 @@
-const adminService = require('./admin.service');
-const authService = require('../Auth/auth.service');
-const emailService = require('../Auth/email.service');
+import adminService from './admin.service.js';
+import authService from '../Auth/auth.service.js';
+import emailService from '../Auth/email.service.js';
 
 /**
  * @description Inicia el registro de un administrador en donde se le pasan los datos del administrador y se le envia un codigo de verificacion al correo
@@ -14,7 +14,7 @@ const startRegistration = async (req, res) => {
             const conflictField = existingVerified.email === email ? 'correo' : 'teléfono';
             return res.status(400).json({ message: `El ${conflictField} ya está registrado y verificado` });
         }
-        const verificationCode = authService.generateCode();
+        const verificationCode = authService.generateAdminCode();
         const hashedPassword = await authService.hasher(password);
         const newAdmin = await adminService.createAdmin({
             firstName,
@@ -97,7 +97,7 @@ const requestPasswordReset = async (req, res) => {
         if (!admin) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
-        const resetCode = authService.generateCode();
+        const resetCode = authService.generateAdminCode();
         await adminService.updateAdminById(admin._id, {
             resetPasswordCode: resetCode,
             resetPasswordExpires: Date.now() + 600000
@@ -165,91 +165,16 @@ const updateCurrentAdmin = async (req, res) => {
     }
 }
 
-
-//DEVELOPER CONTROLLERS
-
-
-/**
- * @description Obtiene todos los administradores
- */
 const getAllAdmins = async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query; 
-        const admins = await adminService.getAllAdmins(page, limit);
+        const admins =  await adminService.getAllAdmins();
         res.status(200).json(admins);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al obtener administradores' + error.message });
-    }
-};
-
-/**
- * @description Obtiene un administrador por ID
- */
-const getAdminById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para acceder a esta ruta' });
-    }
-
-    try {
-        const admin = await adminService.getAdminById(req.params.id);
-        if (!admin) {
-            return res.status(404).json({ message: 'Administrador no encontrado' + error.message });
-        }
-        res.status(200).json(admin);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al obtener el administrador' + error.message });
+    } catch {
+        res.status(500).json({ message: 'Error al obtener los admins'})
     }
 }
 
-/**
- * @description Actualiza un administrador por ID
- */
-const updateAdminById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para acceder a esta ruta' });
-    }
-
-    if (req.body.password) {
-        req.body.password = await authService.hasher(req.body.password)
-    }
-
-    try {
-        const updatedAdmin = await adminService.updateAdminById(req.params.id, req.body);
-        if (!updatedAdmin) {
-            return res.status(404).json({ message: 'Administrador no encontrado' + error.message });
-        }
-        res.status(200).json(updatedAdmin);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar el administrador' + error.message });
-    }
-}
-
-/**
- * @description Elimina un administrador por ID
- */
-const deleteAdminById = async (req, res) => {
-
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para acceder a esta ruta' });
-    }
-
-    try {
-        const deletedAdmin = await adminService.deleteAdminById(req.params.id);
-        if (!deletedAdmin) {
-            return res.status(404).json({ message: `Administrador con ID ${req.params.id} no encontrado` });
-        }
-        res.status(204).send();
-    } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar el administrador: ' + error.message });
-    }
-}
-
-module.exports = {
-
-    //ADMIN CONTROLLERS
-
+export default{
     startRegistration,
     verifyAndActivate,
     loginAdmin,
@@ -258,10 +183,5 @@ module.exports = {
     getCurrentAdmin,
     updateCurrentAdmin,
     
-    //DEVELOPER CONTROLLERS
-
     getAllAdmins,
-    getAdminById,
-    updateAdminById,
-    deleteAdminById,
 };

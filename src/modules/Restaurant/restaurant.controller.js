@@ -1,7 +1,6 @@
-const adminService = require('../Admin/admin.service'); 
-const authService = require('../Auth/auth.service'); 
-const categoryService = require('../Category/category.service'); 
-const restaurantService = require('./restaurant.service'); 
+import adminService from '../Admin/admin.service.js'; 
+import authService from '../Auth/auth.service.js'; 
+import restaurantService from './restaurant.service.js'; 
 
 //ADMIN CONTROLLERS
 
@@ -177,10 +176,7 @@ const deleteRestaurant_CurrentAdmin = async (req, res) => {
  */ 
 const getAllRestaurants = async (req, res) => {
 
-    //Si el usuario no es desarrollador, no puede obtener los restaurantes
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para obtener los restaurantes, solo los desarrolladores pueden hacerlo' });
-    }
+    
 
     //Intentar obtener todos los restaurantes   
     try {
@@ -198,96 +194,7 @@ const getAllRestaurants = async (req, res) => {
     }
 };
 
-const getRestaurantById = async (req, res) => {
-    const { restaurantId } = req.params.restaurantId; 
-
-    //Si el usuario no es desarrollador, no puede obtener el restaurante
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para obtener el restaurante, solo los desarrolladores pueden hacerlo' });
-    }
-
-    //Intentar obtener el restaurante
-    try {
-
-        //Obtener el restaurante
-        const restaurant = await restaurantService.getRestaurantById(restaurantId);
-        if (!restaurant) {
-            return res.status(404).json({ message: 'Restaurante no encontrado' });
-        }
-        
-        /**
-         * @description Obtener las categorias del restaurante
-         * @const {Object} categories - Categorias del restaurante
-         */
-        const categories = await categoryService.getCategoriesByRestaurant(restaurant._id);
-
-        /**
-         * @description Obtener el restaurante con las categorias
-         * @const {Object} restaurantWithCategories - Restaurante con las categorias
-         */
-        const restaurantWithCategories = { ...restaurant._doc, categories };
-
-        //Devolver el restaurante con las categorias
-        res.status(200).json(restaurantWithCategories);
-    } catch (error) {
-
-        //Si ocurre un error, devolver un error 500
-        res.status(500).json({ message: 'Error al obtener el restaurante' });
-    }
-};
-
-/**
- * @description Actualizar un restaurante por ID
- */
-const updateRestaurantById = async (req, res) => {
-
-    //Si el usuario no es desarrollador, no puede actualizar el restaurante
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para actualizar el restaurante, solo los desarrolladores pueden hacerlo' });
-    }
-
-    //Intentar actualizar el restaurante
-    try {
-        const updatedRestaurant = await restaurantService.updateRestaurantById(req.params.restaurantId, req.body);
-        if (!updatedRestaurant) {
-            return res.status(404).json({ message: 'Restaurante no encontrado' });
-        }
-
-        res.status(200).json(updatedRestaurant);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar el restaurante' });
-    }
-}
-
-const deleteRestaurantById = async (req, res) => {
-
-    //Si el usuario no es desarrollador, no puede eliminar el restaurante
-    if (req.user.type !== 'developer') {
-        return res.status(403).json({ message: 'No tienes permisos para eliminar el restaurante, solo los desarrolladores pueden hacerlo' });
-    }
-
-    //Intentar eliminar el restaurante  
-    try {
-
-        //Eliminar el restaurante
-        const deletedRestaurant = await restaurantService.deleteRestaurantById(req.params.restaurantId);
-
-        //Si el restaurante no se encuentra, devolver un error 404
-        if (!deletedRestaurant) {
-            return res.status(404).json({ message: 'Restaurante no encontrado' });
-        }
-
-        //Devolver un mensaje de confirmacion
-        res.status(204).send({ message: 'Restaurante eliminado correctamente' });
-    } catch (error) {
-
-        //Si ocurre un error, devolver un error 500
-        res.status(500).json({ message: 'Error al eliminar el restaurante' });
-    }
-}
-
-module.exports = {
-
+export default {
     //ADMIN CONTROLLERS
 
     createRestaurant_CurrentAdmin,
@@ -297,8 +204,5 @@ module.exports = {
 
     //DEVELOPER CONTROLLERS
 
-    getAllRestaurants,
-    getRestaurantById,
-    updateRestaurantById,
-    deleteRestaurantById,
+    getAllRestaurants
 };
