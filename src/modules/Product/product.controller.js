@@ -142,6 +142,22 @@ const getProductsByRestaurantId = async (req, res) => {
     }
 };
 
+// Nueva función para obtener productos por categoría
+const getProductsByCategory = async (req, res) => {
+    const categoryId = req.params.categoryId;
+    
+    if (!categoryId) {
+        return res.status(400).json({ message: 'Se requiere ID de categoría' });
+    }
+
+    try {
+        const products = await productService.getProductsByCategory(categoryId);
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 ////////////////////////////////////////////////////////////
 //                     UPDATE SECTION                      ///
 ////////////////////////////////////////////////////////////
@@ -215,4 +231,5 @@ module.exports = {
     getProductsByRestaurantId,
     updateProductById_JWT,
     deleteProductById_JWT,
+    getProductsByCategory,
 };

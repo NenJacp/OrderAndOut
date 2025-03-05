@@ -21,4 +21,7 @@ router.get('/available', authMiddleware.verifyTokenMiddleware, (req, res) => {
     productController.getProductsByRestaurantId(req, res);
 });
 
+// Nueva ruta para buscar productos por categoría
+router.get('/:categoryId', authMiddleware.verifyTokenMiddleware, productController.getProductsByCategory);
+
 module.exports = router;

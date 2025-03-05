@@ -43,6 +43,17 @@ const getProductsByRestaurantId = async (restaurantId) => {
 };
 
 /**
+ * @description Función para obtener productos por categoría
+ * @param {String} categoryId
+ * @returns {Promise<Object>}
+ */
+const getProductsByCategory = async (categoryId) => {
+    return await Product.find({ category: categoryId })
+                       .sort({ creationDate: -1 })
+                       .select('-__v');
+};
+
+/**
  * @description Función para actualizar un producto
  * @param {String} id
  * @param {Object} productData
@@ -75,4 +86,5 @@ module.exports = {
     getProductsByRestaurantId,
     updateProduct,
     deleteProduct,
+    getProductsByCategory,
 };
