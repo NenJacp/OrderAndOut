@@ -228,13 +228,13 @@ const getAllProducts = async (req, res) => {
  */
 const getProductsByCategory_CurrentUser = async (req, res) => {
     try {
-        const { categoryId } = req.params; // Obtener categoryId de los parámetros
+        const categoryId = req.params.categoryId; // Obtener categoryId de los parámetros
 
         if (!categoryId) {
             return res.status(400).json({ message: 'Se requiere ID de categoría' });
         }
 
-        const products = await productService.getProductsByCategory(categoryId);
+        const products = await productService.getProductsByCategoryId(categoryId);
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener productos por categoría', error: error.message });

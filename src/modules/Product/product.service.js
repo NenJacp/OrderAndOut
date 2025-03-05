@@ -47,7 +47,7 @@ const getProductsByRestaurantId = async (restaurantId) => {
  * @param {String} categoryId
  * @returns {Promise<Object>}
  */
-const getProductsByCategory = async (categoryId) => {
+const getProductsByCategoryId = async (categoryId) => {
     return await Product.find({ category: categoryId }); // Obtener productos por categoría
 };
 
@@ -82,7 +82,7 @@ export default {
     getAllProducts,
     getProductById,
     getProductsByRestaurantId,
-    getProductsByCategory,
+    getProductsByCategoryId,
     updateProduct,
     deleteProduct,
 };
