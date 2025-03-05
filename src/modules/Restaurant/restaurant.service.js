@@ -7,6 +7,7 @@ import Restaurant from './restaurant.model.js'; // Importar el modelo de restaur
  */
 const createRestaurant = async (restaurantData) => {
     const newRestaurant = new Restaurant(restaurantData); // Crear un nuevo objeto de restaurante con los datos proporcionados
+    console.log(newRestaurant);
     return await newRestaurant.save(); // Guardar el nuevo restaurante en la base de datos y devolver el resultado
 };
 

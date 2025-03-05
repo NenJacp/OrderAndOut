@@ -223,7 +223,7 @@ const createKiosk = async (req, res) => {
      * @description Obtener la contraseña del kiosko
      * @const {string} password
      */
-    const { name, password } = req.body;
+    const { name, password, description } = req.body;
     /**
      * @description Verificar si el usuario es administrador
      */
@@ -240,7 +240,7 @@ const createKiosk = async (req, res) => {
      * @description Crear un nuevo kiosko
      */
     try {
-        console.log("try");
+        
         /**
          * @description Hashear la contraseña
          * @param {string} password
@@ -253,11 +253,14 @@ const createKiosk = async (req, res) => {
          * @param {string} restaurantId
          * @const {object} newKiosk
          */
-        const newKiosk = await kioskService.createKioskById({
+        console.log("antes de crear");
+        const newKiosk = await kioskService.createKiosk({
             name,
             password: hashedPassword,
+            description,
             restaurantId: req.user.restaurant
         });
+        console.log('Despues de crear');
         /**
          * @description Devolver el kiosko creado
          * @response {object} newKiosk

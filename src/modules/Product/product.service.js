@@ -37,6 +37,7 @@ const getProductById = async (productId) => {
  * @returns {Promise<Object>}
  */
 const getProductsByRestaurantId = async (restaurantId) => {
+    
     return await Product.find({ restaurantId })
                        .sort({ creationDate: -1 })
                        .select('-__v');

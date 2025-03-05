@@ -9,9 +9,7 @@ import restaurantService from './restaurant.service.js';
  */
 const createRestaurant_CurrentAdmin = async (req, res) => {
     try {
-
-        //Extraer los datos del body de la solicitud, ...rest es para campos que no son requeridos y que pueden ser opcionales en la creacion del restaurante
-        const { name, image, location, ...rest } = req.body;
+        const restaurantData = req.body; // Obtener los datos del restaurante del cuerpo de la solicitud
 
         //Si el usuario no es administrador, no puede crear un restaurante
         if (req.user.type !== 'admin') {
@@ -24,22 +22,24 @@ const createRestaurant_CurrentAdmin = async (req, res) => {
         }
 
         //Si alguno de los campos requeridos no esta presente, devolver un error 400
-        if (!name || !image || !location?.country || !location?.city || !location?.address?.street || !location?.address?.number || !location?.address?.crossStreets || !location?.address?.colony || !location?.address?.references || !location?.postalCode) {
+        if (!restaurantData.name || !restaurantData.image || !restaurantData.location?.country || !restaurantData.location?.city || !restaurantData.location?.address?.street || !restaurantData.location?.address?.number || !restaurantData.location?.address?.crossStreets || !restaurantData.location?.address?.colony || !restaurantData.location?.address?.references || !restaurantData.location?.postalCode) {
             return res.status(400).json({ message: 'Todos los campos son requeridos' });            
         }
+
+        restaurantData.adminId = req.user.id;
 
         /**
          * @description Crear un nuevo restaurante con los datos del body
          * @const {Object} newRestaurant - Nuevo restaurante creado
          */
-        const newRestaurant = await restaurantService.createRestaurant({name, image, location, adminId: req.user._id, ...rest});
-
+        const newRestaurant = await restaurantService.createRestaurant(restaurantData);
+        
         /**
          * @description Actualizar el administrador con el id del nuevo restaurante
          * @const {Object} updatedAdmin - Administrador actualizado
          */
         const updatedAdmin = await adminService.updateAdminById(req.user.id, { restaurant: newRestaurant._id });
-
+        
         //Si el administrador no se encuentra, eliminar el restaurante y devolver un error 404
         if (!updatedAdmin) {
             await restaurantService.deleteRestaurantById(newRestaurant._id);            
@@ -58,9 +58,8 @@ const createRestaurant_CurrentAdmin = async (req, res) => {
         res.status(201).json({ token, restaurant: newRestaurant });
 
     } catch (error) {
-
-        //Si ocurre un error, devolver un error 500
-        res.status(500).json({ message: 'Error al crear el restaurante' });
+        console.error('Error al crear el restaurante:', error.message); // Registrar el error
+        res.status(500).json({ message: 'Error al crear el restaurante', error: error.message }); // Devolver un mensaje de error
     }
 }
 

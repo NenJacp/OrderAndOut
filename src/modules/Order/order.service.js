@@ -6,7 +6,7 @@ const createOrder = async (orderData) => {
     try {
         return await newOrder.save(); // Guardar en la base de datos
     } catch (error) {
-        throw new Error("Error al crear la orden");
+        throw new Error("Error al crear la orden: " + error.message);
     }
 };
 

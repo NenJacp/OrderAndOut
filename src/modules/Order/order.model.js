@@ -16,11 +16,23 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
                 required: true,
             },
+            costPrice: {
+                type: Number,
+                require: true
+            },
+            salePrice: {
+                type: Number,
+                require: true
+            }
         },
     ],
-    totalPrice: {
+    totalCost: {
         type: Number,
-        required: true,
+        required: true
+    },
+    totalSale: {
+        type: Number,
+        required: true
     },
     status: {
         type: String,
@@ -45,14 +57,15 @@ const orderSchema = new mongoose.Schema({
         ref: 'Restaurant', // Referencia al modelo Restaurant
         required: true,
     },
-    paymentMethod: { // Método de pago
-        type: String,
-        enum: ['tarjeta', 'efectivo'], // Métodos de pago permitidos
-        required: true,
+    paymentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Payment', // Referencia al modelo Payment
+        required: false,
     },
-    paymentStatus: { // Estado de pago
+    paymentMethod: {
         type: String,
-        default: 'pendiente', // Estado por defecto
+        require: true,
+        enum: ["efectivo", "tarjeta"]
     },
     currency: {
         type: String,

@@ -53,7 +53,7 @@ const createProduct = async (req, res) => {
         }
 
         // Crear nuevo producto
-        const nuevoProducto = await productService.createProductByRestaurantId({
+        const nuevoProducto = await productService.createProduct({
             name,
             description: description || '',
             image,
@@ -189,13 +189,14 @@ const getProductById_CurrentUser = async (req, res) => {
  * @param {*} res 
  */
 const getProductsByRestaurant_CurrentUser = async (req, res) => {
-
+    
     try {
         if (req.user.restaurant === 'Empty') {
             return res.status(400).json({ message: 'Primero debes crear un restaurante' });
         }
         
         const products = await productService.getProductsByRestaurantId(req.user.restaurant);
+        
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -123,7 +123,7 @@ const deleteCategoryById_CurrentAdmin = async (req, res) => {
         /**
          * @description Eliminar una categoría por JWT
          */
-        const { categoryId } = req.params.categoryId;
+        const categoryId = req.params.categoryId;
 
         /**
          * @description Verificar si categoryId existe

@@ -6,7 +6,7 @@ import Kiosk from './kiosk.model.js'; // Importar el modelo de kiosko
 * @const {Promise<Object>} createKiosk guarda el kiosko en la base de datos
 */
 const createKiosk = async (kioskData) => {
-
+    
     // Intentar crear un nuevo kiosko
     try {
 
@@ -14,7 +14,7 @@ const createKiosk = async (kioskData) => {
          * @description Crear un nuevo kiosko
          */
         const newKiosk = new Kiosk(kioskData);
-
+        console.log(newKiosk);
         /**
          * @description Guardar el nuevo kiosko en la base de datos
          * @returns {Promise<Object>} devuelve el kiosko creado
