@@ -24,7 +24,7 @@ const getOrderById = async (id) => {
     }
 };
 
-// Nueva función para obtener órdenes por ID de restaurante
+// Función para obtener todas las órdenes de un restaurante específico
 const getOrdersByRestaurantId = async (restaurantId) => {
     return await Order.find({ restaurantId }); // Obtener órdenes filtradas por restaurantId
 };
@@ -42,28 +42,29 @@ const deleteOrderById = async (id) => {
     return await Order.findByIdAndDelete(id); // Eliminar la orden por ID
 };
 
-// Nueva función para obtener el total de órdenes en un rango de fechas
-const getTotalOrdersByDateRange = async (startDate, endDate) => {
+// Nueva función para obtener el total de órdenes en un rango de fechas usando solo startDate para un restaurante específico
+const getTotalOrdersByStartDateAndRestaurantId = async (startDate, restaurantId) => {
     try {
-        // Ajustar endDate al final del día
-        const adjustedEndDate = new Date(endDate);
-        adjustedEndDate.setHours(23, 59, 59, 999); // Establecer a 23:59:59.999
+        // Ajustar endDate al final del día actual
+        const endDate = new Date(); // Fecha actual
+        endDate.setHours(23, 59, 59, 999); // Establecer a 23:59:59.999
 
         return await Order.countDocuments({
             createdAt: {
                 $gte: new Date(startDate), // Fecha de inicio
-                $lte: adjustedEndDate // Fecha de fin ajustada
-            }
+                $lte: endDate // Fecha de fin ajustada
+            },
+            restaurantId // Filtrar por restaurantId
         });
     } catch (error) {
         throw new Error("Error al obtener el total de órdenes: " + error.message);
     }
 };
 
-// Nueva función para obtener el totalCost de todas las órdenes
-const getTotalCost = async () => {
+// Nueva función para obtener el totalCost de las órdenes de un restaurante específico
+const getTotalCostByRestaurantId = async (restaurantId) => {
     try {
-        const orders = await Order.find(); // Obtener todas las órdenes
+        const orders = await getOrdersByRestaurantId(restaurantId); // Obtener órdenes del restaurante
         const totalCost = orders.reduce((total, order) => total + order.totalCost, 0); // Sumar totalCost de cada orden
         return totalCost;
     } catch (error) {
@@ -71,9 +72,10 @@ const getTotalCost = async () => {
     }
 };
 
-const getTotalSale = async () => {
+// Nueva función para obtener el totalSale de las órdenes de un restaurante específico
+const getTotalSaleByRestaurantId = async (restaurantId) => {
     try {
-        const orders = await Order.find(); // Obtener todas las órdenes
+        const orders = await getOrdersByRestaurantId(restaurantId); // Obtener órdenes del restaurante
         const totalSale = orders.reduce((total, order) => total + order.totalSale, 0); // Sumar totalSale de cada orden
         return totalSale;
     } catch (error) {
@@ -81,10 +83,65 @@ const getTotalSale = async () => {
     }
 };
 
-const getTotalGains = async () => {
+// Nueva función para obtener el totalGains de las órdenes de un restaurante específico
+const getTotalGainsByRestaurantId = async (restaurantId) => {
     try {
-        const totalCost = await getTotalCost(); // Obtener el totalCost
-        const totalSale = await getTotalSale(); // Obtener el totalSale
+        const totalCost = await getTotalCostByRestaurantId(restaurantId); // Obtener el totalCost
+        const totalSale = await getTotalSaleByRestaurantId(restaurantId); // Obtener el totalSale
+        const totalGains = totalSale - totalCost; // Calcular las ganancias
+        return {
+            totalCost,
+            totalSale,
+            totalGains
+        };
+    } catch (error) {
+        throw new Error("Error al obtener el totalGains: " + error.message);
+    }
+};
+
+// Nueva función para obtener el totalCost en un rango de fechas para un restaurante específico
+const getTotalCostByDateRangeAndRestaurantId = async (startDate, restaurantId) => {
+    try {
+        const orders = await Order.find({
+            createdAt: {
+                $gte: new Date(startDate), // Fecha de inicio
+                $lte: new Date() // Hasta hoy
+            },
+            restaurantId // Filtrar por restaurantId
+        }); // Obtener órdenes en el rango de fechas
+        const totalCost = orders.reduce((total, order) => total + order.totalCost, 0); // Sumar totalCost de cada orden
+        return totalCost;
+    } catch (error) {
+        throw new Error("Error al obtener el totalCost: " + error.message);
+    }
+};
+
+// Nueva función para obtener el totalSale en un rango de fechas para un restaurante específico
+const getTotalSaleByDateRangeAndRestaurantId = async (startDate, restaurantId) => {
+    try {
+        const orders = await Order.find({
+            createdAt: {
+                $gte: new Date(startDate), // Fecha de inicio
+                $lte: new Date() // Hasta hoy
+            },
+            restaurantId // Filtrar por restaurantId
+        }); // Obtener órdenes en el rango de fechas
+        const totalSale = orders.reduce((total, order) => total + order.totalSale, 0); // Sumar totalSale de cada orden
+        return totalSale;
+    } catch (error) {
+        throw new Error("Error al obtener el totalSale: " + error.message);
+    }
+};
+
+// Nueva función para obtener el totalGains en un rango de fechas para un restaurante específico
+const getTotalGainsByDateRangeAndRestaurantId = async (startDate, restaurantId) => {
+    try {
+        // Ajustar endDate al final del día actual
+        const endDate = new Date(); // Fecha actual
+        endDate.setHours(23, 59, 59, 999); // Establecer a 23:59:59.999
+
+        const totalCost = await getTotalCostByDateRangeAndRestaurantId(startDate, restaurantId); // Obtener el totalCost
+        const totalSale = await getTotalSaleByDateRangeAndRestaurantId(startDate, restaurantId); // Obtener el totalSale
         const totalGains = totalSale - totalCost; // Calcular las ganancias
         return {
             totalCost,
@@ -103,8 +160,11 @@ export default {
     getOrdersByRestaurantId, // Exportar la función para obtener órdenes por ID de restaurante
     updateOrderById, // Exportar la función para actualizar una orden
     deleteOrderById, // Exportar la función para eliminar una orden
-    getTotalOrdersByDateRange, // Exportar la nueva función
-    getTotalCost, // Exportar la nueva función
-    getTotalSale,
-    getTotalGains,
+    getTotalOrdersByStartDateAndRestaurantId, // Exportar la nueva función
+    getTotalCostByRestaurantId, // Exportar la nueva función
+    getTotalSaleByRestaurantId, // Exportar la nueva función
+    getTotalGainsByRestaurantId, // Exportar la nueva función
+    getTotalCostByDateRangeAndRestaurantId, // Exportar la nueva función
+    getTotalSaleByDateRangeAndRestaurantId, // Exportar la nueva función
+    getTotalGainsByDateRangeAndRestaurantId, // Exportar la nueva función
 };

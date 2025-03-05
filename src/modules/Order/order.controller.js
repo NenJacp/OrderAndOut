@@ -284,24 +284,25 @@ async function getAllOrders(req, res) {
 }
 
 /**
- * @description Función para obtener el total de órdenes en un rango de fechas
+ * @description Función para obtener el total de órdenes desde una fecha específica para el restaurante del usuario actual
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getTotalOrdersByDateRange(req, res) {
+async function getTotalOrdersByStartDate(req, res) {
+    const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
 
     if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+        return res.status(403).send('Solo los administradores pueden obtener el total de órdenes.');
     }
-    
-    const { startDate, endDate } = req.query; // Obtener las fechas del query
 
-    if (!startDate || !endDate) {
-        return res.status(400).json({ message: 'Se requieren las fechas de inicio y fin' });
+    const { startDate } = req.query; // Obtener la fecha de inicio del query
+
+    if (!startDate) {
+        return res.status(400).json({ message: 'Se requiere la fecha de inicio' });
     }
 
     try {
-        const totalOrders = await orderService.getTotalOrdersByDateRange(startDate, endDate);
+        const totalOrders = await orderService.getTotalOrdersByStartDateAndRestaurantId(startDate, restaurantId);
         res.status(200).json({ totalOrders });
     } catch (error) {
         console.error('Error al obtener el total de órdenes:', error.message);
@@ -310,18 +311,19 @@ async function getTotalOrdersByDateRange(req, res) {
 }
 
 /**
- * @description Función para obtener el totalCost de todas las órdenes
+ * @description Función para obtener el totalCost de las órdenes del restaurante del usuario actual
  * @param {Object} req 
  * @param {Object} res 
  */
 async function getTotalCost(req, res) {
+    const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
 
     if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+        return res.status(403).send('Solo los administradores pueden obtener el totalCost.');
     }
 
     try {
-        const totalCost = await orderService.getTotalCost(); // Llamar al servicio para obtener el totalCost
+        const totalCost = await orderService.getTotalCostByRestaurantId(restaurantId); // Llamar al servicio para obtener el totalCost
         res.status(200).json({ totalCost }); // Devolver el totalCost
     } catch (error) {
         console.error('Error al obtener el totalCost:', error.message);
@@ -330,18 +332,19 @@ async function getTotalCost(req, res) {
 }
 
 /**
- * @description Función para obtener el totalSale de todas las órdenes
+ * @description Función para obtener el totalSale de las órdenes del restaurante del usuario actual
  * @param {Object} req 
  * @param {Object} res 
  */
 async function getTotalSale(req, res) {
+    const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
 
     if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+        return res.status(403).send('Solo los administradores pueden obtener el totalSale.');
     }
 
     try {
-        const totalSale = await orderService.getTotalSale(); // Llamar al servicio para obtener el totalSale
+        const totalSale = await orderService.getTotalSaleByRestaurantId(restaurantId); // Llamar al servicio para obtener el totalSale
         res.status(200).json({ totalSale }); // Devolver el totalSale
     } catch (error) {
         console.error('Error al obtener el totalSale:', error.message);
@@ -350,18 +353,41 @@ async function getTotalSale(req, res) {
 }
 
 /**
- * @description Función para obtener el totalGains de todas las órdenes
+ * @description Función para obtener el totalGains de las órdenes del restaurante del usuario actual
  * @param {Object} req 
  * @param {Object} res 
  */
 async function getTotalGains(req, res) {
+    const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
 
     if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+        return res.status(403).send('Solo los administradores pueden obtener el totalGains.');
     }
 
     try {
-        const { totalCost, totalSale, totalGains } = await orderService.getTotalGains(); // Llamar al servicio para obtener el totalGains
+        const { totalCost, totalSale, totalGains } = await orderService.getTotalGainsByRestaurantId(restaurantId); // Llamar al servicio para obtener el totalGains
+        res.status(200).json({ totalCost, totalSale, totalGains }); // Devolver el totalCost, totalSale y totalGains
+    } catch (error) {
+        console.error('Error al obtener el totalGains:', error.message);
+        res.status(500).json({ message: 'Error al obtener el totalGains', error: error.message });
+    }
+}
+
+/**
+ * @description Función para obtener el totalGains en un rango de fechas para el restaurante del usuario actual
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+async function getTotalGainsByDateRange(req, res) {
+    const { startDate } = req.query; // Obtener la fecha de inicio del query
+    const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
+
+    if (!startDate) {
+        return res.status(400).json({ message: 'Se requiere la fecha de inicio' });
+    }
+
+    try {
+        const { totalCost, totalSale, totalGains } = await orderService.getTotalGainsByDateRangeAndRestaurantId(startDate, restaurantId); // Llamar al servicio para obtener el totalGains
         res.status(200).json({ totalCost, totalSale, totalGains }); // Devolver el totalCost, totalSale y totalGains
     } catch (error) {
         console.error('Error al obtener el totalGains:', error.message);
@@ -377,8 +403,9 @@ export default {
     deleteOrderById_CurrentAdmin,
 
     getAllOrders,
-    getTotalOrdersByDateRange,
+    getTotalOrdersByStartDate,
     getTotalCost,
     getTotalSale,
     getTotalGains,
+    getTotalGainsByDateRange,
 };
