@@ -12,6 +12,7 @@ router.delete('/myProduct/:productId', authMiddleware.verifyTokenMiddleware, pro
 //KIOSK - ADMIN ROUTES
 router.get('/myProduct/:productId', authMiddleware.verifyTokenMiddleware, productController.getProductById_CurrentUser);
 router.get('/mineProducts', authMiddleware.verifyTokenMiddleware, productController.getProductsByRestaurant_CurrentUser);
+router.get('/products/category/:categoryId', authMiddleware.verifyTokenMiddleware, productController.getProductsByCategory_CurrentUser);
 
 //DEVELOPER ROUTES
 router.get('/', authMiddleware.verifyTokenMiddleware, productController.getAllProducts);

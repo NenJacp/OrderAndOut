@@ -222,6 +222,26 @@ const getAllProducts = async (req, res) => {
 };
 
 /**
+ * @description Obtener productos por categoría
+ * @param {*} req 
+ * @param {*} res 
+ */
+const getProductsByCategory_CurrentUser = async (req, res) => {
+    try {
+        const { categoryId } = req.params; // Obtener categoryId de los parámetros
+
+        if (!categoryId) {
+            return res.status(400).json({ message: 'Se requiere ID de categoría' });
+        }
+
+        const products = await productService.getProductsByCategory(categoryId);
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener productos por categoría', error: error.message });
+    }
+};
+
+/**
  * @description importacion
  */
 export default {
@@ -239,4 +259,5 @@ export default {
     //DEVELOPER CONTROLLERS
 
     getAllProducts,
+    getProductsByCategory_CurrentUser,
 };
