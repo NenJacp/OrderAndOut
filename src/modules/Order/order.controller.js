@@ -283,6 +283,92 @@ async function getAllOrders(req, res) {
     }
 }
 
+/**
+ * @description Función para obtener el total de órdenes en un rango de fechas
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+async function getTotalOrdersByDateRange(req, res) {
+
+    if (req.user.type !== 'admin') {
+        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+    }
+    
+    const { startDate, endDate } = req.query; // Obtener las fechas del query
+
+    if (!startDate || !endDate) {
+        return res.status(400).json({ message: 'Se requieren las fechas de inicio y fin' });
+    }
+
+    try {
+        const totalOrders = await orderService.getTotalOrdersByDateRange(startDate, endDate);
+        res.status(200).json({ totalOrders });
+    } catch (error) {
+        console.error('Error al obtener el total de órdenes:', error.message);
+        res.status(500).json({ message: 'Error al obtener el total de órdenes', error: error.message });
+    }
+}
+
+/**
+ * @description Función para obtener el totalCost de todas las órdenes
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+async function getTotalCost(req, res) {
+
+    if (req.user.type !== 'admin') {
+        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+    }
+
+    try {
+        const totalCost = await orderService.getTotalCost(); // Llamar al servicio para obtener el totalCost
+        res.status(200).json({ totalCost }); // Devolver el totalCost
+    } catch (error) {
+        console.error('Error al obtener el totalCost:', error.message);
+        res.status(500).json({ message: 'Error al obtener el totalCost', error: error.message });
+    }
+}
+
+/**
+ * @description Función para obtener el totalSale de todas las órdenes
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+async function getTotalSale(req, res) {
+
+    if (req.user.type !== 'admin') {
+        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+    }
+
+    try {
+        const totalSale = await orderService.getTotalSale(); // Llamar al servicio para obtener el totalSale
+        res.status(200).json({ totalSale }); // Devolver el totalSale
+    } catch (error) {
+        console.error('Error al obtener el totalSale:', error.message);
+        res.status(500).json({ message: 'Error al obtener el totalSale', error: error.message });
+    }
+}
+
+/**
+ * @description Función para obtener el totalGains de todas las órdenes
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+async function getTotalGains(req, res) {
+
+    if (req.user.type !== 'admin') {
+        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+    }
+
+    try {
+        const { totalCost, totalSale, totalGains } = await orderService.getTotalGains(); // Llamar al servicio para obtener el totalGains
+        res.status(200).json({ totalCost, totalSale, totalGains }); // Devolver el totalCost, totalSale y totalGains
+    } catch (error) {
+        console.error('Error al obtener el totalGains:', error.message);
+        res.status(500).json({ message: 'Error al obtener el totalGains', error: error.message });
+    }
+}
+
 export default {
     createOrder,
     getOrderById_CurrentUser,
@@ -291,4 +377,8 @@ export default {
     deleteOrderById_CurrentAdmin,
 
     getAllOrders,
+    getTotalOrdersByDateRange,
+    getTotalCost,
+    getTotalSale,
+    getTotalGains,
 };
