@@ -6,7 +6,7 @@ import productService from '../Product/product.service.js';
  * @param {Object} req 
  * @param {Object} res 
  */
-async function createOrder(req, res) {
+const createOrder = async (req, res) => {
     
     /**
      * @description Verificación de permisos para crear una orden
@@ -72,7 +72,7 @@ async function createOrder(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getOrderById_CurrentUser(req, res) {
+const getOrderById_CurrentUser = async (req, res) => {
     try {
         // Corregir nombre del campo (orderId en lugar de id)
         const { orderId } = req.params.orderId;
@@ -107,7 +107,7 @@ async function getOrderById_CurrentUser(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getOrdersByRestaurant_CurrentUser(req, res) {
+const getOrdersByRestaurant_CurrentUser = async (req, res) => {
 
     /**
      * @description Obtención de las órdenes por ID de restaurante
@@ -137,7 +137,7 @@ async function getOrdersByRestaurant_CurrentUser(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function updateOrderById_CurrentAdmin(req, res) {
+const updateOrderById_CurrentAdmin = async (req, res) => {
 
     if (req.user.type !== 'admin') {
         return res.status(403).send('Solo los administradores pueden actualizar órdenes.');
@@ -204,7 +204,7 @@ async function updateOrderById_CurrentAdmin(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function deleteOrderById_CurrentAdmin(req, res) {
+const deleteOrderById_CurrentAdmin = async (req, res) => {
 
     /**
      * @description Verificación de permisos para eliminar una orden
@@ -258,7 +258,7 @@ async function deleteOrderById_CurrentAdmin(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getAllOrders(req, res) {
+const getAllOrders = async (req, res) => {
 
     /**
      * @description Obtención de todas las órdenes
@@ -288,7 +288,7 @@ async function getAllOrders(req, res) {
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getTotalOrdersByStartDate(req, res) {
+const getTotalOrdersByStartDate = async (req, res) => {
     const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
 
     if (req.user.type !== 'admin') {
@@ -311,74 +311,11 @@ async function getTotalOrdersByStartDate(req, res) {
 }
 
 /**
- * @description Función para obtener el totalCost de las órdenes del restaurante del usuario actual
- * @param {Object} req 
- * @param {Object} res 
- */
-async function getTotalCost(req, res) {
-    const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
-
-    if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden obtener el totalCost.');
-    }
-
-    try {
-        const totalCost = await orderService.getTotalCostByRestaurantId(restaurantId); // Llamar al servicio para obtener el totalCost
-        res.status(200).json({ totalCost }); // Devolver el totalCost
-    } catch (error) {
-        console.error('Error al obtener el totalCost:', error.message);
-        res.status(500).json({ message: 'Error al obtener el totalCost', error: error.message });
-    }
-}
-
-/**
- * @description Función para obtener el totalSale de las órdenes del restaurante del usuario actual
- * @param {Object} req 
- * @param {Object} res 
- */
-async function getTotalSale(req, res) {
-    const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
-
-    if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden obtener el totalSale.');
-    }
-
-    try {
-        const totalSale = await orderService.getTotalSaleByRestaurantId(restaurantId); // Llamar al servicio para obtener el totalSale
-        res.status(200).json({ totalSale }); // Devolver el totalSale
-    } catch (error) {
-        console.error('Error al obtener el totalSale:', error.message);
-        res.status(500).json({ message: 'Error al obtener el totalSale', error: error.message });
-    }
-}
-
-/**
- * @description Función para obtener el totalGains de las órdenes del restaurante del usuario actual
- * @param {Object} req 
- * @param {Object} res 
- */
-async function getTotalGains(req, res) {
-    const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
-
-    if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden obtener el totalGains.');
-    }
-
-    try {
-        const { totalCost, totalSale, totalGains } = await orderService.getTotalGainsByRestaurantId(restaurantId); // Llamar al servicio para obtener el totalGains
-        res.status(200).json({ totalCost, totalSale, totalGains }); // Devolver el totalCost, totalSale y totalGains
-    } catch (error) {
-        console.error('Error al obtener el totalGains:', error.message);
-        res.status(500).json({ message: 'Error al obtener el totalGains', error: error.message });
-    }
-}
-
-/**
  * @description Función para obtener el totalGains en un rango de fechas para el restaurante del usuario actual
  * @param {Object} req 
  * @param {Object} res 
  */
-async function getTotalGainsByDateRange(req, res) {
+const getTotalGainsByDateRange = async (req, res) => {
     const { startDate } = req.query; // Obtener la fecha de inicio del query
     const restaurantId = req.user.restaurant; // Obtener el restaurantId del usuario actual
 
@@ -404,8 +341,5 @@ export default {
 
     getAllOrders,
     getTotalOrdersByStartDate,
-    getTotalCost,
-    getTotalSale,
-    getTotalGains,
     getTotalGainsByDateRange,
 };
