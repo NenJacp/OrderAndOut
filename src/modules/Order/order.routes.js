@@ -16,9 +16,6 @@ router.delete('/myOrder/:orderId', authMiddleware.verifyTokenMiddleware, orderCo
 router.get('/', authMiddleware.verifyTokenMiddleware, orderController.getAllOrders); // Obtener todas las órdenes
 router.get('/totalOrders', authMiddleware.verifyTokenMiddleware, orderController.getTotalOrdersByStartDate); // Obtener total de órdenes desde una fecha específica
 
-router.get('/totalCost', authMiddleware.verifyTokenMiddleware, orderController.getTotalCost); // Obtener totalCost de las órdenes del restaurante del usuario actual
-router.get('/totalSale', authMiddleware.verifyTokenMiddleware, orderController.getTotalSale); // Obtener totalSale de las órdenes del restaurante del usuario actual
-router.get('/totalGains', authMiddleware.verifyTokenMiddleware, orderController.getTotalGains); // Obtener totalGains de las órdenes del restaurante del usuario actual
 router.get('/totalGainsByDateRange', authMiddleware.verifyTokenMiddleware, orderController.getTotalGainsByDateRange); // Obtener totalGains en un rango de fechas para el restaurante del usuario actual
 
 export default router;
