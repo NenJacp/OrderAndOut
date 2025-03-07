@@ -60,20 +60,9 @@ const restaurantSchema = new mongoose.Schema({
     },
     // Campo para la cuenta de Stripe del restaurante
     stripeAccount: {
-        accountId: {
-            type: String,
-            required: false
-        },
-        detailsSubmitted: {
-            type: Boolean,
-            required: false,
-            default: false
-        },
-        chargesEnabled: {
-            type: Boolean,
-            required: false,
-            default: false
-        }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Stripe',
+        required: false,
     }
 },
 

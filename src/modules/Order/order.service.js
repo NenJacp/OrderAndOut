@@ -8,7 +8,9 @@ import {
     executeTotalOrdersByDateRangeAndRestaurantId, 
     executeTotalCostByDateRangeAndRestaurantId, 
     executeTotalSaleByDateRangeAndRestaurantId, 
-    executeTotalGainsByDateRangeAndRestaurantId 
+    executeTotalGainsByDateRangeAndRestaurantId,
+    executeTop5ProductsByDateRangeAndRestaurantId,
+    executeOrdersByPaymentMethodByDateRangeAndRestaurantId
 } from './orders.services/GET/dashboardData.js'; // Importar casos de uso para dashboard
 
 // Función para crear una nueva orden
@@ -61,6 +63,19 @@ const getTotalGainsByDateRangeAndRestaurantId = async (startDate, endDate, resta
     return await executeTotalGainsByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Usar el caso de uso para obtener el totalGains
 };
 
+// Nueva función para obtener el total de órdenes en un rango de fechas para un restaurante específico
+const getTotalOrdersByStartDateAndRestaurantId = async (startDate, endDate, restaurantId) => {
+    return await executeTotalOrdersByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Llama al servicio correspondiente
+};
+
+const getTop5ProductsByDateRangeAndRestaurantId = async(startDate, endDate, restaurantId) => {
+    return await executeTop5ProductsByDateRangeAndRestaurantId(startDate, endDate, restaurantId);
+}
+
+const getOrdersByPaymentMethodByDateRangeAndRestaurantId = async (startDate, endDate, restaurantId) => {
+    return await executeOrdersByPaymentMethodByDateRangeAndRestaurantId(startDate, endDate, restaurantId);
+};
+
 export default
 {
     createOrder,
@@ -72,5 +87,8 @@ export default
     getTotalOrdersByDateRangeAndRestaurantId,
     getTotalCostByDateRangeAndRestaurantId,
     getTotalSaleByDateRangeAndRestaurantId,
-    getTotalGainsByDateRangeAndRestaurantId
+    getTotalGainsByDateRangeAndRestaurantId,
+    getTotalOrdersByStartDateAndRestaurantId,
+    getTop5ProductsByDateRangeAndRestaurantId,
+    getOrdersByPaymentMethodByDateRangeAndRestaurantId
 }
