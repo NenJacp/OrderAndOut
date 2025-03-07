@@ -1,0 +1,268 @@
+### Admin
+- Clase: Admin
+- Campos:
+  - firstName: 
+    - tipo: String
+    - requerido: true
+    - trim: true
+    - maxlength: 50
+  - lastName: 
+    - tipo: String
+    - requerido: true
+    - trim: true
+  - birthDate: 
+    - tipo: Date
+    - requerido: true
+  - phone: 
+    - tipo: String
+    - requerido: true
+    - unique: true
+  - email: 
+    - tipo: String
+    - requerido: true
+    - unique: true
+  - password: 
+    - tipo: String
+    - requerido: true
+  - restaurant: 
+    - tipo: ObjectId
+    - referencia: Restaurant
+    - por defecto: null
+  - isVerified: 
+    - tipo: Boolean
+    - por defecto: false
+  - verificationCode: 
+    - tipo: String
+    - índice: true
+    - expira en: 3600 segundos
+  - codeExpires: 
+    - tipo: Date
+    - por defecto: null
+  - resetPasswordCode: 
+    - tipo: String
+    - por defecto: null
+  - resetPasswordExpires: 
+    - tipo: Date
+    - por defecto: null
+
+### Order
+- Clase: Order
+- Campos:
+  - numOrder: 
+    - tipo: String
+    - requerido: true
+  - products: 
+    - tipo: Array
+    - requerido: true
+    - productId: 
+      - tipo: ObjectId
+      - referencia: Product
+      - requerido: true
+    - quantity: 
+      - tipo: Number
+      - requerido: true
+    - costPrice: 
+      - tipo: Number
+      - requerido: true
+    - salePrice: 
+      - tipo: Number
+      - requerido: true
+  - totalCost: 
+    - tipo: Number
+    - requerido: true
+  - totalSale: 
+    - tipo: Number
+    - requerido: true
+  - status: 
+    - tipo: String
+    - por defecto: 'pendiente'
+  - notes: 
+    - tipo: String
+    - por defecto: ''
+  - createdById: 
+    - tipo: ObjectId
+    - referencia: User
+    - requerido: true
+  - createdByType: 
+    - tipo: String
+    - requerido: true
+    - enum: ['customer', 'admin', 'cashier', 'kiosk']
+  - restaurantId: 
+    - tipo: ObjectId
+    - referencia: Restaurant
+    - requerido: true
+  - paymentId: 
+    - tipo: ObjectId
+    - referencia: Payment
+    - por defecto: null
+  - paymentMethod: 
+    - tipo: String
+    - requerido: true
+    - enum: ["efectivo", "tarjeta"]
+  - currency: 
+    - tipo: String
+    - por defecto: 'MXN'
+  - orderType: 
+    - tipo: String
+    - por defecto: 'llevar'
+
+### Category
+- Clase: Category
+- Campos:
+  - name: 
+    - tipo: String
+    - requerido: true
+  - description: 
+    - tipo: String
+    - requerido: true
+  - restaurantId: 
+    - tipo: ObjectId
+    - referencia: Restaurant
+    - requerido: true
+
+### Restaurant
+- Clase: Restaurant
+- Campos:
+  - name: 
+    - tipo: String
+    - requerido: true
+  - image: 
+    - tipo: String
+    - requerido: true
+  - location: 
+    - tipo: Object
+    - requerido: true
+    - country: 
+      - tipo: String
+      - requerido: true
+      - por defecto: 'Mexico'
+    - city: 
+      - tipo: String
+      - requerido: true
+    - address: 
+      - tipo: Object
+      - requerido: true
+      - street: 
+        - tipo: String
+        - requerido: true
+      - number: 
+        - tipo: String
+        - requerido: true
+      - crossStreets: 
+        - tipo: String
+        - requerido: true
+      - colony: 
+        - tipo: String
+        - requerido: true
+      - references: 
+        - tipo: String
+        - requerido: true
+    - postalCode: 
+      - tipo: String
+      - requerido: true
+    - coordinates: 
+      - tipo: Object
+      - por defecto: null
+      - lat: 
+        - tipo: Number
+        - por defecto: null
+      - lng: 
+        - tipo: Number
+        - por defecto: null
+  - contact: 
+    - tipo: Object
+    - por defecto: null
+    - phone: 
+      - tipo: String
+      - por defecto: null
+    - email: 
+      - tipo: String
+      - por defecto: null
+    - website: 
+      - tipo: String
+      - por defecto: null
+  - adminId: 
+    - tipo: ObjectId
+    - referencia: Admin
+    - requerido: true
+  - stripeAccount: 
+    - tipo: ObjectId
+    - referencia: Stripe
+    - por defecto: null
+
+### Product
+- Clase: Product
+- Campos:
+  - name: 
+    - tipo: String
+    - requerido: true
+  - description: 
+    - tipo: String
+    - requerido: true
+  - image: 
+    - tipo: String
+    - requerido: true
+  - costPrice: 
+    - tipo: Number
+    - requerido: true
+    - mínimo: 0.01
+  - salePrice: 
+    - tipo: Number
+    - requerido: true
+    - mínimo: 0.01
+    - mayor que: costPrice
+  - currency: 
+    - tipo: String
+    - por defecto: 'MXN'
+  - availability: 
+    - tipo: Boolean
+    - requerido: true
+    - por defecto: true
+  - ingredients: 
+    - tipo: Array
+    - por defecto: []
+  - restaurantId: 
+    - tipo: ObjectId
+    - referencia: Restaurant
+    - requerido: true
+  - category: 
+    - tipo: ObjectId
+    - referencia: Category
+    - requerido: true
+
+### Kiosk
+- Clase: Kiosk
+- Campos:
+  - name: 
+    - tipo: String
+    - requerido: true
+  - password: 
+    - tipo: String
+    - requerido: true
+    - mínimo: 8 caracteres
+  - description: 
+    - tipo: String
+    - requerido: true
+  - restaurantId: 
+    - tipo: ObjectId
+    - referencia: Restaurant
+    - requerido: true
+  - status: 
+    - tipo: String
+    - requerido: true
+    - por defecto: 'activo'
+  - tokenDuration: 
+    - tipo: String
+    - por defecto: '7d'
+  - isConnected: 
+    - tipo: Boolean
+    - por defecto: false
+  - connected_at: 
+    - tipo: Date
+    - por defecto: null
+  - disconnected_at: 
+    - tipo: Date
+    - por defecto: null
+
+
+

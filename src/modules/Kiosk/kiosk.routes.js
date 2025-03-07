@@ -37,6 +37,21 @@ router.post('/myKiosk', authMiddleware.verifyTokenMiddleware, kioskController.cr
  */
 router.get('/mineKiosks', authMiddleware.verifyTokenMiddleware, kioskController.getKiosks_CurrentAdmin);
 
+/**
+ * @description Ruta para obtener un kiosko por ID
+ */
+router.get('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.getKioskById_CurrentAdmin);
+
+/**
+ * @description Ruta para actualizar un kiosko por JWT
+ */
+router.put('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.updateKioskById_CurrentAdmin);
+
+/**
+ * @description Ruta para eliminar un kiosko por JWT
+ */
+router.delete('/myKiosk/:kioskId', authMiddleware.verifyTokenMiddleware, kioskController.deleteKioskById_CurrentAdmin);
+
 //DEVELOPER ROUTES
 
 
