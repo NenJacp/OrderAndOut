@@ -146,38 +146,46 @@ export const executeTop5ProductsByDateRangeAndRestaurantId = async (startDate, e
 };
 
 /**
- * @description Servicio que cuenta las órdenes por método de pago en un rango de fechas
+ * @description Servicio que obtiene estadísticas financieras por método de pago
  * @param {Date} startDate Fecha de inicio
  * @param {Date} endDate Fecha de fin
  * @param {ObjectId} restaurantId ID del restaurante
- * @returns {Object} Conteo de órdenes por método de pago
+ * @returns {Object} Estadísticas detalladas por método de pago
  */
 export const executeOrdersByPaymentMethodByDateRangeAndRestaurantId = async (startDate, endDate, restaurantId) => {
     try {
         const endDateAdjusted = new Date(endDate);
         endDateAdjusted.setHours(23, 59, 59, 999);
 
-        const cashOrders = await Order.countDocuments({
+        // Obtener todas las órdenes en el rango
+        const orders = await Order.find({
             createdAt: {
                 $gte: new Date(startDate),
                 $lte: endDateAdjusted
             },
             restaurantId,
-            paymentMethod: 'efectivo'
+            paymentMethod: { $in: ['efectivo', 'tarjeta'] }
         });
 
-        const cardOrders = await Order.countDocuments({
-            createdAt: {
-                $gte: new Date(startDate),
-                $lte: endDateAdjusted
-            },
-            restaurantId,
-            paymentMethod: 'tarjeta'
-        });
+        // Función para calcular métricas
+        const calculatePaymentStats = (paymentType) => {
+            const filteredOrders = orders.filter(order => order.paymentMethod === paymentType);
+            
+            return {
+                count: filteredOrders.length,
+                cost: filteredOrders.reduce((sum, order) => sum + order.totalCost, 0),
+                sale: filteredOrders.reduce((sum, order) => sum + order.totalSale, 0),
+                profit: filteredOrders.reduce((sum, order) => sum + (order.totalSale - order.totalCost), 0)
+            };
+        };
 
-        return { cash: cashOrders, card: cardOrders };
+        return {
+            cash: calculatePaymentStats('efectivo'),
+            card: calculatePaymentStats('tarjeta')
+        };
+        
     } catch (error) {
-        throw new Error("Error al contar órdenes por método de pago: " + error.message);
+        throw new Error("Error al obtener estadísticas de pago: " + error.message);
     }
 };
 
