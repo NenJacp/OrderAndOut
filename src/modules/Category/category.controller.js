@@ -79,8 +79,10 @@ const updateCategoryById_CurrentAdmin = async (req, res) => {
 
     try {
         
-        const { categoryId } = req.params.categoryId;
+        const categoryId  = req.params.categoryId;
+        console.log(categoryId);
         const { ...updateData } = req.body; // los datos a actualizar
+        console.log(updateData);
 
         if (!categoryId) {
             return res.status(400).json({ message: 'Se requiere ID de categoría' });
@@ -91,7 +93,10 @@ const updateCategoryById_CurrentAdmin = async (req, res) => {
             return res.status(404).json({ message: 'Categoría no encontrada' });
         }
 
-        if (updatedCategory.restaurantId !== req.user.restaurant) {
+        console.log(updatedCategory);
+        console.log(req.user.restaurant);
+
+        if (updatedCategory.restaurantId.toString() !== req.user.restaurant.toString()) {
             return res.status(403).json({ message: 'No tienes permisos para actualizar esta categoría' });
         }
 
