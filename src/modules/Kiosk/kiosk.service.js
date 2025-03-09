@@ -14,11 +14,12 @@ const createKiosk = async (kioskData) => {
          * @description Crear un nuevo kiosko
          */
         const newKiosk = new Kiosk(kioskData);
-        console.log(newKiosk);
+        console.log(newKiosk); // Log para verificar los datos antes de crear
         /**
          * @description Guardar el nuevo kiosko en la base de datos
          * @returns {Promise<Object>} devuelve el kiosko creado
          */
+        console.log("antes de guardar");
         return await newKiosk.save(); // Guardar en la base de datos
     } catch (error) {
 
@@ -51,7 +52,8 @@ const getKioskById = async (id) => {
 */
 const getKiosksByRestaurantId = async (restaurantId) => {
     try {
-        return await Kiosk.find({ restaurantId: restaurantId }).populate('restaurantId');
+        // Realiza la búsqueda sin usar populate
+        return await Kiosk.find({ restaurantId: restaurantId });
     } catch (error) {
         throw new Error(`Error al obtener kioskos: ${error.message}`);
     }

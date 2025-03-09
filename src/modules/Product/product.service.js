@@ -24,9 +24,17 @@ const getAllProducts = async () => {
  * @returns {Promise<Object>}
  */
 const getProductById = async (productId) => {
+    console.log(productId);
     try {
-        return await Product.findById(productId);
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            throw new Error('Producto no encontrado');
+        }
+
+        return product;
     } catch (error) {
+        console.error('Error al obtener el producto:', error);
         return null;
     }
 };

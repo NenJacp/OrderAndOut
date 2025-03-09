@@ -90,7 +90,7 @@ const updateProductById_CurrentAdmin = async (req, res) => {
 
     try {
 
-        const { productId } = req.params.productId;
+        const  productId  = req.params.productId;
         const { ...productData } = req.body;
 
         // Validar campos requeridos
@@ -103,16 +103,16 @@ const updateProductById_CurrentAdmin = async (req, res) => {
         if (currentProduct.restaurantId.toString() !== req.user.restaurant.toString()) {
             return res.status(403).json({ message: 'No tienes permiso para actualizar este producto' });
         }
-
+        
         if (currentProduct.costPrice >= productData.salePrice) {
             return res.status(400).json({ message: 'El precio de venta debe ser mayor al de costo' });
         }
-
+        
         const updatedProduct = await productService.updateProduct(productId, productData);
         if (!updatedProduct) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
-
+       
         res.status(200).json({ "message": "Producto actualizado correctamente" });
     } catch (error) {
         res.status(500).json({ 
@@ -134,7 +134,7 @@ const deleteProductById_CurrentAdmin = async (req, res) => {
         return res.status(403).json({ message: 'No tienes permiso para eliminar productos' });
     }
 
-    const { productId } = req.params.productId;
+    const  productId  = req.params.productId;
 
     try {
         const deletedProduct = await productService.deleteProduct(productId);
