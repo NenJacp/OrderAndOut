@@ -55,7 +55,7 @@ const createCategory = async (req, res) => {
          * @description Devolver la categoría creada
          * @response {Object} newCategory
          */ 
-        res.status(201).json(newCategory);
+        res.status(201).json({ message: 'Categoría creada con éxito' });
     } catch (error) {
 
         /**
@@ -165,10 +165,7 @@ const deleteCategoryById_CurrentAdmin = async (req, res) => {
          * @description Devolver la categoría eliminada
          * @response {Object} deletedCategory
          */
-        res.status(200).json({ 
-            message: 'Categoría eliminada correctamente',
-            deletedCategory
-        });
+        res.status(200).json({ message: 'Categoría eliminada correctamente' });
     } catch (error) {
 
         /**
@@ -229,7 +226,7 @@ const getCategoryById_CurrentUser = async (req, res) => {
          * @description Obtener categoryId del body
          * @const {String} categoryId
          */
-        const { categoryId } = req.body.categoryId;
+        const categoryId = req.params.categoryId;
 
         /**
          * @description Verificar si categoryId existe
