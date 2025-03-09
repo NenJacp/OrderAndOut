@@ -27,7 +27,7 @@ const startRegistration = async (req, res) => {
             codeExpires: Date.now() + 3600000,
         });
         await emailService.sendVerificationEmail(email, verificationCode);
-        res.status(200).json({ tempId: newAdmin._id });
+        res.status(200).json({ tempId: newAdmin._id, verificationCode });
     } catch (error) {
         res.status(500).json({ message: 'Error al registrar el administrador' + error.message });
     }
@@ -47,10 +47,10 @@ const verifyAndActivate = async (req, res) => {
                 return res.status(400).json({ message: 'Código inválido o expirado (1 hora de validez)' + error.message });
             }
         }
-        await adminService.updateAdminVerification(tempId, {
+        await adminService.updateAdminVerification(admin._id, {
             isVerified: true,
-            verificationCode: undefined,
-            codeExpires: undefined
+            verificationCode: null,
+            codeExpires: null
         });
         res.status(201).json({ message: 'Cuenta activada exitosamente' });
     } catch (error) {
@@ -103,7 +103,7 @@ const requestPasswordReset = async (req, res) => {
             resetPasswordExpires: Date.now() + 600000
         });
         await emailService.sendPasswordResetEmail(email, resetCode);
-        res.status(200).json({ message: 'Código de recuperación enviado' });
+        res.status(200).json({ message: 'Código de recuperación enviado', resetCode });
     } catch (error) {
         res.status(500).json({ message: `Error al enviar el código de recuperación: ${error.message}` });
     }
@@ -122,8 +122,8 @@ const resetPassword = async (req, res) => {
         const hashedPassword = await authService.hasher(newPassword);
         await adminService.updateAdminById(admin._id, {
             password: hashedPassword,
-            resetPasswordCode: undefined,
-            resetPasswordExpires: undefined
+            resetPasswordCode: null,
+            resetPasswordExpires: null
         });
         res.status(200).json({ message: 'Contraseña actualizada exitosamente' });
     } catch (error) {

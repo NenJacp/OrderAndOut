@@ -131,7 +131,7 @@ const findAdminWithCode = async (tempId, code) => {
  * @const {Promise<object>} updateAdminVerification actualiza la verificación de un administrador
  */
 const updateAdminVerification = async (id, updates) => {
-    return await Admin.findByIdAndUpdate(id, { $set: updates }, { new: true });
+    return await Admin.findByIdAndUpdate(id, updates, { new: true });
 };
 
 /**

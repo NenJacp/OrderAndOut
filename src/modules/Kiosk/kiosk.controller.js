@@ -397,7 +397,7 @@ const deleteKioskById_CurrentAdmin = async (req, res) => {
 
     try {
         // Corregir la extracción del ID
-        const kioskId = req.params.kioskId;
+        const  kioskId  = req.params.kioskId;
         
         const deletedKiosk = await kioskService.deleteKioskById(kioskId);
         
