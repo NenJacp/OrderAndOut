@@ -88,10 +88,7 @@ const loginKiosk = async (req, res) => {
              * @response {string} token
              */
             return res.status(200).json({ 
-                message: 'Reconexión exitosa',
-                token,
-                kioskId: kiosk._id,
-                restaurantId: kiosk.restaurantId._id
+                token
             });
         }
 
@@ -149,7 +146,7 @@ const logoutKiosk = async (req, res) => {
      * @description Desconectar un kiosko
      */
     try {
-
+        
         /**
          * @description Desconectar un kiosko
          * @param {string} req.user.id
@@ -158,7 +155,7 @@ const logoutKiosk = async (req, res) => {
          */
         await kioskService.updateKioskById(req.user.id, {
             isConnected: false,
-            disconnected_at: new Date()
+            disconnected_at: new Date().toISOString()
         });
 
         /**
@@ -182,6 +179,10 @@ const logoutKiosk = async (req, res) => {
  * @param {object} res
  */
 const getCurrentKiosk = async (req, res) => {
+
+    if(req.user.type !== 'kiosk') {
+        return res.status(403).json({ message: 'El usuario actual no es un kiosko' });
+    }
 
     /**
      * @description Obtener el kiosko por JWT
@@ -253,14 +254,12 @@ const createKiosk = async (req, res) => {
          * @param {string} restaurantId
          * @const {object} newKiosk
          */
-        console.log("antes de crear");
         const newKiosk = await kioskService.createKiosk({
             name,
             password: hashedPassword,
             description,
             restaurantId: req.user.restaurant
         });
-        console.log('Despues de crear');
         /**
          * @description Devolver el kiosko creado
          * @response {object} newKiosk
@@ -319,7 +318,7 @@ const getKioskById_CurrentAdmin = async (req, res) => {
 
     try {
 
-        const { kioskId } = req.params.kioskId;
+        const kioskId = req.params.kioskId;
         /**
          * @description Obtener el kiosko por ID
          */
@@ -357,7 +356,7 @@ const updateKioskById_CurrentAdmin = async (req, res) => {
      */
     try {
 
-        const { kioskId } = req.params.kioskId;
+        const kioskId = req.params.kioskId;
 
         if (req.body.password) {
             req.body.password = await authService.hasher(req.body.password);

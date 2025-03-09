@@ -11,12 +11,12 @@ import authMiddleware from '../Auth/auth.middleware.js'; // Importar el middlewa
 /**
  * @description Ruta para iniciar sesión en un kiosko
  */
-router.post('/login/myKiosk', kioskController.loginKiosk);
+router.post('/login/kiosk', kioskController.loginKiosk);
 
 /**
  * @description Ruta para cerrar sesión en un kiosko
  */
-router.post('/logout/myKiosk', authMiddleware.verifyTokenMiddleware, kioskController.logoutKiosk);
+router.post('/logout/kiosk', authMiddleware.verifyTokenMiddleware, kioskController.logoutKiosk);
 
 /**
  * @description Ruta para obtener un kiosko por JWT

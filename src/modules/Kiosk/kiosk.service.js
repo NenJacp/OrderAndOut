@@ -14,12 +14,10 @@ const createKiosk = async (kioskData) => {
          * @description Crear un nuevo kiosko
          */
         const newKiosk = new Kiosk(kioskData);
-        console.log(newKiosk); // Log para verificar los datos antes de crear
         /**
          * @description Guardar el nuevo kiosko en la base de datos
          * @returns {Promise<Object>} devuelve el kiosko creado
          */
-        console.log("antes de guardar");
         return await newKiosk.save(); // Guardar en la base de datos
     } catch (error) {
 
@@ -66,7 +64,12 @@ const getKiosksByRestaurantId = async (restaurantId) => {
 * @const {Promise<Object>} updateKioskById actualiza el kiosko por ID
 */
 const updateKioskById = async (id, kioskData) => {
-    return await Kiosk.findByIdAndUpdate(id, kioskData, { new: true }); // Actualizar kiosko por ID
+    try {
+        return await Kiosk.findByIdAndUpdate(id, kioskData, { new: true }); // Actualizar kiosko por ID
+    } catch (error) {
+        
+        throw new Error(`Error al actualizar el kiosko: ${error.message}`);
+    }
 };
 
 /**

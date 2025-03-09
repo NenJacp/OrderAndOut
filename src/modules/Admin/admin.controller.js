@@ -157,6 +157,10 @@ const updateCurrentAdmin = async (req, res) => {
         //req.body.password = await authService.hasher(req.body.password);
     }
 
+    if (req.body.email) {
+        return res.status(403).json({ message: 'No puedes cambiar tu correo tu mismo, contactar a soporte. Tel: XXXXXXXXXX'})
+    }
+
     try {
         const adminId = req.user.id;
         const updatedAdmin = await adminService.updateAdminById(adminId, req.body);
