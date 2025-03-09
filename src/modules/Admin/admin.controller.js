@@ -153,7 +153,8 @@ const getCurrentAdmin = async (req, res) => {
 const updateCurrentAdmin = async (req, res) => {
 
     if (req.body.password) {
-        req.body.password = await authService.hasher(req.body.password);
+        return res.status(403).json({ message: 'No se puede editar el password desde aquí' });
+        //req.body.password = await authService.hasher(req.body.password);
     }
 
     try {
