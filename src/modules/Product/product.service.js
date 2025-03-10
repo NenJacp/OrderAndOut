@@ -27,15 +27,10 @@ const getProductById = async (productId) => {
     console.log(productId);
     try {
         const product = await Product.findById(productId);
-
-        if (!product) {
-            throw new Error('Producto no encontrado');
-        }
-
+        
         return product;
     } catch (error) {
-        console.error('Error al obtener el producto:', error);
-        return null;
+        throw new Error(`Error al obtener el producto: ${error.message}`);
     }
 };
 

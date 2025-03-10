@@ -36,7 +36,7 @@ const createProduct = async (req, res) => {
                 message: 'Los precios deben ser valores numéricos' 
             });
         }
-
+        
         if (numericSale <= numericCost) {
             return res.status(400).json({ 
                 message: 'El precio de venta debe ser mayor al de costo' 
@@ -141,7 +141,7 @@ const deleteProductById_CurrentAdmin = async (req, res) => {
         if (!deletedProduct) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
-        res.status(204).send("Producto eliminado correctamente");
+        res.status(200).json({ message: "Producto eliminado correctamente"});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -158,7 +158,7 @@ const deleteProductById_CurrentAdmin = async (req, res) => {
 const getProductById_CurrentUser = async (req, res) => {
     try {
         // Corregir la desestructuración
-        const { productId } = req.params.productId;
+        const productId = req.params.productId;
         
         // Validar ID primero
         if (!productId) {

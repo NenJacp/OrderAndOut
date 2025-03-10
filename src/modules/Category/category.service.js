@@ -34,8 +34,7 @@ const getAllCategories = async () => {
  */
 const getCategoryById = async (id) => {
     try {
-        const category = await Category.findById(id);
-        
+        const category = await Category.findById(id);        
         return category;
     } catch (error) {
         throw new Error(`Error al obtener la categoría: ${error.message}`);
