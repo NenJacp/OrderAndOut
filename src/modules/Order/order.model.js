@@ -37,6 +37,7 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'pendiente', // Estado por defecto
+    enum: ['pendiente', 'cancelado', 'finalizado', 'preparando'],
     },
     notes: { // Campo opcional para notas
         type: String,

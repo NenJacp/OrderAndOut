@@ -24,7 +24,7 @@ const getAllProducts = async () => {
  * @returns {Promise<Object>}
  */
 const getProductById = async (productId) => {
-    console.log(productId);
+    
     try {
         const product = await Product.findById(productId);
         

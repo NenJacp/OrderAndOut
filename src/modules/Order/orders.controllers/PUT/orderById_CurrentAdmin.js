@@ -6,7 +6,6 @@ import orderService from './../../order.service.js'; // Importar el servicio de 
  * @param {Object} res 
  */
 const handle = async (req, res) => {
-
     if (req.user.type !== 'admin') {
         return res.status(403).send('Solo los administradores pueden actualizar órdenes.');
     }
@@ -15,12 +14,11 @@ const handle = async (req, res) => {
      * @description Verificación de permisos para actualizar una orden
      */
     try {
-
         /**
          * @description Obtención de la orden
          * @constant {String} orderId
          */
-        const { orderId } = req.params.orderId;
+        const orderId = req.params.orderId;
         const { ...orderData } = req.body;
 
         /**
@@ -56,9 +54,8 @@ const handle = async (req, res) => {
         /**
          * @description Envío de la orden
          */
-        res.status(200).send(updatedOrder);
+        res.status(200).json({ message: 'Orden editada correctamente'});
     } catch (error) {
-
         /**
          * @description Manejo de errores
          */

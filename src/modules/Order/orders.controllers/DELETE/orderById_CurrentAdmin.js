@@ -11,7 +11,7 @@ const handle = async (req, res) => {
      * @description Verificación de permisos para eliminar una orden
      */
     if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden eliminar órdenes.');
+        return res.status(403).json({ message: 'Solo los administradores pueden eliminar órdenes.' });
     }
 
     /**
@@ -23,7 +23,7 @@ const handle = async (req, res) => {
          * @description Obtención de la orden
          * @constant {String} orderId
          */
-        const { orderId } = req.params.orderId;
+        const orderId = req.params.orderId;
 
         /**
          * @description Obtención de la orden
@@ -35,7 +35,7 @@ const handle = async (req, res) => {
          * @description Verificación de la orden
          */
         if (!order) {
-            return res.status(404).send('Orden no encontrada.');
+            return res.status(404).json({ message: 'Orden no encontrada.' });
         }
 
         /**
@@ -46,10 +46,10 @@ const handle = async (req, res) => {
         /**
          * @description Envío de la orden
          */
-        res.status(200).send('Orden eliminada con éxito.');
+        res.status(200).json({ message: 'Orden eliminada con éxito.' });
     } catch (error) {
         console.error('Error al eliminar la orden:', error);
-        res.status(500).send('Error al eliminar la orden.');
+        res.status(500).json({ message: 'Error al eliminar la orden.' });
     }
 }
 

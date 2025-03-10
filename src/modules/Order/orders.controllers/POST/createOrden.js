@@ -20,7 +20,6 @@ const handle = async (req, res) => {
      */
     try {
         const orderData = req.body;
-        console.log("Datos recibidos del front:", orderData);
 
         // Obtener los productos y sus precios
         const productsWithPrices = await Promise.all(orderData.products.map(async (product) => {
@@ -35,8 +34,6 @@ const handle = async (req, res) => {
                 salePrice: productDetails.salePrice,
             };
         }));
-
-        console.log("Productos con precios:", productsWithPrices);
 
         // Calcular el totalCost y totalSale
         const totalCost = productsWithPrices.reduce((total, product) => {

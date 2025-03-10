@@ -7,6 +7,9 @@ import orderService from './../../order.service.js'; // Importar el servicio de 
  */
 const handle = async (req, res) => {
 
+    if (req.user.type !== 'admin') {
+        return res.status(403).send('No tiene acceso a esta función porque no es administrador.');
+    }
     /**
      * @description Obtención de las órdenes por ID de restaurante
      */
