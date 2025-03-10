@@ -72,7 +72,6 @@ const verifyTokenMiddleware = (req, res, next) => {
          * @param {string} req.user.restaurant - Restaurante del usuario.
          */
         req.user = { id: decoded.id, type: decoded.type, restaurant: decoded.restaurant || null };
-        
         /**
          * @description Continuar con el flujo de la aplicación
          */

@@ -10,7 +10,7 @@ const handle = async (req, res) => {
     if (req.user.type !== 'admin') {
         return res.status(403).json({ message: 'Acceso no autorizado - Solo los administradores pueden acceder a este recurso' });
     }
-    
+
     const restaurantId = req.user.restaurant;
     const { startDate, endDate } = req.query;
 
@@ -40,10 +40,7 @@ const handle = async (req, res) => {
 
     try {
         const totalGains = await orderService.getTotalGainsByDateRangeAndRestaurantId(start, end, restaurantId);
-        res.status(200).json({
-            success: true,
-            data: { totalGains }
-        });
+        res.status(200).json({ data: { totalGains }});
     } catch (error) {
         console.error('Error en dashboard total gains controller:', error);
         res.status(500).json({

@@ -12,6 +12,7 @@ import executeTotalSaleByDateRangeAndRestaurantId from './orders.services.useCas
 import executeTotalGainsByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTotalGains.js'; // Total de ganancias
 import executeTop5ProductsByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTopProducts.js'; // Top 5 productos
 import executeOrdersByPaymentMethodByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardPaymentMethod.js'; // Estadísticas de pago
+import executeTopCategoriesByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTopCategories.js'; // Asegúrate de que el nombre sea correcto
 
 // Función para crear una nueva orden
 const createOrder = async (orderData) => {
@@ -73,6 +74,11 @@ const getOrdersByPaymentMethodByDateRangeAndRestaurantId = async (startDate, end
     return await executeOrdersByPaymentMethodByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Usar el caso de uso para obtener estadísticas de pago
 };
 
+// Nueva función para obtener las categorías más consumidas en un rango de fechas para un restaurante específico
+const getTopCategoriesByDateRangeAndRestaurantId = async (startDate, endDate, restaurantId) => {
+    return await executeTopCategoriesByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Usar el caso de uso para obtener las categorías más consumidas
+};
+
 export default {
     createOrder,
     getAllOrders,
@@ -85,5 +91,6 @@ export default {
     getTotalSaleByDateRangeAndRestaurantId,
     getTotalGainsByDateRangeAndRestaurantId,
     getTop5ProductsByDateRangeAndRestaurantId,
-    getOrdersByPaymentMethodByDateRangeAndRestaurantId
+    getOrdersByPaymentMethodByDateRangeAndRestaurantId,
+    getTopCategoriesByDateRangeAndRestaurantId
 };

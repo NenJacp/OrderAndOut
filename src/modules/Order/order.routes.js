@@ -21,5 +21,8 @@ router.get('/myDashboard/totalCost', authMiddleware.verifyTokenMiddleware, order
 router.get('/myDashboard/totalGains', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTotalGainsHandler); // Obtener total de ganancias
 router.get('/myDashboard/totalOrders', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTotalOrdersHandler); // Obtener total de órdenes
 router.get('/myDashboard/totalSale', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTotalSaleHandler); // Obtener total de ventas
+router.get('/myDashboard/topCategories', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTopCategoriesHandler); // Obtener categorías más consumidas
+
+
 
 export default router;

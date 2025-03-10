@@ -23,7 +23,7 @@ const handle = async (req, res) => {
          * @description Obtención de la orden
          * @constant {String} orderId
          */
-        const { orderId } = req.params.orderId;
+        const orderId = req.params.orderId;
 
         /**
          * @description Obtención de la orden

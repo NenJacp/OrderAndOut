@@ -20,7 +20,7 @@ const handle = async (req, res) => {
          * @description Obtención de la orden
          * @constant {String} orderId
          */
-        const { orderId } = req.params.orderId;
+        const orderId = req.params.orderId;
         const { ...orderData } = req.body;
 
         /**
@@ -56,7 +56,7 @@ const handle = async (req, res) => {
         /**
          * @description Envío de la orden
          */
-        res.status(200).send(updatedOrder);
+        res.status(200).json({ message: 'Orden actualizada con éxito.' });
     } catch (error) {
 
         /**

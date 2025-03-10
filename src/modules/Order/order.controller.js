@@ -12,6 +12,7 @@ import getMyDashboardTotalCost from './orders.controllers.useCases/GET/myDashboa
 import getMyDashboardTotalGains from './orders.controllers.useCases/GET/myDashboardTotalGains.js'; // Importar controlador para total de ganancias
 import getMyDashboardTotalOrders from './orders.controllers.useCases/GET/myDashboardTotalOrders.js'; // Importar controlador para total de órdenes
 import getMyDashboardTotalSale from './orders.controllers.useCases/GET/myDashboardTotalSale.js'; // Importar controlador para total de ventas
+import getMyDashboardTopCategories from './orders.controllers.useCases/GET/myDashboardTopCategories.js'; // Importar controlador para categorías más consumidas
 
 /**
  * @description Función para crear una nueva orden
@@ -28,6 +29,7 @@ const createOrderHandler = async (req, res) => {
  * @param {Object} res 
  */
 const getOrderByIdHandler = async (req, res) => {
+    const id = req.params.orderId;
     return await getOrderById_CurrentUser(req, res); // Usar el controlador para obtener la orden por ID
 }
 
@@ -130,6 +132,15 @@ const getMyDashboardTotalSaleHandler = async (req, res) => {
     return await getMyDashboardTotalSale(req, res); // Usar el controlador para obtener el total de ventas
 }
 
+/**
+ * @description Función para obtener las categorías más consumidas en el dashboard
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+const getMyDashboardTopCategoriesHandler = async (req, res) => {
+    return await getMyDashboardTopCategories(req, res); // Usar el controlador para obtener las categorías más consumidas
+}
+
 export default {
     createOrderHandler,
     getOrderByIdHandler,
@@ -143,5 +154,6 @@ export default {
     getMyDashboardTotalCostHandler,
     getMyDashboardTotalGainsHandler,
     getMyDashboardTotalOrdersHandler,
-    getMyDashboardTotalSaleHandler
+    getMyDashboardTotalSaleHandler,
+    getMyDashboardTopCategoriesHandler
 };

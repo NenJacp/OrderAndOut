@@ -1,16 +1,11 @@
 import orderService from './../../order.service.js'; // Importar el servicio de órdenes
 
 /**
- * @description Controlador para obtener el total de órdenes en el dashboard
+ * @description Controlador para obtener las categorías más consumidas en el dashboard
  * @param {Object} req - Objeto de solicitud
  * @param {Object} res - Objeto de respuesta
  */
 const handle = async (req, res) => {
-
-    if (req.user.type !== 'admin') {
-        return res.status(403).json({ message: 'Acceso no autorizado - Solo los administradores pueden acceder a este recurso' });
-    }
-
     const restaurantId = req.user.restaurant;
     const { startDate, endDate } = req.query;
 
@@ -39,13 +34,13 @@ const handle = async (req, res) => {
     end.setHours(23, 59, 59, 999);
 
     try {
-        const totalOrders = await orderService.getTotalOrdersByDateRangeAndRestaurantId(start, end, restaurantId);
-        res.status(200).json({ data: totalOrders });
+        const topCategories = await orderService.getTopCategoriesByDateRangeAndRestaurantId(start, end, restaurantId);
+        res.status(200).json({ data: topCategories });
     } catch (error) {
-        console.error('Error en dashboard total orders controller:', error);
+        console.error('Error en dashboard top categories controller:', error);
         res.status(500).json({
             success: false,
-            message: 'Error al obtener el total de órdenes',
+            message: 'Error al obtener las categorías más consumidas',
             error: process.env.NODE_ENV === 'development' ? error.message : null
         });
     }
