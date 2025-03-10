@@ -1,17 +1,17 @@
-import executeCreateOrder from './orders.services/POST/createOrder.js'; // Cambiado a importación por defecto
-import executeGetAllOrders from './orders.services/GET/allOrders.js'; // Importar caso de uso para obtener todas las órdenes
-import executeGetOrderById from './orders.services/GET/orderById.js'; // Importar caso de uso para obtener orden por ID
-import executeGetOrdersByRestaurantId from './orders.services/GET/ordersByRestaurantId.js'; // Importar caso de uso para obtener órdenes por ID de restaurante
-import executeUpdateOrderById from './orders.services/PUT/orderById.js'; // Importar caso de uso para actualizar orden
-import executeDeleteOrderById from './orders.services/DELETE/orderById.js'; // Importar caso de uso para eliminar orden
-import { 
-    executeTotalOrdersByDateRangeAndRestaurantId, 
-    executeTotalCostByDateRangeAndRestaurantId, 
-    executeTotalSaleByDateRangeAndRestaurantId, 
-    executeTotalGainsByDateRangeAndRestaurantId,
-    executeTop5ProductsByDateRangeAndRestaurantId,
-    executeOrdersByPaymentMethodByDateRangeAndRestaurantId
-} from './orders.services/GET/dashboardData.js'; // Importar casos de uso para dashboard
+import executeCreateOrder from './orders.services.useCases/POST/createOrder.js'; // Cambiado a importación por defecto
+import executeGetAllOrders from './orders.services.useCases/GET/allOrders.js'; // Importar caso de uso para obtener todas las órdenes
+import executeGetOrderById from './orders.services.useCases/GET/orderById.js'; // Importar caso de uso para obtener orden por ID
+import executeGetOrdersByRestaurantId from './orders.services.useCases/GET/ordersByRestaurantId.js'; // Importar caso de uso para obtener órdenes por ID de restaurante
+import executeUpdateOrderById from './orders.services.useCases/PUT/orderById.js'; // Importar caso de uso para actualizar orden
+import executeDeleteOrderById from './orders.services.useCases/DELETE/orderById.js'; // Importar caso de uso para eliminar orden
+
+// Importar servicios de dashboard
+import executeTotalOrdersByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTotalOrders.js'; // Total de órdenes
+import executeTotalCostByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTotalCost.js'; // Total de costos
+import executeTotalSaleByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTotalSale.js'; // Total de ventas
+import executeTotalGainsByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTotalGains.js'; // Total de ganancias
+import executeTop5ProductsByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTopProducts.js'; // Top 5 productos
+import executeOrdersByPaymentMethodByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardPaymentMethod.js'; // Estadísticas de pago
 
 // Función para crear una nueva orden
 const createOrder = async (orderData) => {
@@ -63,21 +63,17 @@ const getTotalGainsByDateRangeAndRestaurantId = async (startDate, endDate, resta
     return await executeTotalGainsByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Usar el caso de uso para obtener el totalGains
 };
 
-// Nueva función para obtener el total de órdenes en un rango de fechas para un restaurante específico
-const getTotalOrdersByStartDateAndRestaurantId = async (startDate, endDate, restaurantId) => {
-    return await executeTotalOrdersByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Llama al servicio correspondiente
+// Nueva función para obtener los 5 productos más vendidos en un rango de fechas para un restaurante específico
+const getTop5ProductsByDateRangeAndRestaurantId = async (startDate, endDate, restaurantId) => {
+    return await executeTop5ProductsByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Usar el caso de uso para obtener los 5 productos más vendidos
 };
 
-const getTop5ProductsByDateRangeAndRestaurantId = async(startDate, endDate, restaurantId) => {
-    return await executeTop5ProductsByDateRangeAndRestaurantId(startDate, endDate, restaurantId);
-}
-
+// Nueva función para obtener estadísticas de pago por método en un rango de fechas
 const getOrdersByPaymentMethodByDateRangeAndRestaurantId = async (startDate, endDate, restaurantId) => {
-    return await executeOrdersByPaymentMethodByDateRangeAndRestaurantId(startDate, endDate, restaurantId);
+    return await executeOrdersByPaymentMethodByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Usar el caso de uso para obtener estadísticas de pago
 };
 
-export default
-{
+export default {
     createOrder,
     getAllOrders,
     getOrderById,
@@ -88,7 +84,6 @@ export default
     getTotalCostByDateRangeAndRestaurantId,
     getTotalSaleByDateRangeAndRestaurantId,
     getTotalGainsByDateRangeAndRestaurantId,
-    getTotalOrdersByStartDateAndRestaurantId,
     getTop5ProductsByDateRangeAndRestaurantId,
     getOrdersByPaymentMethodByDateRangeAndRestaurantId
-}
+};

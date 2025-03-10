@@ -13,6 +13,13 @@ router.put('/myOrder/:orderId', authMiddleware.verifyTokenMiddleware, orderContr
 
 // DEVELOPER ROUTES
 router.get('/', authMiddleware.verifyTokenMiddleware, orderController.getAllOrdersHandler); // Obtener todas las órdenes
-router.get('/myDashboard', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardHandler); // Obtener totalGains en un rango de fechas para el restaurante del usuario actual
+
+// Rutas para el dashboard
+router.get('/myDashboard/paymentMethod', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardPaymentMethodHandler); // Obtener estadísticas de pago
+router.get('/myDashboard/topProducts', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTopProductsHandler); // Obtener los 5 productos más vendidos
+router.get('/myDashboard/totalCost', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTotalCostHandler); // Obtener total de costos
+router.get('/myDashboard/totalGains', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTotalGainsHandler); // Obtener total de ganancias
+router.get('/myDashboard/totalOrders', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTotalOrdersHandler); // Obtener total de órdenes
+router.get('/myDashboard/totalSale', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTotalSaleHandler); // Obtener total de ventas
 
 export default router;
