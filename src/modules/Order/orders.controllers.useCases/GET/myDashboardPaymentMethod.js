@@ -6,6 +6,10 @@ import orderService from './../../order.service.js'; // Importar el servicio de 
  * @param {Object} res - Objeto de respuesta
  */
 const handle = async (req, res) => {
+    if (req.user.type !== 'admin') {
+        return res.status(403).json({ message: 'Acceso no autorizado - Solo los administradores pueden acceder a este recurso' });
+    }
+
     const restaurantId = req.user.restaurant;
     const { startDate, endDate } = req.query;
 
