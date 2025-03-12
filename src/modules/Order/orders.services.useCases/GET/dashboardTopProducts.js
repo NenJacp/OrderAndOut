@@ -25,15 +25,15 @@ const execute = async (startDate, endDate, restaurantId) => {
     orders.forEach(order => {
         order.products.forEach(product => {
             if (productCounts[product.productId]) {
-                productCounts[product.productId] += product.quantity;
+                productCounts[product.productId].quantity += product.quantity;
             } else {
-                productCounts[product.productId] = product.quantity;
+                productCounts[product.productId] = { quantity: product.quantity };
             }
         });
     });
 
     const sortedProducts = Object.entries(productCounts)
-        .map(([productId, quantity]) => ({ productId, quantity }))
+        .map(([productId, { quantity }]) => ({ productId, quantity }))
         .sort((a, b) => b.quantity - a.quantity)
         .slice(0, 5); // Obtener los 5 productos más vendidos
 

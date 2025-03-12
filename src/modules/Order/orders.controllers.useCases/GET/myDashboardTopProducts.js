@@ -1,4 +1,5 @@
 import orderService from './../../order.service.js'; // Importar el servicio de órdenes
+import productService from '../../../Product/product.service.js'; // Importar el servicio de productos
 
 /**
  * @description Controlador para obtener los 5 productos más vendidos en el dashboard
@@ -40,7 +41,15 @@ const handle = async (req, res) => {
 
     try {
         const topProducts = await orderService.getTop5ProductsByDateRangeAndRestaurantId(start, end, restaurantId);
-        res.status(200).json({data: topProducts});
+        const productsWithNames = await Promise.all(topProducts.map(async (product) => {
+            const productDetails = await productService.getProductById(product.productId); // Usar productService
+            return {
+                name: productDetails.name, // Incluir el nombre
+                productId: product.productId,
+                quantity: product.quantity
+            };
+        }));
+        res.status(200).json({ data: productsWithNames });
     } catch (error) {
         console.error('Error en dashboard top products controller:', error);
         res.status(500).json({
