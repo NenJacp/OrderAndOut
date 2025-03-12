@@ -33,10 +33,8 @@ const getAllCategories = async () => {
  * @returns {Promise<Object>}
  */
 const getCategoryById = async (id) => {
-    console.log(id);
     try {
         const category = await Category.findById(id);   
-        console.log(category);     
         return category;
     } catch (error) {
         throw new Error(`Error al obtener la categoría: ${error.message}`);

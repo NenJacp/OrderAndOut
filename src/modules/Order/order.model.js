@@ -12,6 +12,10 @@ const orderSchema = new mongoose.Schema({
                 ref: 'Product', // Referencia al modelo Product
                 required: true,
             },
+            name : {
+                type: String,
+                required: true
+            },
             quantity: {
                 type: Number,
                 required: true,
@@ -23,7 +27,18 @@ const orderSchema = new mongoose.Schema({
             salePrice: {
                 type: Number,
                 require: true
-            }
+            },
+            category: {
+                id: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Category', // Referencia al modelo Category
+                    required: true,
+                },
+                name: {
+                    type: String,
+                    required: true,
+                },
+            },
         },
     ],
     totalCost: {
