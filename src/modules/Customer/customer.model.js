@@ -13,6 +13,19 @@ const customerSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    phone: {
+        type: String,
+        required: false,
+    },
     image: {
         type: String,
         required: false,
@@ -64,6 +77,23 @@ const customerSchema = new mongoose.Schema({
     longitude: {
         type: Number,
         required: false,
+    },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    verificationCode: {
+        type: String,
+        index: true,
+        expires: 3600, // Expira en 1 hora
+    },
+    resetPasswordCode: {
+        type: String,
+        default: null,
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: null,
     },
 }, {
     timestamps: true

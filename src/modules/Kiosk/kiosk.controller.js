@@ -76,12 +76,14 @@ const loginKiosk = async (req, res) => {
              * @param {string} kiosk._id
              * @param {string} kiosk
              * @param {string} kiosk.restaurantId._id
+             * @param {string} kiosk.name
              * @const {string} token
              */
             const token = authService.generateKioscoAuthToken({
                 id: kiosk._id.toString(),
                 type: 'kiosk',
-                restaurant: kiosk.restaurantId._id.toString()
+                restaurant: kiosk.restaurantId._id.toString(),
+                name: kiosk.name
             }, tokenDuration);
             /**
              * @description Devolver el token de autenticación
@@ -109,6 +111,7 @@ const loginKiosk = async (req, res) => {
          * @param {string} kiosk._id
          * @param {string} 'kiosk'
          * @param {string} kiosk.restaurantId._id
+         * @param {string} kiosk.name
          * @param {string} tokenDuration
          * @const {string} token
          */
@@ -116,7 +119,8 @@ const loginKiosk = async (req, res) => {
             {
                 id: kiosk._id.toString(),
                 type: 'kiosk',
-                restaurant: kiosk.restaurantId._id.toString()
+                restaurant: kiosk.restaurantId._id.toString(),
+                name: kiosk.name
             }, 
             tokenDuration
         );

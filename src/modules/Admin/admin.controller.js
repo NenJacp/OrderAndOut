@@ -79,7 +79,8 @@ const loginAdmin = async (req, res) => {
         const token = authService.generateAdminAuthToken({
             id: admin._id.toString(),
             type: 'admin',
-            restaurant: currentAdmin.restaurant?.toString()
+            restaurant: currentAdmin.restaurant?.toString(),
+            name: `${admin.firstName} ${admin.lastName}` // Añadido el nombre del administrador al JWT
         });
         res.status(200).json({ token });
     } catch (error) {

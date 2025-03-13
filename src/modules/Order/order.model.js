@@ -61,7 +61,11 @@ const orderSchema = new mongoose.Schema({
     createdById: { // ID de quien creó la orden (kiosko, cajero o usuario)
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: false,
+    },
+    createdByName: {
+        type:String,
+        required: true
     },
     createdByType: { // Tipo de usuario que creó la orden
         type: String,

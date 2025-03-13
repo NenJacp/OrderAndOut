@@ -8,12 +8,6 @@ import categoryService from '../../../Category/category.service.js'; // Importar
  * @param {Object} res 
  */
 const handle = async (req, res) => {
-    /**
-     * @description Verificación de permisos para crear una orden
-     */
-    if (req.user.type !== 'admin') {
-        return res.status(403).send('Solo los administradores pueden crear órdenes.');
-    }
 
     /**
      * @description Creación de la orden
@@ -56,6 +50,7 @@ const handle = async (req, res) => {
         orderData.products = productsWithDetails; // Actualizar productos con detalles
         orderData.totalCost = totalCost; // Asignar el totalCost
         orderData.totalSale = totalSale; // Asignar el totalSale
+        orderData.createdByName = req.user.name; // Agregar el nombre del usuario que crea la orden
 
         /**
          * @description Creación de la orden
