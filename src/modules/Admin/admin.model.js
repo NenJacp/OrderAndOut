@@ -57,6 +57,13 @@ const adminSchema = new mongoose.Schema({
         ref: 'Restaurant',
         default: null
     },
+    // Campo para la referencia a una tarjeta
+    card: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Card',
+        default: null,
+        required:false
+    },
     // Campo para indicar si el administrador está verificado
     isVerified: {
         type: Boolean,
