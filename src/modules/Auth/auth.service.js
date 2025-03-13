@@ -67,7 +67,8 @@ const generateAdminAuthToken = (payload) => {
         {
             id: payload.id,
             type: payload.type,
-            restaurant: payload.restaurant || null
+            restaurant: payload.restaurant || null,
+            name: payload.name // Añadir el nombre del usuario al payload
         },
         process.env.JWT_SECRET,
         { expiresIn: '2h' }
@@ -91,7 +92,8 @@ const generateKioscoAuthToken = (payload, duration) => {
         {
             id: payload.id,
             type: payload.type,
-            restaurant: payload.restaurant || null
+            restaurant: payload.restaurant || null,
+            name: payload.name // Añadir el nombre del usuario al payload
         },
         process.env.JWT_SECRET,
         options
@@ -99,13 +101,14 @@ const generateKioscoAuthToken = (payload, duration) => {
 };
 
 /**
- * @description Verificar un token
+ * @description Verificar un token y extraer el nombre del usuario
  * @param {string} token
  * @returns {Object}
  */
 const verifyToken = (token) => {
     try {
-        return jwt.verify(token, process.env.JWT_SECRET);
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        return { ...decodedToken, name: decodedToken.name }; // Extraer el nombre del usuario del token
     } catch (error) {
         throw { 
             name: error.name, 
