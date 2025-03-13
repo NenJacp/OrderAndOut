@@ -76,11 +76,12 @@ const loginAdmin = async (req, res) => {
             return res.status(401).json({ message: 'Credenciales inválidas' });
         }
         const currentAdmin = await adminService.getAdminById(admin._id);
+
         const token = authService.generateAdminAuthToken({
             id: admin._id.toString(),
             type: 'admin',
             restaurant: currentAdmin.restaurant?.toString(),
-            name: `${admin.firstName} ${admin.lastName}` // Añadido el nombre del administrador al JWT
+            name: `${currentAdmin.firstName} ${currentAdmin.lastName}` // Añadido el nombre del administrador al JWT
         });
         res.status(200).json({ token });
     } catch (error) {

@@ -63,12 +63,13 @@ const generateAdminCode = () => {
  * @returns {string}
  */
 const generateAdminAuthToken = (payload) => {
+    console.log(payload);
     return jwt.sign(
         {
             id: payload.id,
             type: payload.type,
             restaurant: payload.restaurant || null,
-            name: payload.name // Añadir el nombre del usuario al payload
+            name: payload.name // Añadido el nombre del administrador al JWT
         },
         process.env.JWT_SECRET,
         { expiresIn: '2h' }
@@ -93,7 +94,7 @@ const generateKioscoAuthToken = (payload, duration) => {
             id: payload.id,
             type: payload.type,
             restaurant: payload.restaurant || null,
-            name: payload.name // Añadir el nombre del usuario al payload
+            name: payload.name // Añadido el nombre del administrador al JWT
         },
         process.env.JWT_SECRET,
         options
@@ -101,14 +102,13 @@ const generateKioscoAuthToken = (payload, duration) => {
 };
 
 /**
- * @description Verificar un token y extraer el nombre del usuario
+ * @description Verificar un token
  * @param {string} token
  * @returns {Object}
  */
 const verifyToken = (token) => {
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        return { ...decodedToken, name: decodedToken.name }; // Extraer el nombre del usuario del token
+        return jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
         throw { 
             name: error.name, 

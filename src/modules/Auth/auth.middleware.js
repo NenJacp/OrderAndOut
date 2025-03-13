@@ -58,8 +58,9 @@ const verifyTokenMiddleware = (req, res, next) => {
          * @param {string} decoded - Token decodificado.
          * @param {string} decoded.id - ID del usuario.
          * @param {string} decoded.type - Tipo de usuario.
+         * @param {string} decoded.name - Nombre del usuario.
          */
-        if (!decoded.id || !decoded.type) {
+        if (!decoded.id || !decoded.type || !decoded.name) {
             return res.status(403).json({ code: 'INVALID_TOKEN', message: 'Token mal formado' });
         }
 
@@ -69,9 +70,10 @@ const verifyTokenMiddleware = (req, res, next) => {
          * @param {string} req.user - Usuario autenticado.
          * @param {string} req.user.id - ID del usuario.
          * @param {string} req.user.type - Tipo de usuario.
+         * @param {string} req.user.name - Nombre del usuario.
          * @param {string} req.user.restaurant - Restaurante del usuario.
          */
-        req.user = { id: decoded.id, type: decoded.type, restaurant: decoded.restaurant || null };
+        req.user = { id: decoded.id, type: decoded.type, name: decoded.name, restaurant: decoded.restaurant || null };
         /**
          * @description Continuar con el flujo de la aplicación
          */

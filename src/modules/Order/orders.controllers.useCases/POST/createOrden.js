@@ -42,6 +42,7 @@ const handle = async (req, res) => {
         const totalSale = productsWithDetails.reduce((total, product) => {
             return total + (product.salePrice * product.quantity);
         }, 0);
+        console.log(req.user.id,req.user.name,req.user.restaurant,req.user.type);
 
         // Asignar datos adicionales
         orderData.createdById = req.user.id;
