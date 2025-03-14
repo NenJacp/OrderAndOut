@@ -85,7 +85,10 @@ const customerSchema = new mongoose.Schema({
     verificationCode: {
         type: String,
         index: true,
-        expires: 3600, // Expira en 1 hora
+    },
+    codeExpires: {
+        type: Date,
+        default: null
     },
     resetPasswordCode: {
         type: String,

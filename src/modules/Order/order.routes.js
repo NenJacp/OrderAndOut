@@ -23,6 +23,7 @@ router.get('/myDashboard/totalOrders', authMiddleware.verifyTokenMiddleware, ord
 router.get('/myDashboard/totalSale', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTotalSaleHandler); // Obtener total de ventas
 router.get('/myDashboard/topCategories', authMiddleware.verifyTokenMiddleware, orderController.getMyDashboardTopCategoriesHandler); // Obtener categorías más consumidas
 
-
+// Ruta para calcular el total de venta
+router.post('/calculateTotalSale', authMiddleware.verifyTokenMiddleware, orderController.calculateTotalSaleHandler);
 
 export default router;

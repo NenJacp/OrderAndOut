@@ -4,6 +4,7 @@ import executeGetOrderById from './orders.services.useCases/GET/orderById.js'; /
 import executeGetOrdersByRestaurantId from './orders.services.useCases/GET/ordersByRestaurantId.js'; // Importar caso de uso para obtener órdenes por ID de restaurante
 import executeUpdateOrderById from './orders.services.useCases/PUT/orderById.js'; // Importar caso de uso para actualizar orden
 import executeDeleteOrderById from './orders.services.useCases/DELETE/orderById.js'; // Importar caso de uso para eliminar orden
+import executeCalculateTotalSale from './orders.services.useCases/GET/calculateTotalSale.js'; // Importar caso de uso para calcular total
 
 // Importar servicios de dashboard
 import executeTotalOrdersByDateRangeAndRestaurantId from './orders.services.useCases/GET/dashboardTotalOrders.js'; // Total de órdenes
@@ -79,6 +80,11 @@ const getTopCategoriesByDateRangeAndRestaurantId = async (startDate, endDate, re
     return await executeTopCategoriesByDateRangeAndRestaurantId(startDate, endDate, restaurantId); // Usar el caso de uso para obtener las categorías más consumidas
 };
 
+// Función para calcular el total de venta
+const calculateTotalSale = async (productsData) => {
+    return await executeCalculateTotalSale(productsData);
+};
+
 export default {
     createOrder,
     getAllOrders,
@@ -92,5 +98,6 @@ export default {
     getTotalGainsByDateRangeAndRestaurantId,
     getTop5ProductsByDateRangeAndRestaurantId,
     getOrdersByPaymentMethodByDateRangeAndRestaurantId,
-    getTopCategoriesByDateRangeAndRestaurantId
+    getTopCategoriesByDateRangeAndRestaurantId,
+    calculateTotalSale
 };

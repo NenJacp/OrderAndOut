@@ -13,6 +13,7 @@ import getMyDashboardTotalGains from './orders.controllers.useCases/GET/myDashbo
 import getMyDashboardTotalOrders from './orders.controllers.useCases/GET/myDashboardTotalOrders.js'; // Importar controlador para total de órdenes
 import getMyDashboardTotalSale from './orders.controllers.useCases/GET/myDashboardTotalSale.js'; // Importar controlador para total de ventas
 import getMyDashboardTopCategories from './orders.controllers.useCases/GET/myDashboardTopCategories.js'; // Importar controlador para categorías más consumidas
+import calculateTotalSale from './orders.controllers.useCases/GET/calculateTotalSale.js';
 
 /**
  * @description Función para crear una nueva orden
@@ -141,6 +142,15 @@ const getMyDashboardTopCategoriesHandler = async (req, res) => {
     return await getMyDashboardTopCategories(req, res); // Usar el controlador para obtener las categorías más consumidas
 }
 
+/**
+ * @description Función para calcular el total de venta sin crear una orden
+ * @param {Object} req 
+ * @param {Object} res 
+ */
+const calculateTotalSaleHandler = async (req, res) => {
+    return await calculateTotalSale(req, res);
+}
+
 export default {
     createOrderHandler,
     getOrderByIdHandler,
@@ -155,5 +165,6 @@ export default {
     getMyDashboardTotalGainsHandler,
     getMyDashboardTotalOrdersHandler,
     getMyDashboardTotalSaleHandler,
-    getMyDashboardTopCategoriesHandler
+    getMyDashboardTopCategoriesHandler,
+    calculateTotalSaleHandler
 };
