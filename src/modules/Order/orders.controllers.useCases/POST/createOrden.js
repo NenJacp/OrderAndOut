@@ -1,6 +1,7 @@
 import orderService from '../../order.service.js'; // Importar el servicio de órdenes
 import productService from '../../../Product/product.service.js'; // Importar el servicio de productos
 import categoryService from '../../../Category/category.service.js'; // Importar el servicio de categorías
+import restaurantService from '../../../Restaurant/restaurant.service.js'; // Importar el servicio de restaurantes
 
 /**
  * @description Controlador para crear una nueva orden
@@ -14,6 +15,11 @@ const handle = async (req, res) => {
      */
     try {
         const orderData = req.body;
+        
+        // Verificar que customerName exista en el body
+        if (!orderData.customerName) {
+            return res.status(400).send('El campo customerName es requerido');
+        }
 
         // Obtener los productos y sus precios
         const productsWithDetails = await Promise.all(orderData.products.map(async (product) => {
@@ -42,12 +48,18 @@ const handle = async (req, res) => {
         const totalSale = productsWithDetails.reduce((total, product) => {
             return total + (product.salePrice * product.quantity);
         }, 0);
-        console.log(req.user.id,req.user.name,req.user.restaurant,req.user.type);
+        
+        // Obtener el nombre del restaurante
+        const restaurantDetails = await restaurantService.getRestaurantById(req.user.restaurant);
+        if (!restaurantDetails) {
+            throw new Error(`Restaurante no encontrado: ${req.user.restaurant}`);
+        }
 
         // Asignar datos adicionales
         orderData.createdById = req.user.id;
         orderData.createdByType = req.user.type;
         orderData.restaurantId = req.user.restaurant;
+        orderData.restaurantName = restaurantDetails.name; // Agregar el nombre del restaurante
         orderData.products = productsWithDetails; // Actualizar productos con detalles
         orderData.totalCost = totalCost; // Asignar el totalCost
         orderData.totalSale = totalSale; // Asignar el totalSale

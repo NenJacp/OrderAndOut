@@ -77,6 +77,14 @@ const orderSchema = new mongoose.Schema({
         ref: 'Restaurant', // Referencia al modelo Restaurant
         required: true,
     },
+    restaurantName: {
+        type: String,
+        required: true,
+    },
+    customerName: { // Nombre del cliente
+        type: String,
+        required: true, // Este campo es requerido
+    },
     paymentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Payment', // Referencia al modelo Payment

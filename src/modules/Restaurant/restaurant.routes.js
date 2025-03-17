@@ -28,6 +28,11 @@ router.put('/myRestaurant', authMiddleware.verifyTokenMiddleware, restaurantCont
  */
 router.delete('/myRestaurant', authMiddleware.verifyTokenMiddleware, restaurantController.deleteRestaurant_CurrentAdmin); //req.body, req.user
 
+/**
+ * @description Ruta para obtener solo el nombre del restaurante del usuario actual
+ */
+router.get('/myRestaurantName', authMiddleware.verifyTokenMiddleware, restaurantController.getRestaurantName_CurrentUser);
+
 
 //DEVELOPER ROUTES
 

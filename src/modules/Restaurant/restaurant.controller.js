@@ -193,6 +193,43 @@ const getAllRestaurants = async (req, res) => {
     }
 };
 
+/**
+ * @description Obtener solo el nombre del restaurante del usuario actual
+ */
+const getRestaurantName_CurrentUser = async (req, res) => {
+    try {
+        // Obtener el ID del restaurante del usuario autenticado
+        const restaurantId = req.user.restaurant;
+        
+        if (!restaurantId) {
+            return res.status(404).json({ 
+                message: 'No tienes un restaurante asignado'
+            });
+        }
+        
+        // Obtener el restaurante por ID
+        const restaurant = await restaurantService.getRestaurantById(restaurantId);
+        
+        // Si el restaurante no se encuentra, devolver un error 404
+        if (!restaurant) {
+            return res.status(404).json({ 
+                message: 'Restaurante no encontrado'
+            });
+        }
+        
+        // Devolver solo el nombre del restaurante
+        res.status(200).json({ 
+            restaurantName: restaurant.name 
+        });
+    } catch (error) {
+        // Si ocurre un error, devolver un error 500
+        res.status(500).json({ 
+            message: 'Error al obtener el nombre del restaurante', 
+            error: error.message 
+        });
+    }
+};
+
 export default {
     //ADMIN CONTROLLERS
 
@@ -203,5 +240,8 @@ export default {
 
     //DEVELOPER CONTROLLERS
 
-    getAllRestaurants
+    getAllRestaurants,
+
+    // NUEVO CONTROLADOR
+    getRestaurantName_CurrentUser
 };
