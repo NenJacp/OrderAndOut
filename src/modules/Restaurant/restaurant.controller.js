@@ -230,6 +230,54 @@ const getRestaurantName_CurrentUser = async (req, res) => {
     }
 };
 
+/**
+ * @description Generar enlace para conectar restaurante con Stripe
+ */
+const connectRestaurantToStripe = async (req, res) => {
+    try {
+        // Verificar permisos (solo administradores de restaurante)
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Solo administradores pueden conectar Stripe' 
+            });
+        }
+        
+        const restaurantId = req.user.restaurant;
+        if (!restaurantId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'No tienes un restaurante asignado' 
+            });
+        }
+        
+        // URLs para tu dashboard
+        const baseUrl = 'https://kibbi-web.onrender.com';
+        const refreshUrl = `${baseUrl}/#/stripe/refresh`;
+        const returnUrl = `${baseUrl}/#/stripe/success`;
+        
+        // Generar enlace usando el servicio de Stripe
+        const stripeService = await import('../Stripe/stripe.service.js');
+        const accountLink = await stripeService.default.createAccountLink(
+            restaurantId,
+            refreshUrl,
+            returnUrl
+        );
+        
+        res.status(200).json({
+            success: true,
+            url: accountLink.url
+        });
+    } catch (error) {
+        console.error('Error generando enlace de Stripe:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error al generar enlace de Stripe', 
+            error: error.message 
+        });
+    }
+};
+
 export default {
     //ADMIN CONTROLLERS
 
@@ -243,5 +291,8 @@ export default {
     getAllRestaurants,
 
     // NUEVO CONTROLADOR
-    getRestaurantName_CurrentUser
+    getRestaurantName_CurrentUser,
+
+    // NUEVO CONTROLADOR
+    connectRestaurantToStripe
 };

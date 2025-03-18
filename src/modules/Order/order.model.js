@@ -102,6 +102,17 @@ const orderSchema = new mongoose.Schema({
     orderType: { // Nuevo campo agregado
         type: String,
         default: 'llevar', // Valor por defecto
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pendiente', 'pagado', 'fallido', 'reembolsado'],
+        default: 'pendiente'
+    },
+    stripePaymentId: {
+        type: String
+    },
+    stripePaymentUrl: {
+        type: String
     }
 },
 {

@@ -70,7 +70,38 @@ const handle = async (req, res) => {
          * @constant {Object} newOrder
          */
         const newOrder = await orderService.createOrder(orderData);
-        res.status(201).send(newOrder);
+        
+        // Generar URL de pago si se especifica paymentMethod como 'tarjeta'
+        if (orderData.paymentMethod === 'tarjeta') {
+            try {
+                const stripeService = await import('../../../Stripe/stripe.paymentService.js');
+                const paymentUrl = await stripeService.default.generatePaymentUrl(
+                    newOrder._id,
+                    newOrder.restaurantId,
+                    newOrder.totalSale
+                );
+                
+                // Actualizar la orden con la URL de pago
+                newOrder.stripePaymentUrl = paymentUrl;
+                await newOrder.save();
+                
+                // Incluir URL de pago en la respuesta
+                res.status(201).json({
+                    order: newOrder,
+                    paymentUrl: paymentUrl
+                });
+            } catch (error) {
+                console.error('Error generando URL de pago:', error);
+                // Aún devolver la orden creada aunque falle el pago
+                res.status(201).json({
+                    order: newOrder,
+                    error: `Error generando URL de pago: ${error.message}`
+                });
+            }
+        } else {
+            // Si no es pago con tarjeta, simplemente devolver la orden
+            res.status(201).json({ order: newOrder });
+        }
     } catch (error) {
         res.status(500).send('Error al crear la orden: ' + error.message);
     }

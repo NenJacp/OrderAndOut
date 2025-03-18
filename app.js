@@ -7,6 +7,7 @@ import orderRouter from './src/modules/Order/order.routes.js'; // Importar las r
 import productRouter from './src/modules/Product/product.routes.js'; // Importar las rutas de productos
 import categoriesRouter from './src/modules/Category/category.routes.js'; // Importar las rutas de categorías
 import customerRouter from './src/modules/Customer/customer.routes.js'; // Importar las rutas de clientes
+import stripeRouter from './src/modules/Stripe/stripe.routes.js'; // Importar las rutas de Stripe
 import cleanupJob from './src/config/cleanup.js';
 import cors from 'cors';
 
@@ -33,6 +34,7 @@ app.use('/api/orders', orderRouter); // Usar la instancia de la aplicación
 app.use('/api/products', productRouter); // Usar la instancia de la aplicación
 app.use('/api/categories', categoriesRouter); // Usar la instancia de la aplicación
 app.use('/api/customers', customerRouter); // Usar la instancia de la aplicación para clientes
+app.use('/api/stripe', stripeRouter); // Usar la instancia de la aplicación para Stripe
 
 // Iniciar limpieza automática
 //cleanupJob();

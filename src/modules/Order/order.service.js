@@ -85,6 +85,57 @@ const calculateTotalSale = async (productsData) => {
     return await executeCalculateTotalSale(productsData);
 };
 
+/**
+ * @description Procesar pago de una orden
+ */
+const processOrderPayment = async (orderId, paymentMethodId) => {
+    try {
+        // Obtener la orden
+        const order = await Order.findById(orderId);
+        if (!order) {
+            throw new Error('Orden no encontrada');
+        }
+        
+        // Obtener el restaurante
+        const restaurant = await Restaurant.findById(order.restaurantId)
+            .populate('stripeAccount');
+            
+        if (!restaurant) {
+            throw new Error('Restaurante no encontrado');
+        }
+        
+        if (!restaurant.stripeAccount) {
+            throw new Error('El restaurante no tiene cuenta Stripe conectada');
+        }
+        
+        // Obtener la cuenta Stripe
+        const stripeAccount = await StripeAccount.findById(restaurant.stripeAccount);
+        if (!stripeAccount || !stripeAccount.chargesEnabled) {
+            throw new Error('Cuenta Stripe del restaurante no está habilitada para cobros');
+        }
+        
+        // Procesar pago con Stripe
+        const stripeService = await import('../Stripe/stripe.service.js');
+        const paymentIntent = await stripeService.default.processPayment(
+            orderId,
+            paymentMethodId,
+            order.totalSale,
+            restaurant._id,
+            stripeAccount.stripeAccountId
+        );
+        
+        // Actualizar estado de la orden
+        order.paymentStatus = 'pagado';
+        order.stripePaymentId = paymentIntent.id;
+        await order.save();
+        
+        return paymentIntent;
+    } catch (error) {
+        console.error('Error procesando pago:', error);
+        throw error;
+    }
+};
+
 export default {
     createOrder,
     getAllOrders,
@@ -99,5 +150,6 @@ export default {
     getTop5ProductsByDateRangeAndRestaurantId,
     getOrdersByPaymentMethodByDateRangeAndRestaurantId,
     getTopCategoriesByDateRangeAndRestaurantId,
-    calculateTotalSale
+    calculateTotalSale,
+    processOrderPayment
 };

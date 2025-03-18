@@ -42,4 +42,11 @@ router.get('/myRestaurantName', authMiddleware.verifyTokenMiddleware, restaurant
  */
 router.get('/', authMiddleware.verifyTokenMiddleware, restaurantController.getAllRestaurants); //req.body.query.page, req.body.query.limit
 
+/**
+ * @description Ruta para conectar restaurante a Stripe
+ */
+router.get('/connectStripe', 
+    authMiddleware.verifyTokenMiddleware, 
+    restaurantController.connectRestaurantToStripe);
+
 export default router;
