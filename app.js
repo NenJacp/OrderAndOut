@@ -1,4 +1,7 @@
 import express from 'express';
+dotenv.config(); // Configurar dotenv
+
+
 import connectDB from './src/config/mongoDB.js'; // Importar la conexión a MongoDB
 import adminRouter from './src/modules/Admin/admin.routes.js'; // Importar las rutas de administradores
 import restaurantRouter from './src/modules/Restaurant/restaurant.routes.js'; // Importar las rutas de restaurantes
@@ -9,6 +12,8 @@ import categoriesRouter from './src/modules/Category/category.routes.js'; // Imp
 import customerRouter from './src/modules/Customer/customer.routes.js'; // Importar las rutas de clientes
 import cleanupJob from './src/config/cleanup.js';
 import cors from 'cors';
+import dotenv from 'dotenv';
+
 
 // Conexion a la base de datos
 connectDB();
@@ -33,6 +38,7 @@ app.use('/api/orders', orderRouter); // Usar la instancia de la aplicación
 app.use('/api/products', productRouter); // Usar la instancia de la aplicación
 app.use('/api/categories', categoriesRouter); // Usar la instancia de la aplicación
 app.use('/api/customers', customerRouter); // Usar la instancia de la aplicación para clientes
+app.use('api/payments');
 
 // Iniciar limpieza automática
 //cleanupJob();

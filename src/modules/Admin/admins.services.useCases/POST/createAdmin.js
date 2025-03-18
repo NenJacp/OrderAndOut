@@ -6,7 +6,6 @@ import Admin from '../../admin.model'; // Importar el modelo de administrador
  * @returns {object} retorna la informacion del admin
  */
 const execute = async (adminData) => {
-
     /**
      * @description Crear un nuevo administrador con los datos proporcionados
      */ 
