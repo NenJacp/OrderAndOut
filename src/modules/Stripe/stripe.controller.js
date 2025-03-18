@@ -8,7 +8,13 @@ import Restaurant from '../Restaurant/restaurant.model.js';
  */
 const createStripeConnectLink = async (req, res) => {
     try {
-        const { refreshUrl, returnUrl } = req.body;
+        // Establecer URLs de redirección predeterminadas
+        const refreshUrl = `${process.env.FRONTEND_URL}/stripe/refresh`;
+        const returnUrl = `${process.env.FRONTEND_URL}/stripe/success`;
+
+        // Log para verificar las URLs
+        console.log('Refresh URL:', refreshUrl);
+        console.log('Return URL:', returnUrl);
         
         // Verificar permisos
         if (req.user.type !== 'admin') {
@@ -29,8 +35,8 @@ const createStripeConnectLink = async (req, res) => {
         // Generar enlace
         const accountLink = await stripeService.createAccountLink(
             restaurantId,
-            refreshUrl || `${process.env.FRONTEND_URL}/stripe/refresh`,
-            returnUrl || `${process.env.FRONTEND_URL}/stripe/success`
+            refreshUrl,
+            returnUrl
         );
         
         res.status(200).json({
@@ -38,6 +44,7 @@ const createStripeConnectLink = async (req, res) => {
             url: accountLink.url
         });
     } catch (error) {
+        console.error('Error al crear enlace de onboarding:', error);
         res.status(500).json({
             success: false,
             message: 'Error al generar enlace',

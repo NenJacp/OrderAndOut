@@ -13,6 +13,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  */
 const createAccountLink = async (restaurantId, refreshUrl, returnUrl) => {
     try {
+        // Asegúrate de que refreshUrl y returnUrl comiencen con http o https
+        if (!/^https?:\/\//.test(refreshUrl) || !/^https?:\/\//.test(returnUrl)) {
+            throw new Error('Las URLs de redirección deben comenzar con http:// o https://');
+        }
+
         // Buscar si ya existe una cuenta
         let stripeAccount = await StripeAccount.findOne({ restaurantId });
         
@@ -51,7 +56,7 @@ const createAccountLink = async (restaurantId, refreshUrl, returnUrl) => {
         
         return accountLink;
     } catch (error) {
-        console.error('Error al crear enlace:', error);
+        console.error('Error al crear enlace de onboarding:', error);
         throw new Error(`Error al crear enlace: ${error.message}`);
     }
 };
