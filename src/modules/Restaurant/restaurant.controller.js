@@ -47,11 +47,11 @@ const createRestaurant_CurrentAdmin = async (req, res) => {
         }
 
         //Generar un token de autenticacion para el administrador
-        const token = authService.generateAdminAuthToken
-        ({
-            id: updatedAdmin._id,
+        const token = authService.generateAdminAuthToken({
+            id: updatedAdmin._id.toString(),
             type: 'admin',
-            restaurant: newRestaurant._id
+            restaurant: newRestaurant._id.toString(),
+            name: `${updatedAdmin.firstName} ${updatedAdmin.lastName}`
         });    
 
         //Devolver el token y el restaurante creado
