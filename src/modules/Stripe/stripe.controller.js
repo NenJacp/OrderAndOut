@@ -39,6 +39,9 @@ const createStripeConnectLink = async (req, res) => {
             returnUrl
         );
         
+        // Log para verificar el enlace generado
+        console.log('Enlace de onboarding generado:', accountLink.url);
+        
         res.status(200).json({
             success: true,
             url: accountLink.url
@@ -153,6 +156,7 @@ const handleStripeWebhook = async (req, res) => {
     try {
         const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+        console.log('Evento recibido:', event);
     } catch (err) {
         console.error(`Error de firma de webhook: ${err.message}`);
         return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -163,28 +167,28 @@ const handleStripeWebhook = async (req, res) => {
         switch (event.type) {
             case 'account.updated':
                 const account = event.data.object;
-                
-                // Actualizar cuenta en la base de datos
+                console.log('Cuenta actualizada:', account);
                 await updateStripeAccountStatus(account);
                 break;
                 
             case 'payment_intent.succeeded':
                 const paymentIntent = event.data.object;
+                console.log('Pago exitoso:', paymentIntent);
                 await handlePaymentSuccess(paymentIntent);
                 break;
                 
             case 'payment_intent.payment_failed':
                 const failedPayment = event.data.object;
+                console.log('Pago fallido:', failedPayment);
                 await handlePaymentFailure(failedPayment);
                 break;
                 
-            // Puedes manejar más eventos según sea necesario
             default:
                 console.log(`Evento no manejado: ${event.type}`);
         }
         
         // Responder a Stripe que el webhook se procesó correctamente
-        res.json({received: true});
+        res.json({ received: true });
     } catch (error) {
         console.error(`Error procesando webhook: ${error.message}`);
         res.status(500).send(`Error procesando webhook: ${error.message}`);

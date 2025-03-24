@@ -9,6 +9,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  */
 const generatePaymentUrl = async (orderId, restaurantId, amount) => {
     try {
+        console.log('Generando URL de pago para la orden:', orderId);
+        console.log('ID del restaurante:', restaurantId);
+        console.log('Monto:', amount);
+
         // Buscar la cuenta Stripe del restaurante
         const restaurant = await Restaurant.findById(restaurantId);
         if (!restaurant) {
@@ -17,6 +21,8 @@ const generatePaymentUrl = async (orderId, restaurantId, amount) => {
         
         // Obtener el StripeAccount del restaurante
         const stripeAccount = await StripeAccount.findOne({ restaurantId });
+        console.log('Cuenta Stripe encontrada:', stripeAccount);
+        
         if (!stripeAccount || !stripeAccount.chargesEnabled) {
             throw new Error('Cuenta Stripe del restaurante no configurada o no habilitada para pagos');
         }
@@ -52,6 +58,7 @@ const generatePaymentUrl = async (orderId, restaurantId, amount) => {
             },
         });
         
+        console.log('URL de pago generada:', session.url);
         return session.url;
     } catch (error) {
         console.error('Error generando URL de pago:', error);

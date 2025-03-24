@@ -13,6 +13,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  */
 const createAccountLink = async (restaurantId, refreshUrl, returnUrl) => {
     try {
+        console.log('Creando enlace de onboarding para el restaurante:', restaurantId);
+        console.log('Refresh URL:', refreshUrl);
+        console.log('Return URL:', returnUrl);
+
         // Asegúrate de que refreshUrl y returnUrl comiencen con http o https
         if (!/^https?:\/\//.test(refreshUrl) || !/^https?:\/\//.test(returnUrl)) {
             throw new Error('Las URLs de redirección deben comenzar con http:// o https://');
@@ -20,6 +24,7 @@ const createAccountLink = async (restaurantId, refreshUrl, returnUrl) => {
 
         // Buscar si ya existe una cuenta
         let stripeAccount = await StripeAccount.findOne({ restaurantId });
+        console.log('Cuenta Stripe encontrada:', stripeAccount);
         
         // Si no existe, crear nueva cuenta Stripe
         if (!stripeAccount) {
@@ -33,12 +38,14 @@ const createAccountLink = async (restaurantId, refreshUrl, returnUrl) => {
                     restaurantId: restaurantId.toString()
                 }
             });
+            console.log('Cuenta Stripe creada:', account);
             
             // Guardar referencia en DB
             stripeAccount = await StripeAccount.create({
                 restaurantId,
                 stripeAccountId: account.id
             });
+            console.log('Cuenta Stripe guardada en la base de datos:', stripeAccount);
             
             // Actualizar el modelo de Restaurant con la referencia a la cuenta Stripe
             await Restaurant.findByIdAndUpdate(restaurantId, {
@@ -53,6 +60,7 @@ const createAccountLink = async (restaurantId, refreshUrl, returnUrl) => {
             return_url: returnUrl,
             type: 'account_onboarding'
         });
+        console.log('Enlace de onboarding creado:', accountLink);
         
         return accountLink;
     } catch (error) {
