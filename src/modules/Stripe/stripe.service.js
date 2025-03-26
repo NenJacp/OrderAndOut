@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import StripeAccount from './stripe.model.js';
 import Restaurant from './../Restaurant/restaurant.model.js';
+import Admin from '../Admin/admin.model.js';
 
 // Inicializar Stripe con tu clave secreta
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -151,8 +152,29 @@ const processPayment = async (orderId, paymentMethodId, amount, restaurantId) =>
     }
 };
 
+/**
+ * @description Maneja suscripciones exitosas del administrador (no tiene nada que ver con los pagos de los restaurantes)
+ * @param {object} session Objeto de sesión de Stripe
+ */
+const handleSubscriptionSuccess = async (session) => {
+    const customerId = session.customer;
+    const subscriptionId = session.subscription;
+    const productId = session.line_items.data[0].price.product;
+    
+    // Buscar al administrador usando el customerId de Stripe
+    const admin = await Admin.findOne({ stripeCustomerId: customerId });
+
+    if (admin) {
+        // Actualizar información de la suscripción
+        console.log('Administrador encontrado:', admin);
+    } else {
+        console.log('No se encontró un administrador con este customerId');
+    }
+};
+
 export default {
     createAccountLink,
     checkAccountStatus,
-    processPayment
+    processPayment,
+    handleSubscriptionSuccess
 }; 

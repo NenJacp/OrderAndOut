@@ -24,4 +24,9 @@ router.post('/webhook',
     express.raw({type: 'application/json'}),  // Importante: mantener el cuerpo en formato raw
     stripeController.handleStripeWebhook);
 
+router.post('/create-subscription');
+
+
+router.post('/subscription-status');
+
 export default router; 

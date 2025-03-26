@@ -2,6 +2,8 @@ import stripeService from './stripe.service.js';
 import orderService from '../Order/order.service.js';
 import StripeAccount from './stripe.model.js';
 import Restaurant from '../Restaurant/restaurant.model.js';
+import Stripe from 'stripe';
+import Admin from '../Admin/admin.model.js';
 
 /**
  * @description Crear enlace de onboarding para restaurante
@@ -165,6 +167,13 @@ const handleStripeWebhook = async (req, res) => {
     try {
         // Manejar eventos específicos
         switch (event.type) {
+            //Evento de pago para suscripción
+            case 'checkout.session.completed':
+                const session = event.data.object;
+                console.log('Pago completado:', session);
+                await stripeService.handleSubscriptionSuccess(session);
+                break;
+
             case 'account.updated':
                 const account = event.data.object;
                 console.log('Cuenta actualizada:', account);

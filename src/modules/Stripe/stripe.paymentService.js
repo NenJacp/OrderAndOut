@@ -79,6 +79,15 @@ const getPaymentStatus = async (paymentIntentId) => {
     }
 };
 
+const getSubscriptionStatus = async (subscriptionId) => {
+    try {
+        
+    } catch (error) {
+        console.error('Error verificando estado de suscripción:', error);
+        throw error;
+    }
+}
+
 export default {
     generatePaymentUrl,
     getPaymentStatus

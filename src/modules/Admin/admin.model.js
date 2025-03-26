@@ -5,6 +5,11 @@ import mongoose from 'mongoose'; // Importación de mongoose
  */
 const adminSchema = new mongoose.Schema({
     // Campo para el nombre
+    stripeCustomerId: {
+        type: String, // El customerId de Stripe es un string
+        unique: true,  // Aseguramos que sea único
+        required: true
+    },
     firstName: {
         type: String,
         required: [true, 'El nombre es requerido'],
