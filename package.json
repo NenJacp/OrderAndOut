@@ -11,11 +11,12 @@
     "url": "git+https://github.com/NenJacp/OrderAndOut.git"
   },
   "license": "ISC",
-  "author": "Nen - Damaya, Richi",
+  "author": "Nen - Damaya, Richi, JuniRanger",
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
@@ -29,5 +30,8 @@
     "mongoose": "^8.10.0",
     "nodemailer": "^6.10.0",
     "stripe": "^17.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

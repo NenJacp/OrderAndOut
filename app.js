@@ -1,4 +1,5 @@
 import express from 'express';
+import dotenv from 'dotenv'; // Importar dotenv
 import connectDB from './src/config/mongoDB.js'; // Importar la conexión a MongoDB
 import adminRouter from './src/modules/Admin/admin.routes.js'; // Importar las rutas de administradores
 import restaurantRouter from './src/modules/Restaurant/restaurant.routes.js'; // Importar las rutas de restaurantes
@@ -9,6 +10,9 @@ import categoriesRouter from './src/modules/Category/category.routes.js'; // Imp
 import stripeRouter from './src/modules/Stripe/stripe.routes.js'; // Importar las rutas de Stripe
 import cleanupJob from './src/config/cleanup.js';
 import cors from 'cors';
+
+// Configurar dotenv para leer variables de entorno
+dotenv.config();
 
 // Conexion a la base de datos
 connectDB();
@@ -38,7 +42,7 @@ app.use('/api/stripe', stripeRouter); // Usar la instancia de la aplicación par
 //cleanupJob();
 
 // Puerto
-const PORT = process.env.PORT || 5000; // Usar el puerto definido en .env o 5000 por defecto
+const PORT = process.env.PORT || 3000; // Usar el puerto definido en .env o 3000 por defecto
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });

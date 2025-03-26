@@ -23,7 +23,7 @@ const createStripeConnectLink = async (req, res) => {
                 message: 'Acceso no autorizado'
             });
         }
-        
+
         const restaurantId = req.user.restaurant;
         if (!restaurantId) {
             return res.status(400).json({

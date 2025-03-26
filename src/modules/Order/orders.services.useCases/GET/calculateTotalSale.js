@@ -28,7 +28,7 @@ const execute = async (productsData) => {
             }
             totalSale += product.salePrice * item.quantity;
         }
-        
+
         return totalSale;
     } catch (error) {
         throw new Error("Error al calcular el total de venta: " + error.message);
@@ -36,3 +36,4 @@ const execute = async (productsData) => {
 };
 
 export default execute; 
+
