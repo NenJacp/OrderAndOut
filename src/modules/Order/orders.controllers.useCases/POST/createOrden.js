@@ -2,6 +2,7 @@ import orderService from '../../order.service.js'; // Importar el servicio de ó
 import productService from '../../../Product/product.service.js'; // Importar el servicio de productos
 import categoryService from '../../../Category/category.service.js'; // Importar el servicio de categorías
 import restaurantService from '../../../Restaurant/restaurant.service.js'; // Importar el servicio de restaurantes
+import couponService from '../../../Coupons/coupon.service.js';
 
 /**
  * @description Controlador para crear una nueva orden
@@ -40,14 +41,61 @@ const handle = async (req, res) => {
             };
         }));
 
-        // Calcular el totalCost y totalSale
+        // Calcular el totalCost
         const totalCost = productsWithDetails.reduce((total, product) => {
             return total + (product.costPrice * product.quantity);
         }, 0);
 
-        const totalSale = productsWithDetails.reduce((total, product) => {
+        // Calcular el subtotal (antes era totalSale)
+        const subtotal = productsWithDetails.reduce((total, product) => {
             return total + (product.salePrice * product.quantity);
         }, 0);
+
+        // Inicializar descuento
+        let discount = 0;
+        let couponId = null;
+
+        // Verificar si se envió un código de cupón
+        if (orderData.coupon) {
+            // Buscar cupón por código
+            const coupon = await couponService.getCouponByCode(orderData.coupon);
+
+            if (!coupon) {
+                return res.status(404).json({ message: 'Cupón no encontrado' });
+            }
+
+            // Guardar el ID del cupón
+            couponId = coupon._id;
+
+            // Verificar el estado del cupón
+            if (coupon.status === 'expired') {
+                return res.status(400).json({ message: 'El cupón ha expirado' });
+            } else if (coupon.status === 'consumed') {
+                return res.status(400).json({ message: 'El cupón ya ha sido consumido' });
+            } else if (coupon.status === 'valid') {
+                // Verificar la validez de la fecha
+                const now = new Date();
+                if (now > new Date(coupon.validity)) {
+                    coupon.status = 'expired';
+                    await couponService.updateCouponById(coupon._id, { status: 'expired' });
+                    return res.status(400).json({ message: 'El cupón ha expirado' });
+                }
+
+                // Aplicar el descuento
+                if (coupon.type === 'fixed') {
+                    discount = coupon.discount; // Descuento fijo
+                } else if (coupon.type === 'percentage') {
+                    discount = (subtotal * coupon.discount) / 100; // Descuento porcentual
+                }
+
+                // Marcar el cupón como consumido
+                coupon.status = 'consumed';
+                await couponService.updateCouponById(coupon._id, { status: 'consumed' });
+            }
+        }
+
+        // Calcular el totalSale (subtotal - discount)
+        const totalSale = subtotal - discount;
         
         // Obtener el nombre del restaurante
         const restaurantDetails = await restaurantService.getRestaurantById(req.user.restaurant);
@@ -62,8 +110,15 @@ const handle = async (req, res) => {
         orderData.restaurantName = restaurantDetails.name; // Agregar el nombre del restaurante
         orderData.products = productsWithDetails; // Actualizar productos con detalles
         orderData.totalCost = totalCost; // Asignar el totalCost
+        orderData.subtotal = subtotal;
+        orderData.discount = discount || 0;
         orderData.totalSale = totalSale; // Asignar el totalSale
         orderData.createdByName = req.user.name; // Agregar el nombre del usuario que crea la orden
+        
+        // Agregar código y ID del cupón si existe
+        if (orderData.coupon) {
+            orderData.couponId = couponId; // Guardar el ID del cupón
+        }
 
         /**
          * @description Creación de la orden
@@ -78,7 +133,7 @@ const handle = async (req, res) => {
                 const paymentUrl = await stripeService.default.generatePaymentUrl(
                     newOrder._id,
                     newOrder.restaurantId,
-                    newOrder.totalSale
+                    newOrder.totalSale // Usar totalSale (después del descuento) para el pago
                 );
                 
                 // Actualizar la orden con la URL de pago

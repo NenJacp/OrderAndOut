@@ -9,6 +9,7 @@ import categoriesRouter from './src/modules/Category/category.routes.js'; // Imp
 import stripeRouter from './src/modules/Stripe/stripe.routes.js'; // Importar las rutas de Stripe
 import cleanupJob from './src/config/cleanup.js';
 import cors from 'cors';
+import couponRouter from './src/modules/Coupons/coupon.routes.js'; // Importar las rutas de cupones
 
 // Conexion a la base de datos
 connectDB();
@@ -33,6 +34,7 @@ app.use('/api/orders', orderRouter); // Usar la instancia de la aplicación
 app.use('/api/products', productRouter); // Usar la instancia de la aplicación
 app.use('/api/categories', categoriesRouter); // Usar la instancia de la aplicación
 app.use('/api/stripe', stripeRouter); // Usar la instancia de la aplicación para Stripe
+app.use('/api/coupons', couponRouter); // Usar la instancia de la aplicación para cupones
 
 // Iniciar limpieza automática
 //cleanupJob();

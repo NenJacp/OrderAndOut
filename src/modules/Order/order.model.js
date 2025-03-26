@@ -113,7 +113,24 @@ const orderSchema = new mongoose.Schema({
     },
     stripePaymentUrl: {
         type: String
-    }
+    },
+    coupon: {
+        type: String,
+        required: false
+    },
+    couponId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon',
+        required: false
+    },
+    discount: {
+        type: Number,
+        default: 0
+    },
+    subtotal: {
+        type: Number,
+        required: true
+    },
 },
 {
     timestamps: true,

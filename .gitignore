@@ -3,3 +3,5 @@
 
 # Otros elementos a ignorar
 node_modules/
+generateFakeData.js
+./docs/
