@@ -93,7 +93,6 @@ const updateProductById_CurrentAdmin = async (req, res) => {
         const productId = req.params.productId;
         const productData = req.body;
 
-        console.log(productData, productId);
         // Validar campos requeridos
         if (!productId) {
             return res.status(400).json({ message: 'Se requiere ID del producto' });
@@ -108,11 +107,12 @@ const updateProductById_CurrentAdmin = async (req, res) => {
         if (currentProduct.restaurantId.toString() !== req.user.restaurant.toString()) {
             return res.status(403).json({ message: 'No tienes permiso para actualizar este producto' });
         }
-        
-        if (productData.costPrice && productData.salePrice && 
-            parseFloat(productData.costPrice) >= parseFloat(productData.salePrice)) {
-            return res.status(400).json({ message: 'El precio de venta debe ser mayor al de costo' });
-        }
+        console.log(productData.costPrice, productData.salePrice);
+        if (productData.costPrice && productData.salePrice ){
+            if ( productData.costPrice >= productData.salePrice) {
+                return res.status(400).json({ message: 'El precio de venta debe ser mayor al de costo' });
+            }
+        } 
         
         const updatedProduct = await productService.updateProduct(productId, productData);
         

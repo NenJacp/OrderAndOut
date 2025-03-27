@@ -24,13 +24,7 @@ const productSchema = new mongoose.Schema({
     salePrice: {  
         type: Number,
         required: true,
-        min: [0.01, 'El precio de venta debe ser mayor a 0'],
-        validate: {
-            validator: function(v) {
-                return v > this.costPrice;
-            },
-            message: 'El precio de venta debe ser mayor al de costo' // El precio de venta debe ser mayor al de costo
-        }
+        min: [0.01, 'El precio de venta debe ser mayor a 0']
     },
     currency: {
         type: String,
@@ -54,16 +48,6 @@ const productSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         required: true,
-        validate: {
-            validator: async function(categoryId) {
-                const category = await mongoose.model('Category').findOne({
-                    _id: categoryId,
-                    restaurantId: this.restaurantId
-                });
-                return !!category;
-            },
-            message: 'La categoría no pertenece a este restaurante'
-        }
     },
 },
 {
