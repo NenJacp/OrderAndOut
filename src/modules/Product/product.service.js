@@ -37,11 +37,18 @@ const getProductById = async (productId) => {
 /**
  * @description Función para obtener productos por ID del restaurante
  * @param {String} restaurantId
+ * @param {Boolean} onlyAvailable - Indica si solo devolver productos disponibles
  * @returns {Promise<Object>}
  */
-const getProductsByRestaurantId = async (restaurantId) => {
+const getProductsByRestaurantId = async (restaurantId, onlyAvailable = false) => {
+    let query = { restaurantId };
     
-    return await Product.find({ restaurantId })
+    // Si solo se requieren productos disponibles, añadir al filtro
+    if (onlyAvailable) {
+        query.availability = true;
+    }
+    
+    return await Product.find(query)
                        .sort({ creationDate: -1 })
                        .select('-__v');
 };
@@ -49,10 +56,18 @@ const getProductsByRestaurantId = async (restaurantId) => {
 /**
  * @description Función para obtener productos por categoría
  * @param {String} categoryId
+ * @param {Boolean} onlyAvailable - Indica si solo devolver productos disponibles
  * @returns {Promise<Object>}
  */
-const getProductsByCategoryId = async (categoryId) => {
-    return await Product.find({ category: categoryId }); // Obtener productos por categoría
+const getProductsByCategoryId = async (categoryId, onlyAvailable = false) => {
+    let query = { category: categoryId };
+    
+    // Si solo se requieren productos disponibles, añadir al filtro
+    if (onlyAvailable) {
+        query.availability = true;
+    }
+    
+    return await Product.find(query);
 };
 
 /**

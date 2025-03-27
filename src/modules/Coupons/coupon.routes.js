@@ -12,12 +12,12 @@ router.post('/myCoupon', authMiddleware.verifyTokenMiddleware, couponController.
 /**
  * @description Ruta para obtener todos los cupones de un restaurante
  */
-router.get('/restaurant/:restaurantId', authMiddleware.verifyTokenMiddleware, couponController.getCouponsByRestaurant);
+router.get('/mineCoupons', authMiddleware.verifyTokenMiddleware, couponController.getCouponsByRestaurant);
 
 /**
  * @description Ruta para obtener un cupón específico por ID
  */
-router.get('/myCoupon/:id', authMiddleware.verifyTokenMiddleware, couponController.getCouponById);
+router.get('/myCoupon/:couponId', authMiddleware.verifyTokenMiddleware, couponController.getCouponById);
 
 /**
  * @description Ruta para obtener un cupón por su código
@@ -27,12 +27,12 @@ router.get('/myCoupon/code/:code', authMiddleware.verifyTokenMiddleware, couponC
 /**
  * @description Ruta para actualizar un cupón por ID
  */
-router.put('/:id', authMiddleware.verifyTokenMiddleware, couponController.updateCouponById);
+router.put('/myCoupon/:couponId', authMiddleware.verifyTokenMiddleware, couponController.updateCouponById);
 
 /**
  * @description Ruta para eliminar un cupón por ID
  */
-router.delete('/:id', authMiddleware.verifyTokenMiddleware, couponController.deleteCouponById);
+router.delete('/myCoupon/:couponId', authMiddleware.verifyTokenMiddleware, couponController.deleteCouponById);
 
 /**
  * @description Ruta para calcular el descuento de un cupón

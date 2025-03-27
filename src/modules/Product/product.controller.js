@@ -195,7 +195,10 @@ const getProductsByRestaurant_CurrentUser = async (req, res) => {
             return res.status(400).json({ message: 'Primero debes crear un restaurante' });
         }
         
-        const products = await productService.getProductsByRestaurantId(req.user.restaurant);
+        // Verificar si es usuario tipo kiosk para filtrar solo productos disponibles
+        const onlyAvailable = req.user.type === 'kiosk';
+        
+        const products = await productService.getProductsByRestaurantId(req.user.restaurant, onlyAvailable);
         
         res.status(200).json(products);
     } catch (error) {
@@ -235,7 +238,10 @@ const getProductsByCategory_CurrentUser = async (req, res) => {
             return res.status(400).json({ message: 'Se requiere ID de categoría' });
         }
 
-        const products = await productService.getProductsByCategoryId(categoryId);
+        // Verificar si es usuario tipo kiosk para filtrar solo productos disponibles
+        const onlyAvailable = req.user.type === 'kiosk';
+        
+        const products = await productService.getProductsByCategoryId(categoryId, onlyAvailable);
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener productos por categoría', error: error.message });
