@@ -152,12 +152,19 @@ const getCouponByCode = async (req, res) => {
  */
 const calculateCouponDiscount = async (req, res) => {
     try {
-        const code = req.params;
-        const subtotal= req.body;
+        // Obtener correctamente el código del cupón
+        const code = req.params.code;
+        const { subtotal } = req.body;
+        
+        console.log("Código:", code);
+        console.log("Subtotal:", subtotal);
 
         // Validar que se envió el subtotal
-        if (subtotal === undefined || isNaN(subtotal)) {
-            return res.status(400).json({ message: 'Se requiere un subtotal válido' });
+        if (subtotal === undefined || isNaN(parseFloat(subtotal))) {
+            return res.status(400).json({ 
+                message: 'Se requiere un subtotal válido',
+                received: req.body
+            });
         }
 
         // Buscar el cupón por código

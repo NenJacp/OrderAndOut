@@ -78,9 +78,24 @@ const getProductsByCategoryId = async (categoryId, onlyAvailable = false) => {
  */
 const updateProduct = async (id, productData) => {
     try {
-        return await Product.findByIdAndUpdate(id, productData);
+        // Usar findByIdAndUpdate con la opción new:true para devolver el documento actualizado
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            productData,
+            { 
+                new: true,       // Devuelve el documento actualizado
+                runValidators: true  // Ejecuta validadores de esquema
+            }
+        );
+        
+        if (!updatedProduct) {
+            throw new Error(`No se encontró el producto con ID: ${id}`);
+        }
+        
+        return updatedProduct;
     } catch (error) {
-        return null;
+        console.error(`Error al actualizar el producto: ${error.message}`);
+        throw error; // Propaga el error para manejo adecuado
     }
 };
 

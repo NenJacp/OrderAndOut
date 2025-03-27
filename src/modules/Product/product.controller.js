@@ -1,6 +1,7 @@
 import productService from './product.service.js'; // Importar el repositorio
 
 import categoryService from '../Category/category.service.js'; // Importar el modelo de categoría
+import { urlencoded } from 'express';
 
 
 //ADMIN CONTROLLERS
@@ -89,9 +90,8 @@ const updateProductById_CurrentAdmin = async (req, res) => {
     }
 
     try {
-
-        const  productId  = req.params.productId;
-        const { ...productData } = req.body;
+        const productId = req.params.productId;
+        const productData = req.body;
 
         // Validar campos requeridos
         if (!productId) {
@@ -100,20 +100,29 @@ const updateProductById_CurrentAdmin = async (req, res) => {
 
         const currentProduct = await productService.getProductById(productId);
 
+        if (!currentProduct) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
         if (currentProduct.restaurantId.toString() !== req.user.restaurant.toString()) {
             return res.status(403).json({ message: 'No tienes permiso para actualizar este producto' });
         }
         
-        if (currentProduct.costPrice >= productData.salePrice) {
+        if (productData.costPrice && productData.salePrice && 
+            parseFloat(productData.costPrice) >= parseFloat(productData.salePrice)) {
             return res.status(400).json({ message: 'El precio de venta debe ser mayor al de costo' });
         }
         
         const updatedProduct = await productService.updateProduct(productId, productData);
+        
         if (!updatedProduct) {
-            return res.status(404).json({ message: 'Producto no encontrado' });
+            return res.status(500).json({ message: 'Error al actualizar el producto' });
         }
        
-        res.status(200).json({ "message": "Producto actualizado correctamente" });
+        res.status(200).json({ 
+            message: "Producto actualizado correctamente",
+            product: updatedProduct
+        });
     } catch (error) {
         res.status(500).json({ 
             message: 'Error al actualizar',
