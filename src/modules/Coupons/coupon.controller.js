@@ -96,7 +96,7 @@ const updateCouponById = async (req, res) => {
         if (req.user.type !== 'admin') {
             return res.status(403).json({ message: 'No tienes permisos para eliminar el kiosko, solo los administradores pueden hacerlo' });
         }  
-        const updatedCoupon = await couponService.updateCouponById(req.params.id, req.body);
+        const updatedCoupon = await couponService.updateCouponById(req.params.couponId, req.body);
         if (!updatedCoupon) {
             return res.status(404).json({ message: 'Cupón no encontrado' });
         }
@@ -113,12 +113,13 @@ const updateCouponById = async (req, res) => {
  */
 const deleteCouponById = async (req, res) => {
     try {
+
         // Verificar que el usuario sea admin
         if (req.user.type !== 'admin') {
             return res.status(403).json({ message: 'No tienes permisos para eliminar el kiosko, solo los administradores pueden hacerlo' });
         }  
         
-        const deletedCoupon = await couponService.deleteCouponById(req.params.id);
+        const deletedCoupon = await couponService.deleteCouponById(req.params.couponId);
         if (!deletedCoupon) {
             return res.status(404).json({ message: 'Cupón no encontrado' });
         }
