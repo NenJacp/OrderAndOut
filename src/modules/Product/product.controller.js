@@ -93,6 +93,7 @@ const updateProductById_CurrentAdmin = async (req, res) => {
         const productId = req.params.productId;
         const productData = req.body;
 
+        console.log(productData, productId);
         // Validar campos requeridos
         if (!productId) {
             return res.status(400).json({ message: 'Se requiere ID del producto' });
