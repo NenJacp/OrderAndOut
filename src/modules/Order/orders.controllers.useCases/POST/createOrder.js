@@ -67,6 +67,15 @@ const handle = async (req, res) => {
             // Guardar el ID del cupón
             couponId = coupon._id;
 
+            // Verificar si el cupón pertenece al mismo restaurante que el usuario
+            if (coupon.restaurantId.toString() !== req.user.restaurant.toString()) {
+                return res.status(403).json({ 
+                    message: 'Este cupón no pertenece a tu restaurante',
+                    couponRestaurant: coupon.restaurantId,
+                    userRestaurant: req.user.restaurant
+                });
+            }
+
             // Verificar el estado del cupón
             if (coupon.status === 'expired') {
                 return res.status(400).json({ message: 'El cupón ha expirado' });

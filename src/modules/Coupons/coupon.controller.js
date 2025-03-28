@@ -153,10 +153,9 @@ const getCouponByCode = async (req, res) => {
  */
 const calculateCouponDiscount = async (req, res) => {
     try {
-        // Obtener correctamente el código del cupón
         const code = req.params.code;
         const { subtotal } = req.body;
-        
+    
         // Validar que se envió el subtotal
         if (subtotal === undefined || isNaN(parseFloat(subtotal))) {
             return res.status(400).json({ 
@@ -164,11 +163,36 @@ const calculateCouponDiscount = async (req, res) => {
                 received: req.body
             });
         }
-
         // Buscar el cupón por código
         const coupon = await couponService.getCouponByCode(code);
         if (!coupon) {
             return res.status(404).json({ message: 'Cupón no encontrado' });
+        }
+
+        // Verificar que el cupón pertenezca al restaurante del usuario
+        if (coupon.restaurantId.toString() !== req.user.restaurant.toString()) {
+            return res.status(403).json({ message: 'Este cupón no pertenece a tu restaurante',});
+        }
+
+        // Verificar el estado del cupón
+        if (coupon.status === 'consumed') {
+            return res.status(400).json({ message: 'Este cupón ya ha sido consumido' });
+        }
+        
+        if (coupon.status === 'expired') {
+            return res.status(400).json({ message: 'Este cupón ha expirado' });
+        }
+        
+        if (coupon.status === 'disabled') {
+            return res.status(400).json({ message: 'Este cupón ha sido deshabilitado' });
+        }
+
+        // Verificar la fecha de validez
+        const now = new Date();
+        if (now > new Date(coupon.validity)) {
+            // Actualizar estado del cupón a expirado
+            await couponService.updateCouponById(coupon._id, { status: 'expired' });
+            return res.status(400).json({ message: 'El cupón ha expirado' });
         }
 
         // Calcular el descuento
